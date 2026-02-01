@@ -1,0 +1,109 @@
+"""Utility functions for video creation."""
+
+import json
+from pathlib import Path
+from typing import Tuple, Optional, Union
+
+
+def create_sequential_video(
+    images_root: Union[str, Path],
+    output_path: Union[str, Path] = "sequential_video_output.mp4",
+    resolution: Tuple[int, int] = (1920, 1080),
+    fps: int = 30,
+    image_duration: float = 4.0,
+    crossfade_duration: float = 1.2,
+    zoom_intensity: float = 1.15,
+    effects_intensity: float = 0.7,
+    audio_path: Optional[Union[str, Path]] = None,
+    transition_style: str = "random",
+    movement_style: str = "random",
+    color_grade: str = "cinematic",
+    enable_vignette: bool = True,
+    enable_film_grain: bool = False,
+    duration_config_path: Optional[Union[str, Path]] = None
+) -> None:
+    """Convenience function to create a sequential video from numbered images.
+    
+    Args:
+        images_root: Path to directory containing numbered images (1.png, 2.jpg, etc.)
+        output_path: Output video file path
+        resolution: Video resolution as (width, height)
+        fps: Frames per second
+        image_duration: Default duration each image is displayed (seconds)
+        crossfade_duration: Duration of transitions between images (seconds)
+        zoom_intensity: Ken Burns zoom intensity (1.0 = no zoom, 1.2 = 20% zoom)
+        effects_intensity: Overall effects intensity (0.0 to 1.0)
+        audio_path: Optional path to audio file
+        transition_style: Transition style - 'random', 'sequential', 'cinematic', or specific type
+        movement_style: Movement style - 'random', 'sequential', 'dramatic_sequence', or specific type
+        color_grade: Color grading style - 'cinematic', 'documentary', 'vintage', etc.
+        enable_vignette: Enable vignette effect
+        enable_film_grain: Enable film grain overlay
+        duration_config_path: Optional path to JSON file with per-image durations
+    """
+    from .orchestrator import SequentialVideoOrchestrator
+    
+    orchestrator = SequentialVideoOrchestrator(
+        images_root=images_root,
+        output_path=output_path,
+        resolution=resolution,
+        fps=fps,
+        image_duration=image_duration,
+        crossfade_duration=crossfade_duration,
+        zoom_intensity=zoom_intensity,
+        effects_intensity=effects_intensity,
+        audio_path=audio_path,
+        transition_style=transition_style,
+        movement_style=movement_style,
+        color_grade=color_grade,
+        enable_vignette=enable_vignette,
+        enable_film_grain=enable_film_grain,
+        duration_config_path=duration_config_path
+    )
+    orchestrator.create_video()
+
+
+def load_config_and_create_video(config_path: Union[str, Path]) -> None:
+    """Load configuration from JSON and create video."""
+    config_path = Path(config_path)
+
+    if not config_path.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+
+    config_dir = config_path.parent
+
+    images_root = config_dir / config.get('images_root', 'assets/images')
+    output_path = config_dir / config.get('output', 'sequential_video_output.mp4')
+
+    res_str = config.get('res', '1920x1080')
+    width, height = map(int, res_str.split('x'))
+    resolution = (width, height)
+
+    audio_path = None
+    if 'audio' in config and config['audio']:
+        audio_path = config_dir / config['audio']
+
+    duration_config_path = None
+    if 'duration_config' in config and config['duration_config']:
+        duration_config_path = config_dir / config['duration_config']
+
+    create_sequential_video(
+        images_root=images_root,
+        output_path=output_path,
+        resolution=resolution,
+        fps=config.get('fps', 30),
+        image_duration=config.get('image_duration', 4.0),
+        crossfade_duration=config.get('crossfade', 1.2),
+        zoom_intensity=config.get('zoom', 1.15),
+        effects_intensity=config.get('effects_intensity', 0.7),
+        audio_path=audio_path,
+        transition_style=config.get('transition_style', 'random'),
+        movement_style=config.get('movement_style', 'random'),
+        color_grade=config.get('color_grade', 'cinematic'),
+        enable_vignette=config.get('enable_vignette', True),
+        enable_film_grain=config.get('enable_film_grain', False),
+        duration_config_path=duration_config_path
+    )

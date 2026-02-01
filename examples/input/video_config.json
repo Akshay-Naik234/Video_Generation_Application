@@ -1,0 +1,17 @@
+{
+    "images_root": "../../assets/images",
+    "output": "output.mp4",
+    "res": "1920x1080",
+    "fps": 30,
+    "image_duration": 4.0,
+    "crossfade": 1.2,
+    "zoom": 1.15,
+    "effects_intensity": 0.7,
+    "audio": "../audio/narration.mp3",
+    "transition_style": "random",
+    "movement_style": "documentary",
+    "color_grade": "cinematic",
+    "enable_vignette": true,
+    "enable_film_grain": false,
+    "duration_config": "image_display_duration.json"
+}

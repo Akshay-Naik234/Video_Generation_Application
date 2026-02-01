@@ -1,0 +1,8 @@
+Audio Merge
+python audio_merger.py
+
+running video generation
+python -m sequential_video_composer
+
+Timestamp generation
+python .\timestamp_extraction.py large

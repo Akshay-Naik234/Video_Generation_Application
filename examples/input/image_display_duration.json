@@ -1,0 +1,653 @@
+{
+  "video_metadata": {
+    "person_name": "Albert Einstein",
+    "title": "Albert Einstein The Man Who Refused the Room",
+    "total_duration_seconds": 695.52,
+    "total_images": 107,
+    "timing_mode": "TIMESTAMP_LOCKED"
+  },
+  "images": [
+    {
+      "image": 1,
+      "start_time": 0.0,
+      "duration": 5.4,
+      "end_time": 5.4
+    },
+    {
+      "image": 2,
+      "start_time": 5.4,
+      "duration": 3.88,
+      "end_time": 9.28
+    },
+    {
+      "image": 3,
+      "start_time": 9.28,
+      "duration": 5.88,
+      "end_time": 15.16
+    },
+    {
+      "image": 4,
+      "start_time": 15.16,
+      "duration": 2.0,
+      "end_time": 17.16
+    },
+    {
+      "image": 5,
+      "start_time": 17.16,
+      "duration": 6.84,
+      "end_time": 24.0
+    },
+    {
+      "image": 6,
+      "start_time": 24.0,
+      "duration": 2.3,
+      "end_time": 26.3
+    },
+    {
+      "image": 7,
+      "start_time": 26.3,
+      "duration": 6.82,
+      "end_time": 33.12
+    },
+    {
+      "image": 8,
+      "start_time": 33.12,
+      "duration": 3.66,
+      "end_time": 36.78
+    },
+    {
+      "image": 9,
+      "start_time": 36.78,
+      "duration": 2.42,
+      "end_time": 39.2
+    },
+    {
+      "image": 10,
+      "start_time": 39.2,
+      "duration": 4.16,
+      "end_time": 43.36
+    },
+    {
+      "image": 11,
+      "start_time": 43.36,
+      "duration": 6.44,
+      "end_time": 49.8
+    },
+    {
+      "image": 12,
+      "start_time": 49.8,
+      "duration": 2.86,
+      "end_time": 52.66
+    },
+    {
+      "image": 13,
+      "start_time": 52.66,
+      "duration": 6.0,
+      "end_time": 58.66
+    },
+    {
+      "image": 14,
+      "start_time": 58.66,
+      "duration": 4.52,
+      "end_time": 63.18
+    },
+    {
+      "image": 15,
+      "start_time": 63.18,
+      "duration": 3.9,
+      "end_time": 67.08
+    },
+    {
+      "image": 16,
+      "start_time": 67.08,
+      "duration": 4.36,
+      "end_time": 71.44
+    },
+    {
+      "image": 17,
+      "start_time": 71.44,
+      "duration": 5.0,
+      "end_time": 76.44
+    },
+    {
+      "image": 18,
+      "start_time": 76.44,
+      "duration": 4.86,
+      "end_time": 81.3
+    },
+    {
+      "image": 19,
+      "start_time": 81.3,
+      "duration": 3.72,
+      "end_time": 85.02
+    },
+    {
+      "image": 20,
+      "start_time": 85.02,
+      "duration": 2.86,
+      "end_time": 87.88
+    },
+    {
+      "image": 21,
+      "start_time": 104.54,
+      "duration": 4.8,
+      "end_time": 109.34
+    },
+    {
+      "image": 22,
+      "start_time": 109.34,
+      "duration": 4.96,
+      "end_time": 114.3
+    },
+    {
+      "image": 23,
+      "start_time": 114.3,
+      "duration": 2.54,
+      "end_time": 116.84
+    },
+    {
+      "image": 24,
+      "start_time": 116.84,
+      "duration": 3.84,
+      "end_time": 120.68
+    },
+    {
+      "image": 25,
+      "start_time": 87.88,
+      "duration": 7.94,
+      "end_time": 95.82
+    },
+    {
+      "image": 26,
+      "start_time": 95.82,
+      "duration": 1.7,
+      "end_time": 97.52
+    },
+    {
+      "image": 27,
+      "start_time": 97.52,
+      "duration": 2.36,
+      "end_time": 99.88
+    },
+    {
+      "image": 28,
+      "start_time": 99.88,
+      "duration": 4.66,
+      "end_time": 104.54
+    },
+    {
+      "image": 29,
+      "start_time": 120.68,
+      "duration": 8.24,
+      "end_time": 128.92
+    },
+    {
+      "image": 30,
+      "start_time": 128.92,
+      "duration": 10.08,
+      "end_time": 139.0
+    },
+    {
+      "image": 31,
+      "start_time": 139.0,
+      "duration": 1.34,
+      "end_time": 140.34
+    },
+    {
+      "image": 32,
+      "start_time": 140.34,
+      "duration": 5.56,
+      "end_time": 145.9
+    },
+    {
+      "image": 33,
+      "start_time": 145.9,
+      "duration": 2.62,
+      "end_time": 148.52
+    },
+    {
+      "image": 34,
+      "start_time": 148.52,
+      "duration": 3.32,
+      "end_time": 151.84
+    },
+    {
+      "image": 35,
+      "start_time": 151.84,
+      "duration": 4.64,
+      "end_time": 156.48
+    },
+    {
+      "image": 36,
+      "start_time": 156.48,
+      "duration": 5.74,
+      "end_time": 162.22
+    },
+    {
+      "image": 37,
+      "start_time": 162.22,
+      "duration": 5.66,
+      "end_time": 167.88
+    },
+    {
+      "image": 38,
+      "start_time": 167.88,
+      "duration": 4.04,
+      "end_time": 171.92
+    },
+    {
+      "image": 39,
+      "start_time": 171.92,
+      "duration": 4.84,
+      "end_time": 176.76
+    },
+    {
+      "image": 40,
+      "start_time": 176.76,
+      "duration": 5.08,
+      "end_time": 181.84
+    },
+    {
+      "image": 41,
+      "start_time": 181.84,
+      "duration": 5.24,
+      "end_time": 187.08
+    },
+    {
+      "image": 42,
+      "start_time": 187.08,
+      "duration": 6.88,
+      "end_time": 193.96
+    },
+    {
+      "image": 43,
+      "start_time": 193.96,
+      "duration": 7.96,
+      "end_time": 201.92
+    },
+    {
+      "image": 44,
+      "start_time": 201.92,
+      "duration": 7.46,
+      "end_time": 209.38
+    },
+    {
+      "image": 45,
+      "start_time": 209.38,
+      "duration": 6.38,
+      "end_time": 215.76
+    },
+    {
+      "image": 46,
+      "start_time": 215.76,
+      "duration": 4.48,
+      "end_time": 220.24
+    },
+    {
+      "image": 47,
+      "start_time": 220.24,
+      "duration": 7.18,
+      "end_time": 227.42
+    },
+    {
+      "image": 48,
+      "start_time": 227.42,
+      "duration": 13.74,
+      "end_time": 241.16
+    },
+    {
+      "image": 49,
+      "start_time": 241.16,
+      "duration": 5.9,
+      "end_time": 247.06
+    },
+    {
+      "image": 50,
+      "start_time": 247.06,
+      "duration": 9.02,
+      "end_time": 256.08
+    },
+    {
+      "image": 51,
+      "start_time": 256.08,
+      "duration": 4.42,
+      "end_time": 260.5
+    },
+    {
+      "image": 52,
+      "start_time": 260.5,
+      "duration": 9.66,
+      "end_time": 270.16
+    },
+    {
+      "image": 53,
+      "start_time": 270.16,
+      "duration": 24.76,
+      "end_time": 294.92
+    },
+    {
+      "image": 54,
+      "start_time": 294.92,
+      "duration": 5.38,
+      "end_time": 300.3
+    },
+    {
+      "image": 55,
+      "start_time": 300.3,
+      "duration": 4.85,
+      "end_time": 305.15
+    },
+    {
+      "image": 56,
+      "start_time": 305.15,
+      "duration": 4.85,
+      "end_time": 310.0
+    },
+    {
+      "image": 57,
+      "start_time": 310.0,
+      "duration": 10.6,
+      "end_time": 320.6
+    },
+    {
+      "image": 58,
+      "start_time": 320.6,
+      "duration": 4.14,
+      "end_time": 324.74
+    },
+    {
+      "image": 59,
+      "start_time": 324.74,
+      "duration": 4.64,
+      "end_time": 329.38
+    },
+    {
+      "image": 60,
+      "start_time": 329.38,
+      "duration": 7.46,
+      "end_time": 336.84
+    },
+    {
+      "image": 61,
+      "start_time": 336.84,
+      "duration": 7.66,
+      "end_time": 344.5
+    },
+    {
+      "image": 62,
+      "start_time": 344.5,
+      "duration": 6.28,
+      "end_time": 350.78
+    },
+    {
+      "image": 63,
+      "start_time": 350.78,
+      "duration": 6.98,
+      "end_time": 357.76
+    },
+    {
+      "image": 64,
+      "start_time": 357.76,
+      "duration": 15.96,
+      "end_time": 373.72
+    },
+    {
+      "image": 65,
+      "start_time": 373.72,
+      "duration": 5.08,
+      "end_time": 378.8
+    },
+    {
+      "image": 66,
+      "start_time": 378.8,
+      "duration": 7.1,
+      "end_time": 385.9
+    },
+    {
+      "image": 67,
+      "start_time": 385.9,
+      "duration": 21.24,
+      "end_time": 407.14
+    },
+    {
+      "image": 68,
+      "start_time": 407.14,
+      "duration": 6.72,
+      "end_time": 413.86
+    },
+    {
+      "image": 69,
+      "start_time": 413.86,
+      "duration": 9.74,
+      "end_time": 423.6
+    },
+    {
+      "image": 70,
+      "start_time": 423.6,
+      "duration": 7.28,
+      "end_time": 430.88
+    },
+    {
+      "image": 71,
+      "start_time": 430.88,
+      "duration": 4.76,
+      "end_time": 435.64
+    },
+    {
+      "image": 72,
+      "start_time": 435.64,
+      "duration": 5.66,
+      "end_time": 441.3
+    },
+    {
+      "image": 73,
+      "start_time": 441.3,
+      "duration": 10.38,
+      "end_time": 451.68
+    },
+    {
+      "image": 74,
+      "start_time": 451.68,
+      "duration": 16.96,
+      "end_time": 468.64
+    },
+    {
+      "image": 75,
+      "start_time": 468.64,
+      "duration": 6.7,
+      "end_time": 475.34
+    },
+    {
+      "image": 76,
+      "start_time": 475.34,
+      "duration": 5.11,
+      "end_time": 480.45
+    },
+    {
+      "image": 77,
+      "start_time": 480.45,
+      "duration": 5.11,
+      "end_time": 485.56
+    },
+    {
+      "image": 78,
+      "start_time": 485.56,
+      "duration": 5.17,
+      "end_time": 490.73
+    },
+    {
+      "image": 79,
+      "start_time": 490.73,
+      "duration": 6.09,
+      "end_time": 496.82
+    },
+    {
+      "image": 80,
+      "start_time": 496.82,
+      "duration": 9.58,
+      "end_time": 506.4
+    },
+    {
+      "image": 81,
+      "start_time": 506.4,
+      "duration": 3.94,
+      "end_time": 510.34
+    },
+    {
+      "image": 82,
+      "start_time": 510.34,
+      "duration": 3.94,
+      "end_time": 514.28
+    },
+    {
+      "image": 83,
+      "start_time": 514.28,
+      "duration": 11.28,
+      "end_time": 525.56
+    },
+    {
+      "image": 84,
+      "start_time": 525.56,
+      "duration": 9.92,
+      "end_time": 535.48
+    },
+    {
+      "image": 85,
+      "start_time": 535.48,
+      "duration": 7.44,
+      "end_time": 542.92
+    },
+    {
+      "image": 86,
+      "start_time": 542.92,
+      "duration": 9.26,
+      "end_time": 552.18
+    },
+    {
+      "image": 87,
+      "start_time": 552.18,
+      "duration": 3.95,
+      "end_time": 556.13
+    },
+    {
+      "image": 88,
+      "start_time": 556.13,
+      "duration": 4.65,
+      "end_time": 560.78
+    },
+    {
+      "image": 89,
+      "start_time": 560.78,
+      "duration": 4.0,
+      "end_time": 564.78
+    },
+    {
+      "image": 90,
+      "start_time": 564.78,
+      "duration": 12.96,
+      "end_time": 577.74
+    },
+    {
+      "image": 91,
+      "start_time": 577.74,
+      "duration": 5.0,
+      "end_time": 582.74
+    },
+    {
+      "image": 92,
+      "start_time": 582.74,
+      "duration": 10.04,
+      "end_time": 592.78
+    },
+    {
+      "image": 93,
+      "start_time": 592.78,
+      "duration": 5.59,
+      "end_time": 598.37
+    },
+    {
+      "image": 94,
+      "start_time": 598.37,
+      "duration": 5.59,
+      "end_time": 603.96
+    },
+    {
+      "image": 95,
+      "start_time": 603.96,
+      "duration": 2.85,
+      "end_time": 606.81
+    },
+    {
+      "image": 96,
+      "start_time": 606.81,
+      "duration": 2.85,
+      "end_time": 609.65
+    },
+    {
+      "image": 97,
+      "start_time": 609.65,
+      "duration": 3.87,
+      "end_time": 613.52
+    },
+    {
+      "image": 98,
+      "start_time": 613.52,
+      "duration": 2.98,
+      "end_time": 616.5
+    },
+    {
+      "image": 99,
+      "start_time": 616.5,
+      "duration": 3.82,
+      "end_time": 620.32
+    },
+    {
+      "image": 100,
+      "start_time": 620.32,
+      "duration": 2.35,
+      "end_time": 622.67
+    },
+    {
+      "image": 101,
+      "start_time": 622.67,
+      "duration": 2.35,
+      "end_time": 625.01
+    },
+    {
+      "image": 102,
+      "start_time": 625.01,
+      "duration": 2.35,
+      "end_time": 627.36
+    },
+    {
+      "image": 103,
+      "start_time": 627.36,
+      "duration": 6.82,
+      "end_time": 634.18
+    },
+    {
+      "image": 104,
+      "start_time": 634.18,
+      "duration": 13.64,
+      "end_time": 647.82
+    },
+    {
+      "image": 105,
+      "start_time": 647.82,
+      "duration": 31.3,
+      "end_time": 679.12
+    },
+    {
+      "image": 106,
+      "start_time": 679.12,
+      "duration": 9.16,
+      "end_time": 688.28
+    },
+    {
+      "image": 107,
+      "start_time": 688.28,
+      "duration": 7.24,
+      "end_time": 695.52
+    }
+  ]
+}
