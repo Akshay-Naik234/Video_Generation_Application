@@ -1,0 +1,21 @@
+Generate a cinematic, ultra-sharp YouTube documentary thumbnail in 16:9 (1280x720, RGB).
+
+Create a chest-up close-up portrait of {{PERSON_NAME}} in their most iconic historically accurate era that represents their legacy. Use authentic period clothing, grooming, and posture. No modern styling. Documentary realism only.
+
+Position the subject using the rule of thirds, occupying about 60–65% of the frame with a subtle 3/4 angle. Face fully visible, eyes unobstructed.
+
+Facial expression: emotionally controlled but intense. Convey deep intelligence, quiet rebellion, inner conflict, and determination through subtle eyebrow tension and sharp focused eyes. Natural skin texture with realistic imperfections.
+
+Lighting: cinematic high-contrast documentary lighting. One side of the face lit in warm golden/orange tones, the opposite side in cool blue/teal shadows. HDR clarity, professional color grading, subtle film grain.
+
+Background: dark and softly blurred with cinematic depth. Include faint semi-transparent symbolic elements related to {{PERSON_NAME}}’s field or legacy such as handwritten notes, diagrams, historical textures, abstract metaphors, or aged paper fading into darkness. Keep background low contrast and non-distracting.
+
+Add subtle atmospheric depth like soft light rays, floating dust particles, or gentle haze, keeping focus on the eyes.
+
+Insert bold cinematic thumbnail text reading exactly: "{{THUMBNAIL_TEXT}}"
+
+Text style: bold sans-serif (Bebas Neue / Montserrat Black / Impact style), high contrast white or warm gold with subtle shadow or outline. Place in clean negative space (left or right side), never covering the face.
+
+Overall mood: premium cinematic documentary, serious, mysterious, emotionally powerful, rebellion and importance.
+
+Ensure the image is optimized for mobile viewing with a single strong focal point, high contrast, and instantly readable face and text.

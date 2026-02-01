@@ -1,0 +1,33 @@
+I need to sync images with narration audio for a video. Each image should display when its matching narration content plays.
+
+TASK: Analyze the attached image prompts and narration timestamps. Match each image to its corresponding narration segment based on CONTENT (what the image shows vs what the narration says), NOT by sequential order. Images and narration may be in different orders.
+
+RULES:
+1. Match images to narration by content similarity
+2. No gaps between images - timeline must be continuous
+3. No negative durations
+4. If multiple images match one narration segment, split the time equally
+5. If one image matches multiple segments, span the full time range
+
+OUTPUT FORMAT:
+{
+  "video_metadata": {
+    "person_name": "",
+    "title": "",
+    "total_duration_seconds": 0,
+    "total_images": 0,
+    "timing_mode": "TIMESTAMP_LOCKED"
+  },
+  "images": [
+    { "image": 1, "start_time": 0.0, "duration": 0.0, "end_time": 0.0 }
+  ]
+}
+
+Provide the corrected JSON with all images properly timed.
+
+FILES TO ATTACH:
+
+narration_timestamps.json - Narration segments with start, end, text
+
+Image_prompts.txt - Description of each image
+
