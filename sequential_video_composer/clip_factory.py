@@ -43,14 +43,30 @@ class ClipFactory:
     def __init__(self, orchestrator: 'SequentialVideoOrchestrator'):
         self.orchestrator = orchestrator
 
+    # Speed ramp multipliers: emotional peaks get slight slow-down for impact,
+    # action sections get a subtle speed-up to maintain energy.
+    SPEED_RAMP_MAP = {
+        'COLD_OPEN': 1.0,
+        'EARLY_LIFE': 1.0,
+        'THE_SPARK': 1.0,
+        'THE_RISE': 1.05,
+        'THE_CONFLICT': 1.10,
+        'THE_CLIMAX': 0.90,       # Slow down at peak emotional moments
+        'THE_FALL': 0.85,         # Slow down for devastating emotional weight
+        'LEGACY': 0.95,
+        'CTA': 1.0,
+    }
+
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info.
         
         Uses section metadata (when available) to select appropriate color grading
         and movement styles for each image based on its narrative position.
+        Includes brightness normalization and color continuity smoothing when enabled.
         """
         clips_data = []
         total = len(numbered_images)
+        prev_image_array = None  # For color continuity smoothing
 
         for i, (num, image_path) in enumerate(tqdm(numbered_images, desc="Processing images")):
             print(f"Processing image {num}: {image_path.name}")
@@ -66,12 +82,44 @@ class ClipFactory:
                 print(f"Error loading image {image_path}: {e}")
                 continue
 
+            # Pre-process image for brightness normalization and color continuity
+            if self.orchestrator.enable_brightness_normalization or self.orchestrator.enable_color_continuity:
+                proc_img = img.convert('RGB')
+                proc_array = np.array(proc_img)
+
+                if self.orchestrator.enable_brightness_normalization:
+                    proc_array = self.orchestrator.color_grading.normalize_brightness(proc_array)
+
+                if self.orchestrator.enable_color_continuity and prev_image_array is not None:
+                    proc_array = self.orchestrator.color_grading.smooth_color_transition(
+                        prev_image_array, proc_array
+                    )
+
+                prev_image_array = np.array(img.convert('RGB'))  # Store original for next comparison
+
+                # Save processed image to temp path for the movement engine
+                proc_img = PILImage.fromarray(proc_array)
+                import tempfile
+                temp_path = Path(tempfile.mktemp(suffix=image_path.suffix))
+                proc_img.save(str(temp_path))
+                effective_image_path = temp_path
+            else:
+                effective_image_path = image_path
+
             timing = self.orchestrator.get_timing_for_image(num)
             image_duration = timing.get('duration', self.orchestrator.image_duration)
             start_time = timing.get('start_time')
             end_time = timing.get('end_time')
             section = timing.get('section', '')
             emotional_tone = timing.get('emotional_tone', '')
+
+            # Speed ramp: adjust image duration based on emotional section
+            if self.orchestrator.enable_speed_ramp and section:
+                ramp = self.SPEED_RAMP_MAP.get(section, 1.0)
+                if ramp != 1.0:
+                    image_duration = image_duration / ramp  # Slower ramp = longer display
+                    if end_time is not None and start_time is not None:
+                        end_time = start_time + image_duration
             
             # Section-aware movement selection
             movement = self.orchestrator._get_movement_for_image(i, total, image_number=num)
@@ -87,7 +135,7 @@ class ClipFactory:
             print(f"  Movement: {movement} | Color grade: {color_grade}")
 
             clip = self.orchestrator.movements.create_animated_clip(
-                image_path=image_path,
+                image_path=effective_image_path,
                 duration=image_duration,
                 movement_type=movement,
                 zoom_intensity=self.orchestrator.zoom_intensity,
@@ -96,6 +144,13 @@ class ClipFactory:
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
             )
+
+            # Clean up temp file if we created one
+            if effective_image_path != image_path and effective_image_path.exists():
+                try:
+                    effective_image_path.unlink()
+                except OSError:
+                    pass
 
             # Section-aware transition selection (pass actual previous image number for gap handling)
             prev_num = numbered_images[i - 1][0] if i > 0 else None

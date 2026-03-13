@@ -16,5 +16,13 @@
   "enable_chapter_cards": true,
   "enable_dynamic_pacing": true,
   "pattern_interrupt_interval": 75,
+  "enable_hook_overlay": true,
+  "enable_cta_end_screen": true,
+  "enable_brightness_normalization": true,
+  "enable_color_continuity": true,
+  "enable_speed_ramp": true,
+  "audio_fade_in": 1.0,
+  "audio_fade_out": 2.0,
+  "channel_name": "Subscribe",
   "audio": "../examples/audio/narration.mp3"
 }

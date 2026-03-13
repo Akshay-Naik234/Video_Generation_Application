@@ -197,6 +197,29 @@ The script MUST alternate between these three pacing modes. This is what separat
 - "This next part... it changes everything you thought you knew."
 - "Remember this moment. It's going to matter later."
 
+**ADVANCED RETENTION TECHNIQUES (from top 1% creators — weave these throughout):**
+
+1. **SUBCONSCIOUS LOOP TECHNIQUE**: End sentences with incomplete thoughts that force the viewer's brain to stay for closure:
+   - "He walked in with a plan. But what he didn't know was—" (then pivot to context before revealing)
+   - "Three people knew the truth. And one of them was about to—" (cut to next beat)
+   - Use 2-3 of these per script, spaced at key tension points.
+
+2. **PHANTOM COMPLETION HACK**: Start a numbered list or sequence, then delay the payoff:
+   - "He made three promises that day. The first? He'd never speak to Edison again. The second? He'd build something that would make Edison's work look like a toy. The third... well, we'll get to that."
+   - Use once per script, ideally in THE_RISE or THE_CONFLICT section.
+
+3. **OPEN LOOP AT EVERY SECTION TRANSITION**: The last sentence of each section must create an open loop that the next section answers. The viewer should feel physically unable to click away because a question is unanswered.
+   - End of EARLY_LIFE: "And that's when a letter arrived that would change everything."
+   - End of THE_SPARK: "He had no idea what was waiting for him on the other side of that door."
+   - End of THE_RISE: "But success? Success was about to become his worst enemy."
+
+4. **PATTERN INTERRUPT MICRO-STORIES**: Every 90 seconds, insert a 2-3 sentence micro-story that's tangential but fascinating — a weird detail, a coincidence, a human moment. This resets the viewer's attention clock.
+   - "Side note — and this is wild — that same night, in the same hotel, a young Frank Sinatra was performing downstairs. Two geniuses. Same building. Neither knew the other was there."
+
+5. **DIRECT ADDRESS MOMENTS**: 2-3 times per script, break the fourth wall and speak directly to the viewer as if confiding a secret:
+   - "Okay, real talk for a second. If I told you this next part without context, you literally wouldn't believe me."
+   - "I need you to stop and really picture this. Close your eyes for a second — actually, don't, keep watching — but imagine..."
+
 **HOW TO USE RETENTION HOOKS NATURALLY (CRITICAL — hooks must NOT feel forced):**
 - NEVER place two hooks back-to-back. There must be at least 3-4 sentences of genuine story between each hook.
 - Each hook must come at a NATURAL story transition point — at the end of a mini-story, before a new revelation, or at a cliffhanger moment.
@@ -311,6 +334,17 @@ Example 5 (SPORTS — for athletic figures):
 [10:30 - 11:30] LEGACY (~150 words) — What they left behind. Their impact on the world today. End with a powerful one-liner that reframes the entire story. Leave an OPEN LOOP: "What if he had made a different choice that night?" The last line before CTA should be quotable — something viewers will paste in the comments. USE SLOW, REFLECTIVE PACING.
 
 [11:30 - 12:00] CTA (~75 words) — This must flow ORGANICALLY from the legacy section. Do NOT say "thanks for watching" or any generic YouTube CTA. Instead, connect the CTA to the story's emotion: "If that story moved you, hit subscribe — we tell stories like this every week. And drop a comment: what was the moment that hit you the hardest?" Then tease the next video: "Next week... [one-line tease of next biography]." USE MEDIUM, WARM PACING.
+
+**IMPORTANT — VIDEO SYSTEM INTEGRATION NOTES:**
+The video generation system automatically adds these visual elements based on the script structure:
+- **Hook overlay** in the first 5 seconds (dramatic text over the opening image)
+- **Chapter title cards** at each section transition ("The Early Years", "The Turning Point", etc.)
+- **Progress indicator** showing story position at section boundaries
+- **Cinematic letterbox bars** during CLIMAX, CONFLICT, and FALL sections
+- **CTA end screen** in the last 15 seconds with subscribe prompt
+- **Flash transitions** at high-impact section entries
+- **Light leaks** at section boundaries
+These are all automatic — your script just needs strong section transitions and emotional peaks for these effects to land properly.
 
 ---
 

@@ -231,15 +231,27 @@ OVERLAY TEXT RULES:
 - Add overlay_text at the FIRST image where a new date, year, location, or person is introduced
 - Do NOT repeat the same overlay_text on consecutive images
 - Leave as empty string "" for images without overlays
+- **CRITICAL: The FIRST image (image 1, COLD_OPEN) MUST have overlay_text** — the video system uses this as a dramatic hook overlay in the first 5 seconds. Make it impactful (e.g., "1943 | New Yorker Hotel" or "The Night Everything Changed").
 - Format patterns the video system auto-detects:
   "1884"                     -> large cinematic year stamp (top-right)
   "1943, New York"           -> year stamp with location label
   "1943 | New Yorker Hotel"  -> combined date + location card (bottom-right)
   "New York City"            -> location stamp with accent bar (bottom-left)
-  "Nikola Tesla — Inventor"  -> lower third name bar (bottom-left)
+  "Nikola Tesla — Inventor"  -> lower third name bar with slide-in animation (bottom-left)
   "Born: July 10, 1856"     -> info card (bottom-right)
   "$2,300,000"               -> animated counting number overlay (for large numbers with $ prefix)
-  "$2.3 Million"             -> info card for key facts
+  "$2.3 Million"             -> info card for financial facts
+  '"Quote text" — Attribution' -> quote card with attribution (centered)
+
+- **QUOTE OVERLAY FORMAT**: When the narration features a powerful direct quote, use this overlay_text format:
+  '"Imagination is more important than knowledge" — Albert Einstein'
+  The video system auto-detects quoted text and renders it as a cinematic quote card.
+  Use quote overlays for 2-3 of the most powerful quotes in the biography.
+
+- **LOWER THIRD TIMING**: Place "Name — Title" overlays at the FIRST appearance of important people:
+  - The biography subject: first EARLY_LIFE image (e.g., "Nikola Tesla — Inventor & Visionary")
+  - Key antagonist: first THE_CONFLICT image (e.g., "Thomas Edison — Rival")
+  - Key ally: when they first appear (e.g., "George Westinghouse — Business Partner")
 
 PROMPT RULES:
 - EVERY prompt MUST include the biography person's full name for image generation consistency
@@ -422,6 +434,9 @@ EMOTIONAL PACING (VISUAL MOOD BY SECTION):
 - CTA (11:30-12:00):
   * Clean, channel-branded feel
   * Final portrait or symbolic image that encapsulates the whole story
+  * The video system automatically adds a subscribe CTA overlay in the last 15 seconds
+  * Use 3-4 images: a final powerful portrait, a symbolic legacy image, and a clean closing shot
+  * Keep overlay_text minimal in CTA — the system handles the subscribe prompt
 
 AMERICAN AUDIENCE VISUAL ANCHORS (for USA-targeted channels):
 - Include American cultural touchpoints where the script references them:

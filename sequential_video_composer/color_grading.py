@@ -149,6 +149,68 @@ class ColorGrading:
         img = (img - 128) * 1.05 + 128
         return np.clip(img, 0, 255).astype(np.uint8)
 
+    def normalize_brightness(self, image: np.ndarray, target_mean: float = 110.0, strength: float = 0.5) -> np.ndarray:
+        """Normalize image brightness toward a target mean to prevent jarring jumps.
+
+        AI-generated images can vary wildly in brightness. This gently nudges
+        each image toward a consistent baseline so adjacent clips don't create
+        a distracting bright→dark→bright flicker pattern.
+
+        Args:
+            image: Input image as numpy array (H, W, 3)
+            target_mean: Target mean brightness (0-255). 110 is neutral cinematic.
+            strength: How aggressively to normalize (0.0=none, 1.0=full). 0.5 keeps
+                      the original character while reducing extreme outliers.
+        """
+        img = image.astype(np.float64)
+        current_mean = img.mean()
+        if current_mean < 1.0:
+            return image  # Nearly black image, don't adjust
+
+        # Calculate adjustment factor, clamped to avoid extreme shifts
+        ratio = target_mean / current_mean
+        ratio = max(0.7, min(1.4, ratio))  # Never shift more than 40%
+
+        # Blend between original and adjusted based on strength
+        adjusted = img * (1.0 - strength + strength * ratio)
+        return np.clip(adjusted, 0, 255).astype(np.uint8)
+
+    def smooth_color_transition(self, prev_image: np.ndarray, curr_image: np.ndarray, blend_strength: float = 0.15) -> np.ndarray:
+        """Smooth color continuity between adjacent images.
+
+        Prevents jarring color temperature jumps between consecutive clips by
+        blending a small portion of the previous image's color characteristics
+        into the current image. This mimics how professional editors use
+        color continuity to maintain visual flow.
+
+        Args:
+            prev_image: Previous image as numpy array (H, W, 3)
+            curr_image: Current image as numpy array (H, W, 3)
+            blend_strength: How much of prev color to blend (0.0-0.3). Higher
+                           values create smoother transitions but may wash out
+                           intentional color changes between sections.
+        """
+        prev_mean = prev_image.astype(np.float64).mean(axis=(0, 1))  # Per-channel mean
+        curr_mean = curr_image.astype(np.float64).mean(axis=(0, 1))
+
+        # Only smooth if the difference is noticeable but not intentional
+        diff = np.abs(prev_mean - curr_mean).mean()
+        if diff < 5.0 or diff > 60.0:
+            # Too similar (no need) or too different (probably intentional section change)
+            return curr_image
+
+        # Blend channel means gently
+        target_mean = prev_mean * blend_strength + curr_mean * (1.0 - blend_strength)
+        img = curr_image.astype(np.float64)
+
+        for c in range(3):
+            if curr_mean[c] > 1.0:
+                ratio = target_mean[c] / curr_mean[c]
+                ratio = max(0.85, min(1.15, ratio))
+                img[:, :, c] *= ratio
+
+        return np.clip(img, 0, 255).astype(np.uint8)
+
     def auto_grade_for_section(self, image: np.ndarray, section: str, emotional_tone: str = '') -> np.ndarray:
         """Automatically select and apply color grading based on section and emotional tone.
         

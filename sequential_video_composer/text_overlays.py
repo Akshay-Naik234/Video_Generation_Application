@@ -39,6 +39,10 @@ class TextOverlayEngine:
         'location_stamp': 28,
         'location_stamp_sub': 20,
         'progress_year': 18,
+        'hook_main': 48,
+        'hook_sub': 28,
+        'cta_main': 44,
+        'cta_sub': 26,
     }
 
     # Section-to-chapter-title mapping for automatic chapter cards
@@ -754,5 +758,170 @@ class TextOverlayEngine:
         text_y = card_y + padding_y
         if 0 < text_x < self.width:
             draw.text((text_x, text_y), text, font=font, fill=(*text_color, 240))
+
+        return np.array(overlay)
+
+    def create_hook_overlay(
+        self,
+        hook_text: str,
+        sub_text: str = '',
+        accent_color: Tuple[int, int, int] = (220, 50, 50),
+        text_color: Tuple[int, int, int] = (255, 255, 255),
+    ) -> np.ndarray:
+        """Create a dramatic hook text overlay for the first 5 seconds.
+
+        Top creators show the most dramatic moment as text in the first 5 seconds
+        to instantly hook viewers. This creates a bold, centered text overlay
+        with a cinematic backdrop bar and accent underline.
+
+        Args:
+            hook_text: The main hook line (e.g., "He died alone in a hotel room")
+            sub_text: Optional subtitle (e.g., "But his invention powers the world")
+            accent_color: Color for the accent underline
+            text_color: Main text color
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        main_font = self._get_font('hook_main', bold=True)
+        sub_font = self._get_font('hook_sub')
+
+        max_width = int(self.width * 0.75)
+
+        # Word-wrap hook text
+        words = hook_text.split()
+        lines = []
+        current_line = ''
+        for word in words:
+            test_line = f'{current_line} {word}'.strip()
+            test_bbox = draw.textbbox((0, 0), test_line, font=main_font)
+            if test_bbox[2] - test_bbox[0] <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+
+        # Calculate line heights
+        line_heights = []
+        for line in lines:
+            bbox = draw.textbbox((0, 0), line, font=main_font)
+            line_heights.append(bbox[3] - bbox[1])
+
+        line_spacing = int(10 * self.scale)
+        total_height = sum(line_heights) + line_spacing * max(0, len(lines) - 1)
+
+        sub_height = 0
+        if sub_text:
+            sub_bbox = draw.textbbox((0, 0), sub_text, font=sub_font)
+            sub_height = sub_bbox[3] - sub_bbox[1]
+            total_height += int(30 * self.scale) + sub_height
+
+        # Draw semi-transparent backdrop
+        bg_padding_y = int(50 * self.scale)
+        bg_height = total_height + bg_padding_y * 2
+        bg_y = (self.height - bg_height) // 2
+        bg = PILImage.new('RGBA', (self.width, bg_height), (0, 0, 0, 170))
+        overlay.paste(bg, (0, bg_y), bg)
+
+        # Draw main text lines centered
+        y = bg_y + bg_padding_y
+        for i, line in enumerate(lines):
+            bbox = draw.textbbox((0, 0), line, font=main_font)
+            line_width = bbox[2] - bbox[0]
+            x = (self.width - line_width) // 2
+            draw.text((x, y), line, font=main_font, fill=(*text_color, 250))
+            y += line_heights[i] + line_spacing
+
+        # Draw accent underline below main text
+        underline_width = int(100 * self.scale)
+        underline_height = int(3 * self.scale)
+        underline_x = (self.width - underline_width) // 2
+        underline_y = y + int(6 * self.scale)
+        accent_line = PILImage.new('RGBA', (underline_width, underline_height), (*accent_color, 230))
+        overlay.paste(accent_line, (underline_x, underline_y), accent_line)
+
+        # Draw subtitle
+        if sub_text:
+            sub_bbox = draw.textbbox((0, 0), sub_text, font=sub_font)
+            sub_width = sub_bbox[2] - sub_bbox[0]
+            sub_x = (self.width - sub_width) // 2
+            sub_y = underline_y + underline_height + int(14 * self.scale)
+            draw.text((sub_x, sub_y), sub_text, font=sub_font, fill=(*text_color, 200))
+
+        return np.array(overlay)
+
+    def create_cta_end_screen(
+        self,
+        channel_name: str = 'Subscribe',
+        cta_text: str = 'If you enjoyed this story, subscribe for more',
+        accent_color: Tuple[int, int, int] = (200, 50, 50),
+        text_color: Tuple[int, int, int] = (255, 255, 255),
+    ) -> np.ndarray:
+        """Create a professional end-screen CTA overlay.
+
+        Top creators use a clear call-to-action in the last 15-20 seconds.
+        This creates a centered subscribe prompt with a styled button area
+        and space for YouTube's built-in end screen elements.
+
+        Args:
+            channel_name: Channel name or 'Subscribe' text for the button
+            cta_text: The call-to-action message
+            accent_color: Subscribe button color (YouTube red by default)
+            text_color: Text color
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        main_font = self._get_font('cta_main', bold=True)
+        sub_font = self._get_font('cta_sub')
+
+        # Draw subtle dark gradient backdrop on lower third of screen
+        bg_height = int(self.height * 0.35)
+        bg_y = self.height - bg_height
+        bg = PILImage.new('RGBA', (self.width, bg_height), (0, 0, 0, 140))
+        overlay.paste(bg, (0, bg_y), bg)
+
+        # Draw CTA text centered
+        cta_bbox = draw.textbbox((0, 0), cta_text, font=sub_font)
+        cta_width = cta_bbox[2] - cta_bbox[0]
+        cta_height = cta_bbox[3] - cta_bbox[1]
+        cta_x = (self.width - cta_width) // 2
+        cta_y = bg_y + int(40 * self.scale)
+        draw.text((cta_x, cta_y), cta_text, font=sub_font, fill=(*text_color, 220))
+
+        # Draw subscribe button
+        btn_text = channel_name
+        btn_bbox = draw.textbbox((0, 0), btn_text, font=main_font)
+        btn_text_width = btn_bbox[2] - btn_bbox[0]
+        btn_text_height = btn_bbox[3] - btn_bbox[1]
+
+        btn_padding_x = int(40 * self.scale)
+        btn_padding_y = int(16 * self.scale)
+        btn_width = btn_text_width + btn_padding_x * 2
+        btn_height = btn_text_height + btn_padding_y * 2
+        btn_x = (self.width - btn_width) // 2
+        btn_y = cta_y + cta_height + int(30 * self.scale)
+
+        # Button with rounded feel (rectangle with accent color)
+        btn_bg = PILImage.new('RGBA', (btn_width, btn_height), (*accent_color, 220))
+        overlay.paste(btn_bg, (btn_x, btn_y), btn_bg)
+
+        # Button text centered
+        btn_text_x = btn_x + btn_padding_x
+        btn_text_y = btn_y + btn_padding_y
+        draw.text((btn_text_x, btn_text_y), btn_text, font=main_font, fill=(*text_color, 255))
+
+        # Leave space below for YouTube end screen elements (video cards)
+        # Top creators leave the bottom 20% of the end screen for YT auto-cards
+        hint_font = self._get_font('progress_year')
+        hint_text = "Watch Next"
+        hint_bbox = draw.textbbox((0, 0), hint_text, font=hint_font)
+        hint_width = hint_bbox[2] - hint_bbox[0]
+        hint_x = (self.width - hint_width) // 2
+        hint_y = btn_y + btn_height + int(50 * self.scale)
+        draw.text((hint_x, hint_y), hint_text, font=hint_font, fill=(*text_color, 130))
 
         return np.array(overlay)

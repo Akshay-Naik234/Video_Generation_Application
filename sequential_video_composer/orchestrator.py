@@ -99,6 +99,14 @@ class SequentialVideoOrchestrator:
         enable_chapter_cards: bool = True,
         enable_dynamic_pacing: bool = True,
         pattern_interrupt_interval: int = 75,
+        enable_hook_overlay: bool = True,
+        enable_cta_end_screen: bool = True,
+        enable_brightness_normalization: bool = True,
+        enable_color_continuity: bool = True,
+        enable_speed_ramp: bool = True,
+        audio_fade_in: float = 1.0,
+        audio_fade_out: float = 2.0,
+        channel_name: str = 'Subscribe',
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -123,6 +131,15 @@ class SequentialVideoOrchestrator:
         self.duration_config_path = Path(duration_config_path) if duration_config_path else None
         self.image_durations: Dict[int, Dict] = {}
         self.total_video_duration: float = 0
+        self._movement_history: List[str] = []  # Track recent movements to prevent repetition
+        self.enable_hook_overlay: bool = enable_hook_overlay
+        self.enable_cta_end_screen: bool = enable_cta_end_screen
+        self.enable_brightness_normalization: bool = enable_brightness_normalization
+        self.enable_color_continuity: bool = enable_color_continuity
+        self.enable_speed_ramp: bool = enable_speed_ramp
+        self.audio_fade_in: float = audio_fade_in
+        self.audio_fade_out: float = audio_fade_out
+        self.channel_name: str = channel_name
 
         if self.duration_config_path:
             self._load_duration_config()
@@ -270,7 +287,12 @@ class SequentialVideoOrchestrator:
         When both shot_type and section are available, picks movements that appear
         in both preference lists (intersection), giving the most contextually
         appropriate movement. Falls back to section map if no intersection.
+        
+        Includes movement repetition prevention: avoids using the same movement
+        type 3 times in a row, which top creators avoid to prevent visual monotony.
         """
+        chosen = None
+
         if image_number is not None and self.image_durations:
             timing = self.image_durations.get(image_number, {})
             section = timing.get('section', '')
@@ -283,37 +305,58 @@ class SequentialVideoOrchestrator:
             if section_movements and shot_movements:
                 intersection = [m for m in section_movements if m in shot_movements]
                 if intersection:
-                    return intersection[index % len(intersection)]
+                    chosen = self._pick_non_repeating(intersection, index)
             
             # Fallback: shot_type preferences alone
-            if shot_movements:
-                return shot_movements[index % len(shot_movements)]
+            if chosen is None and shot_movements:
+                chosen = self._pick_non_repeating(shot_movements, index)
             
             # Fallback: section preferences alone
-            if section_movements:
-                return section_movements[index % len(section_movements)]
+            if chosen is None and section_movements:
+                chosen = self._pick_non_repeating(section_movements, index)
 
-        if self.movement_style == "random":
-            return random.choice(MovementStyles.MOVEMENT_TYPES)
-        elif self.movement_style == "sequential":
-            movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
-            return movements[index % len(movements)]
-        elif self.movement_style == "dramatic_sequence":
-            if index == 0:
-                return 'dramatic_zoom'
-            elif index == total - 1:
-                return 'zoom_out'
-            elif index < total // 3:
-                return random.choice(['zoom_in', 'pan_right', 'gentle_drift'])
-            elif index < 2 * total // 3:
-                return random.choice(['pan_left', 'pan_right', 'breathing'])
+        if chosen is None:
+            if self.movement_style == "random":
+                chosen = random.choice(MovementStyles.MOVEMENT_TYPES)
+            elif self.movement_style == "sequential":
+                movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
+                chosen = movements[index % len(movements)]
+            elif self.movement_style == "dramatic_sequence":
+                if index == 0:
+                    chosen = 'dramatic_zoom'
+                elif index == total - 1:
+                    chosen = 'zoom_out'
+                elif index < total // 3:
+                    chosen = random.choice(['zoom_in', 'pan_right', 'gentle_drift'])
+                elif index < 2 * total // 3:
+                    chosen = random.choice(['pan_left', 'pan_right', 'breathing'])
+                else:
+                    chosen = random.choice(['zoom_out', 'focus_center', 'gentle_drift'])
+            elif self.movement_style == "documentary":
+                subtle_movements = ['zoom_in', 'gentle_drift', 'zoom_out', 'focus_center', 'breathing', 'minimal']
+                chosen = subtle_movements[index % len(subtle_movements)]
             else:
-                return random.choice(['zoom_out', 'focus_center', 'gentle_drift'])
-        elif self.movement_style == "documentary":
-            subtle_movements = ['zoom_in', 'gentle_drift', 'zoom_out', 'focus_center', 'breathing', 'minimal']
-            return subtle_movements[index % len(subtle_movements)]
-        else:
-            return self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'
+                chosen = self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'
+
+        # Track movement history for repetition prevention
+        self._movement_history.append(chosen)
+        if len(self._movement_history) > 3:
+            self._movement_history = self._movement_history[-3:]
+        return chosen
+
+    def _pick_non_repeating(self, candidates: list, index: int) -> str:
+        """Pick a movement from candidates while avoiding 3x repetition.
+
+        If the last 2 movements are the same type, filter that type out of
+        candidates before picking. This prevents visual monotony where the
+        same Ken Burns movement repeats 3+ times in a row.
+        """
+        if len(self._movement_history) >= 2 and self._movement_history[-1] == self._movement_history[-2]:
+            repeated = self._movement_history[-1]
+            filtered = [m for m in candidates if m != repeated]
+            if filtered:
+                return filtered[index % len(filtered)]
+        return candidates[index % len(candidates)]
 
     def _get_transition_for_image(self, index: int, total: int, image_number: int = None,
                                    prev_image_number: int = None) -> str:
@@ -442,6 +485,16 @@ class SequentialVideoOrchestrator:
         flash_overlays = self._create_flash_transition_overlays(clips_data)
         overlays.extend(flash_overlays)
 
+        # Add hook overlay for the first 5 seconds (most critical retention element)
+        if self.enable_hook_overlay:
+            hook_overlays = self._create_hook_overlay(clips_data)
+            overlays.extend(hook_overlays)
+
+        # Add CTA end screen overlay for the last 15 seconds
+        if self.enable_cta_end_screen:
+            cta_overlays = self._create_cta_end_screen_overlay(main_video.duration)
+            overlays.extend(cta_overlays)
+
         if self.effects_intensity > 0.3:
             particles = self.clip_factory.create_particle_overlay(
                 main_video.duration,
@@ -464,6 +517,12 @@ class SequentialVideoOrchestrator:
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
+            # Professional audio fade in/out
+            if self.audio_fade_in > 0:
+                audio_clip = audio_clip.audio_fadein(self.audio_fade_in)
+            if self.audio_fade_out > 0:
+                audio_clip = audio_clip.audio_fadeout(self.audio_fade_out)
+                print(f"  Audio fades: {self.audio_fade_in}s in, {self.audio_fade_out}s out")
             main_video = main_video.set_audio(audio_clip)
 
         self._export_video(main_video)
@@ -705,6 +764,20 @@ class SequentialVideoOrchestrator:
                                                            'london', 'paris', 'chicago', 'washington', 'boston',
                                                            'mumbai', 'delhi', 'tokyo', 'berlin', 'rome')):
                 overlay_array = self.text_overlay_engine.create_location_stamp(location=text)
+            # Pattern: quoted text → quote card (auto-detection)
+            # Matches "text in quotes" or text starting with opening quote marks
+            elif (_re.match(r'^["\u201C\u201D\u2018\u2019]', text) or
+                  _re.search(r'["\u201C\u201D]\s*[-\u2014]\s*\w', text)):
+                # Strip outer quotes if present
+                clean_quote = _re.sub(r'^["\u201C\u201D\u2018\u2019]+|["\u201C\u201D\u2018\u2019]+$', '', text).strip()
+                # Try to extract attribution after dash/em-dash
+                attr_match = _re.split(r'\s*[-\u2014]\s*(?=[A-Z])', clean_quote, maxsplit=1)
+                if len(attr_match) == 2:
+                    overlay_array = self.text_overlay_engine.create_quote_card(
+                        quote=attr_match[0].strip(), attribution=attr_match[1].strip()
+                    )
+                else:
+                    overlay_array = self.text_overlay_engine.create_quote_card(quote=clean_quote)
             # Default: info card
             else:
                 overlay_array = self.text_overlay_engine.create_info_card(text=text)
@@ -913,6 +986,109 @@ class SequentialVideoOrchestrator:
 
         if overlays:
             print(f"  Flash transitions: {len(overlays)} high-impact section entries")
+
+        return overlays
+
+    def _create_hook_overlay(self, clips_data: List[Dict]) -> List:
+        """Create a dramatic hook text overlay for the first 5 seconds.
+
+        Top creators show the most dramatic moment as text in the first few seconds
+        to instantly hook viewers. If the first image has overlay_text, use that as
+        the hook. Otherwise, look for the COLD_OPEN section's first overlay_text.
+        Falls back gracefully if no hook text is available.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+
+        # Find hook text from COLD_OPEN section or first image
+        hook_text = ''
+        for data in clips_data:
+            section = data.get('section', '')
+            image_num = data.get('image_num')
+            if image_num is not None:
+                timing = self.image_durations.get(image_num, {})
+                overlay_text = timing.get('overlay_text', '')
+                if overlay_text and (section == 'COLD_OPEN' or not hook_text):
+                    hook_text = overlay_text
+                    if section == 'COLD_OPEN':
+                        break
+
+        if not hook_text:
+            return overlays
+
+        hook_array = self.text_overlay_engine.create_hook_overlay(hook_text=hook_text)
+        if hook_array is None:
+            return overlays
+
+        hook_duration = 4.0
+        rgb_array = hook_array[:, :, :3]
+        alpha_mask = hook_array[:, :, 3].astype(float) / 255.0
+
+        def make_hook_frame(t, rgb=rgb_array):
+            return rgb
+
+        def make_hook_mask(t, a=alpha_mask):
+            return a
+
+        hook_clip = VideoClip(make_hook_frame, duration=hook_duration)
+        hook_clip = hook_clip.set_fps(self.fps)
+        mask_clip = VideoClip(make_hook_mask, duration=hook_duration, ismask=True)
+        mask_clip = mask_clip.set_fps(self.fps)
+        hook_clip = hook_clip.set_mask(mask_clip)
+        hook_clip = (
+            hook_clip
+            .set_start(0.5)
+            .crossfadein(0.3)
+            .crossfadeout(0.8)
+        )
+        overlays.append(hook_clip)
+        print(f"  Hook overlay: '{hook_text[:50]}...' at 0.5s-4.5s")
+
+        return overlays
+
+    def _create_cta_end_screen_overlay(self, video_duration: float) -> List:
+        """Create a CTA end screen overlay for the last 15 seconds.
+
+        Top creators use a clear call-to-action in the final seconds to drive
+        subscriptions and engagement. This renders a subscribe button area with
+        space for YouTube's built-in end screen elements.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+
+        if video_duration < 20:
+            return overlays  # Video too short for end screen
+
+        cta_array = self.text_overlay_engine.create_cta_end_screen(
+            channel_name=self.channel_name
+        )
+        if cta_array is None:
+            return overlays
+
+        cta_duration = 15.0
+        cta_start = max(0, video_duration - cta_duration)
+        rgb_array = cta_array[:, :, :3]
+        alpha_mask = cta_array[:, :, 3].astype(float) / 255.0
+
+        def make_cta_frame(t, rgb=rgb_array):
+            return rgb
+
+        def make_cta_mask(t, a=alpha_mask):
+            return a
+
+        cta_clip = VideoClip(make_cta_frame, duration=cta_duration)
+        cta_clip = cta_clip.set_fps(self.fps)
+        mask_clip = VideoClip(make_cta_mask, duration=cta_duration, ismask=True)
+        mask_clip = mask_clip.set_fps(self.fps)
+        cta_clip = cta_clip.set_mask(mask_clip)
+        cta_clip = (
+            cta_clip
+            .set_start(cta_start)
+            .crossfadein(0.8)
+            .crossfadeout(0.3)
+        )
+        overlays.append(cta_clip)
+        print(f"  CTA end screen: {cta_start:.1f}s - {video_duration:.1f}s")
 
         return overlays
 
