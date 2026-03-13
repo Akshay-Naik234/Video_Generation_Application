@@ -1,0 +1,13 @@
+# Core dependencies
+moviepy==1.0.3
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# AI depth estimation (MiDaS) - CPU-only to save disk space (~200-300 MB)
+# For GPU support, replace with: torch torchvision
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+
+# Optional: better image processing (auto-detected by ai_effects.py)
+opencv-python-headless>=4.8.0

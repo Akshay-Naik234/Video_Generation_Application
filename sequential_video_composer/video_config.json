@@ -29,5 +29,8 @@
   "enable_dof": true,
   "enable_weather": true,
   "enable_human_feel": true,
+  "enable_sound_design": true,
+  "sound_design_intensity": 0.08,
+  "enable_pytorch_depth": true,
   "audio": "../examples/audio/narration.mp3"
 }

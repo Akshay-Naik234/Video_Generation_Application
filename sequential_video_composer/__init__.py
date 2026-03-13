@@ -13,6 +13,7 @@ from .ai_effects import (
     WeatherEffects,
     get_ai_status,
 )
+from .sound_design import SoundDesignEngine
 from .utils import create_sequential_video, load_config_and_create_video
 
 __version__ = "2.0.0"
@@ -30,6 +31,7 @@ __all__ = [
     'SubjectDetector',
     'WeatherEffects',
     'get_ai_status',
+    'SoundDesignEngine',
     'create_sequential_video',
     'load_config_and_create_video'
 ]

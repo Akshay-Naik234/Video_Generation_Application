@@ -17,6 +17,7 @@ from .ai_effects import (
     DepthEstimator, ParallaxEngine, SubjectDetector,
     WeatherEffects, get_ai_status,
 )
+from .sound_design import SoundDesignEngine
 
 
 class SequentialVideoOrchestrator:
@@ -116,6 +117,9 @@ class SequentialVideoOrchestrator:
         enable_dof: bool = True,
         enable_weather: bool = True,
         enable_human_feel: bool = True,
+        enable_sound_design: bool = True,
+        sound_design_intensity: float = 0.08,
+        enable_pytorch_depth: bool = True,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -154,6 +158,9 @@ class SequentialVideoOrchestrator:
         self.enable_dof: bool = enable_dof and ai_animation_enabled
         self.enable_weather: bool = enable_weather and ai_animation_enabled
         self.enable_human_feel: bool = enable_human_feel
+        self.enable_sound_design: bool = enable_sound_design
+        self.sound_design_intensity: float = sound_design_intensity
+        self.enable_pytorch_depth: bool = enable_pytorch_depth
 
         if self.duration_config_path:
             self._load_duration_config()
@@ -177,6 +184,11 @@ class SequentialVideoOrchestrator:
 
         if self.enable_weather:
             self.weather_effects = WeatherEffects()
+
+        # Initialize sound design engine
+        self.sound_design_engine: Optional[SoundDesignEngine] = None
+        if self.enable_sound_design:
+            self.sound_design_engine = SoundDesignEngine()
 
     def _load_duration_config(self) -> None:
         """Load image durations, timing, and section metadata from JSON configuration file.
@@ -574,10 +586,87 @@ class SequentialVideoOrchestrator:
             if self.audio_fade_out > 0:
                 audio_clip = audio_clip.audio_fadeout(self.audio_fade_out)
                 print(f"  Audio fades: {self.audio_fade_in}s in, {self.audio_fade_out}s out")
+
+            # Mix programmatic sound effects into audio at section transitions
+            if self.enable_sound_design and self.sound_design_engine is not None:
+                audio_clip = self._mix_sound_effects(audio_clip, clips_data)
+
             main_video = main_video.set_audio(audio_clip)
 
         self._export_video(main_video)
         print(f"Video created successfully: {self.output_path}")
+
+    def _mix_sound_effects(self, audio_clip, clips_data: List[Dict]):
+        """Mix programmatic sound effects into the narration audio at section transitions.
+
+        Generates whooshes, risers, bass drops, and ambient pads at section boundaries,
+        then mixes them under the narration at low volume for cinematic feel.
+
+        Args:
+            audio_clip: MoviePy AudioFileClip with narration.
+            clips_data: List of clip data dicts with section and timing info.
+
+        Returns:
+            New AudioFileClip with sound effects mixed in.
+        """
+        import tempfile
+        import os
+
+        try:
+            # Extract audio as numpy array
+            audio_fps = audio_clip.fps or 44100
+            audio_array = audio_clip.to_soundarray(fps=audio_fps)
+
+            # Detect section boundaries (where section changes)
+            effects_to_mix = []
+            prev_section = None
+            for data in clips_data:
+                section = data.get('section', '')
+                start_time = data.get('start_time')
+                if start_time is None or not section:
+                    continue
+
+                if section != prev_section:
+                    # Section transition — get appropriate sound effects
+                    transition_duration = data.get('crossfade_duration', 0.8)
+                    section_effects = self.sound_design_engine.get_effects_for_section(
+                        section, transition_duration
+                    )
+                    for effect_audio, volume in section_effects:
+                        effects_to_mix.append((start_time, effect_audio, volume))
+                    prev_section = section
+
+            if not effects_to_mix:
+                print("  Sound design: no section transitions found, skipping")
+                return audio_clip
+
+            # Convert stereo/mono to consistent format
+            is_stereo = audio_array.ndim == 2 and audio_array.shape[1] >= 2
+
+            # Mix effects into audio array
+            mixed = self.sound_design_engine.mix_effects_into_audio(
+                narration=audio_array,
+                effects=effects_to_mix,
+                master_volume=self.sound_design_intensity,
+            )
+
+            # Write mixed audio to temp file and reload as AudioFileClip
+            temp_fd, temp_path = tempfile.mkstemp(suffix='.wav')
+            os.close(temp_fd)
+            try:
+                from moviepy.audio.AudioClip import AudioArrayClip
+                mixed_clip = AudioArrayClip(mixed, fps=audio_fps)
+                mixed_clip = mixed_clip.set_duration(audio_clip.duration)
+                print(f"  Sound design: mixed {len(effects_to_mix)} effects at section transitions")
+                print(f"    Master volume: {self.sound_design_intensity} ({20 * math.log10(max(self.sound_design_intensity, 0.001)):.0f} dB)")
+                return mixed_clip
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+
+        except Exception as e:
+            print(f"  Sound design: error mixing effects ({e}), using original audio")
+            return audio_clip
 
     def _get_letterbox_ranges(self, clips_data: List[Dict]) -> List[Tuple[float, float]]:
         """Find time ranges where cinematic letterbox bars should appear.

@@ -37,6 +37,9 @@ def create_sequential_video(
     enable_dof: bool = True,
     enable_weather: bool = True,
     enable_human_feel: bool = True,
+    enable_sound_design: bool = True,
+    sound_design_intensity: float = 0.08,
+    enable_pytorch_depth: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -74,6 +77,12 @@ def create_sequential_video(
         enable_weather: Enable section-aware weather/atmosphere particles
         enable_human_feel: Make video feel like human-edited (camera breathing, varied
             easing, hard cuts, timing variation). Default True.
+        enable_sound_design: Enable programmatic sound effects (whooshes, risers, bass
+            drops) at section transitions. Default True.
+        sound_design_intensity: Master volume for sound effects (0.0-1.0). Default 0.08
+            (~-22 dB below narration).
+        enable_pytorch_depth: Use PyTorch MiDaS for AI depth estimation when available.
+            Default True.
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -110,6 +119,9 @@ def create_sequential_video(
         enable_dof=enable_dof,
         enable_weather=enable_weather,
         enable_human_feel=enable_human_feel,
+        enable_sound_design=enable_sound_design,
+        sound_design_intensity=sound_design_intensity,
+        enable_pytorch_depth=enable_pytorch_depth,
         duration_config_path=duration_config_path
     )
     orchestrator.create_video()
@@ -174,5 +186,8 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         enable_dof=config.get('enable_dof', True),
         enable_weather=config.get('enable_weather', True),
         enable_human_feel=config.get('enable_human_feel', True),
+        enable_sound_design=config.get('enable_sound_design', True),
+        sound_design_intensity=config.get('sound_design_intensity', 0.08),
+        enable_pytorch_depth=config.get('enable_pytorch_depth', True),
         duration_config_path=duration_config_path
     )
