@@ -587,7 +587,12 @@ class SequentialVideoOrchestrator:
             overlay_start = start_time + 0.5
 
             # Pattern: "$NUMBER" or "NUMBER+" → animated counter
-            counter_match = _re.match(r'^(\$?)([\d,]+)\+?\s*(.*)$', text)
+            # Requires $ prefix, comma in number, or + suffix to avoid matching bare years like "1943"
+            counter_match = _re.match(r'^(\$)([\d,]+)\+?\s*(.*)$', text)
+            if not counter_match:
+                counter_match = _re.match(r'^()([\d,]+)\+\s*(.*)$', text)  # "50000+"
+            if not counter_match:
+                counter_match = _re.match(r'^()([\d]+,[\d,]+)\s*(.*)$', text)  # "2,300,000"
             if counter_match and len(counter_match.group(2).replace(',', '')) >= 4:
                 prefix = counter_match.group(1)
                 target = int(counter_match.group(2).replace(',', ''))
