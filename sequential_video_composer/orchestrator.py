@@ -469,7 +469,7 @@ class SequentialVideoOrchestrator:
             # is visible (transparent areas stay transparent, not black).
             card_duration = 2.5
             rgb_array = card_array[:, :, :3]
-            alpha_mask = card_array[:, :, 3].astype(np.float64) / 255.0
+            alpha_mask = card_array[:, :, 3].astype(float) / 255.0
 
             def make_card_frame(t, rgb=rgb_array):
                 return rgb
