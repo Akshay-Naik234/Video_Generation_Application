@@ -1,5 +1,6 @@
 """Sequential Video Orchestrator - Main orchestration class."""
 
+import math
 import re
 import json
 import random
@@ -178,7 +179,7 @@ class SequentialVideoOrchestrator:
         self.weather_effects: Optional[WeatherEffects] = None
 
         if self.enable_parallax or self.enable_dof:
-            self.depth_estimator = DepthEstimator(use_ai=True)
+            self.depth_estimator = DepthEstimator(use_ai=self.enable_pytorch_depth)
             self.parallax_engine = ParallaxEngine(resolution)
             self.subject_detector = SubjectDetector()
 
@@ -617,6 +618,10 @@ class SequentialVideoOrchestrator:
             audio_fps = audio_clip.fps or 44100
             audio_array = audio_clip.to_soundarray(fps=audio_fps)
 
+            # Create a sound design engine at the narration's sample rate
+            # to avoid pitch/timing issues when narration isn't 44100 Hz
+            sound_engine = SoundDesignEngine(sample_rate=audio_fps)
+
             # Detect section boundaries (where section changes)
             effects_to_mix = []
             prev_section = None
@@ -629,7 +634,7 @@ class SequentialVideoOrchestrator:
                 if section != prev_section:
                     # Section transition — get appropriate sound effects
                     transition_duration = data.get('crossfade_duration', 0.8)
-                    section_effects = self.sound_design_engine.get_effects_for_section(
+                    section_effects = sound_engine.get_effects_for_section(
                         section, transition_duration
                     )
                     for effect_audio, volume in section_effects:
@@ -640,11 +645,8 @@ class SequentialVideoOrchestrator:
                 print("  Sound design: no section transitions found, skipping")
                 return audio_clip
 
-            # Convert stereo/mono to consistent format
-            is_stereo = audio_array.ndim == 2 and audio_array.shape[1] >= 2
-
-            # Mix effects into audio array
-            mixed = self.sound_design_engine.mix_effects_into_audio(
+            # Mix effects into audio array (engine uses matching sample rate)
+            mixed = sound_engine.mix_effects_into_audio(
                 narration=audio_array,
                 effects=effects_to_mix,
                 master_volume=self.sound_design_intensity,
