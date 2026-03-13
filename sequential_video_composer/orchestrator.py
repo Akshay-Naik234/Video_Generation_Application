@@ -12,6 +12,7 @@ from .transitions import TransitionEffects
 from .movements import MovementStyles
 from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
+from .text_overlays import TextOverlayEngine
 
 
 class SequentialVideoOrchestrator:
@@ -31,8 +32,8 @@ class SequentialVideoOrchestrator:
         'EARLY_LIFE': ['gentle_drift', 'breathing', 'pan_right', 'minimal'],
         'THE_SPARK': ['zoom_in', 'pan_left', 'diagonal_tl_br', 'focus_center'],
         'THE_RISE': ['zoom_in', 'pan_right', 'diagonal_tl_br', 'dramatic_zoom'],
-        'THE_CONFLICT': ['pan_left', 'pan_right', 'zoom_in', 'dramatic_zoom', 'push_in'],
-        'THE_CLIMAX': ['dramatic_zoom', 'zoom_in', 'focus_center', 'push_in'],
+        'THE_CONFLICT': ['pan_left', 'pan_right', 'zoom_in', 'dramatic_zoom', 'push_in', 'zoom_pulse'],
+        'THE_CLIMAX': ['dramatic_zoom', 'zoom_in', 'focus_center', 'push_in', 'zoom_pulse'],
         'THE_FALL': ['zoom_out', 'pull_out', 'gentle_drift', 'breathing'],
         'LEGACY': ['gentle_drift', 'breathing', 'zoom_out', 'pull_out', 'minimal'],
         'CTA': ['zoom_out', 'gentle_drift', 'minimal', 'static'],
@@ -106,6 +107,7 @@ class SequentialVideoOrchestrator:
         self.movements = MovementStyles(resolution)
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
+        self.text_overlay_engine = TextOverlayEngine(resolution)
 
     def _load_duration_config(self) -> None:
         """Load image durations, timing, and section metadata from JSON configuration file.
@@ -266,20 +268,26 @@ class SequentialVideoOrchestrator:
         else:
             return self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'
 
-    def _get_transition_for_image(self, index: int, total: int, image_number: int = None) -> str:
+    def _get_transition_for_image(self, index: int, total: int, image_number: int = None,
+                                   prev_image_number: int = None) -> str:
         """Get transition style for an image based on its position and section metadata.
         
         Uses section boundaries to apply dramatic transitions (fade_through_black)
         at section changes, and smoother crossfades within sections.
+        
+        Args:
+            prev_image_number: Actual image number of the previous image (handles gaps
+                in numbering, e.g. images 4.png and 6.png with no 5.png).
         """
         # Section-aware transitions: use dramatic transitions at section boundaries
         if image_number is not None and self.image_durations:
             timing = self.image_durations.get(image_number, {})
             section = timing.get('section', '')
             
-            # Check if this is a section boundary (different section from previous image)
-            prev_number = image_number - 1
-            prev_timing = self.image_durations.get(prev_number, {})
+            # Use actual previous image number instead of assuming consecutive numbering
+            prev_timing = {}
+            if prev_image_number is not None:
+                prev_timing = self.image_durations.get(prev_image_number, {})
             prev_section = prev_timing.get('section', '')
             
             if section and prev_section and section != prev_section:
@@ -354,6 +362,18 @@ class SequentialVideoOrchestrator:
 
         overlays = [main_video]
 
+        # Add cinematic letterbox bars for dramatic sections
+        letterbox_sections = self._get_letterbox_ranges(clips_data)
+        for start, duration in letterbox_sections:
+            letterbox = self.clip_factory.create_letterbox_overlay(duration)
+            letterbox = letterbox.set_start(start).crossfadein(0.5).crossfadeout(0.5)
+            overlays.append(letterbox)
+            print(f"  Letterbox bars: {start:.1f}s - {start + duration:.1f}s")
+
+        # Add text overlay chapter cards at section boundaries
+        chapter_overlays = self._create_chapter_card_overlays(clips_data)
+        overlays.extend(chapter_overlays)
+
         if self.effects_intensity > 0.3:
             particles = self.clip_factory.create_particle_overlay(
                 main_video.duration,
@@ -380,6 +400,82 @@ class SequentialVideoOrchestrator:
 
         self._export_video(main_video)
         print(f"Video created successfully: {self.output_path}")
+
+    def _get_letterbox_ranges(self, clips_data: List[Dict]) -> List[Tuple[float, float]]:
+        """Find time ranges where cinematic letterbox bars should appear.
+        
+        Returns (start_time, duration) pairs for sections that benefit from
+        2.39:1 widescreen bars (CLIMAX, CONFLICT, FALL).
+        """
+        ranges = []
+        current_start = None
+        current_end = None
+
+        for data in clips_data:
+            section = data.get('section', '')
+            start = data.get('start_time')
+            duration = data.get('duration', 0)
+            if start is None:
+                continue
+
+            if section in ClipFactory.LETTERBOX_SECTIONS:
+                if current_start is None:
+                    current_start = start
+                current_end = start + duration
+            else:
+                if current_start is not None:
+                    ranges.append((current_start, current_end - current_start))
+                    current_start = None
+                    current_end = None
+
+        if current_start is not None:
+            ranges.append((current_start, current_end - current_start))
+
+        return ranges
+
+    def _create_chapter_card_overlays(self, clips_data: List[Dict]) -> List:
+        """Create text overlay clips for section transitions.
+        
+        Generates chapter title cards that appear briefly at the start of each
+        new narrative section, giving viewers a sense of story progression.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+        seen_sections = set()
+
+        for data in clips_data:
+            section = data.get('section', '')
+            start_time = data.get('start_time')
+            if not section or section in seen_sections or start_time is None:
+                continue
+
+            seen_sections.add(section)
+            card_array = self.text_overlay_engine.create_chapter_card(section)
+            if card_array is None:
+                continue
+
+            # Create a 2.5 second overlay from the RGBA array
+            card_duration = 2.5
+            rgb_array = card_array[:, :, :3]
+            alpha = card_array[:, :, 3].astype(float) / 255.0
+
+            def make_card_frame(t, rgb=rgb_array, a=alpha):
+                return rgb
+
+            card_clip = VideoClip(make_card_frame, duration=card_duration)
+            card_clip = card_clip.set_fps(self.fps)
+            opacity = float(alpha.mean())  # Use average alpha as opacity
+            card_clip = (
+                card_clip
+                .set_start(start_time)
+                .set_opacity(min(0.9, opacity))
+                .crossfadein(0.4)
+                .crossfadeout(0.6)
+            )
+            overlays.append(card_clip)
+            print(f"  Chapter card: '{TextOverlayEngine.SECTION_TITLES.get(section, '')}' at {start_time:.1f}s")
+
+        return overlays
 
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with YouTube-optimized professional settings.

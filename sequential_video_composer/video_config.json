@@ -12,5 +12,9 @@
   "color_grade": "cinematic",
   "enable_vignette": true,
   "enable_film_grain": true,
+  "enable_letterbox": true,
+  "enable_chapter_cards": true,
+  "enable_dynamic_pacing": true,
+  "pattern_interrupt_interval": 75,
   "audio": "../examples/audio/narration.mp3"
 }

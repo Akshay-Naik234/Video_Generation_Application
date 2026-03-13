@@ -30,6 +30,7 @@ class MovementStyles:
         'static',
         'push_in',
         'pull_out',
+        'zoom_pulse',
     ]
 
     def __init__(self, resolution: Tuple[int, int]):
@@ -220,6 +221,13 @@ class MovementStyles:
             zoom = zoom_intensity - (zoom_intensity - 1.0) * 0.9 * progress
             pan_y = 0.005 * progress  # Slight downward drift for melancholy
             return zoom, 0, pan_y
+
+        elif movement_type == 'zoom_pulse':
+            # Heartbeat-like zoom pulse for dramatic/climactic moments
+            # Two quick pulses then settle - mimics a racing heartbeat
+            pulse = np.sin(progress * np.pi * 4) * np.exp(-progress * 2)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6 * progress + 0.03 * pulse
+            return zoom, 0, 0
 
         elif movement_type == 'static':
             return 1.0, 0, 0
