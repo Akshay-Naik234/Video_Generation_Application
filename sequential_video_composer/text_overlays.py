@@ -614,3 +614,145 @@ class TextOverlayEngine:
                 )
 
         return np.array(overlay)
+
+    def create_animated_counter_frames(
+        self,
+        target_number: int,
+        prefix: str = '',
+        suffix: str = '',
+        num_frames: int = 30,
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+    ) -> List[np.ndarray]:
+        """Create frames for an animated number counter (Shivanshu-style).
+        
+        Returns a list of RGBA numpy arrays that count from 0 up to target_number.
+        Each frame shows the number at a different stage of the count-up animation
+        with an ease-out curve so the counting slows down near the target.
+        
+        Args:
+            target_number: The final number to count up to (e.g., 1000000)
+            prefix: Text before the number (e.g., "$")
+            suffix: Text after the number (e.g., " million")
+            num_frames: How many frames in the animation
+            accent_color: Color for the number text
+        """
+        frames = []
+        font = self._get_font('year_stamp', bold=True)
+
+        for i in range(num_frames):
+            progress = i / max(1, num_frames - 1)
+            # Ease-out cubic: fast start, slow finish
+            eased = 1.0 - (1.0 - progress) ** 3
+            current_number = int(target_number * eased)
+
+            display_text = f"{prefix}{current_number:,}{suffix}"
+
+            overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+
+            text_bbox = draw.textbbox((0, 0), display_text, font=font)
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+
+            padding_x = int(40 * self.scale)
+            padding_y = int(24 * self.scale)
+            card_width = text_width + padding_x * 2
+            card_height = text_height + padding_y * 2
+            card_x = (self.width - card_width) // 2
+            card_y = (self.height - card_height) // 2
+
+            card_bg = PILImage.new('RGBA', (card_width, card_height), (10, 10, 10, 180))
+            overlay.paste(card_bg, (card_x, card_y), card_bg)
+
+            text_x = card_x + padding_x
+            text_y = card_y + padding_y
+            draw.text((text_x, text_y), display_text, font=font, fill=(*accent_color, 255))
+
+            frames.append(np.array(overlay))
+
+        return frames
+
+    def create_slide_in_overlay(
+        self,
+        text: str,
+        position: str = 'bottom_left',
+        slide_from: str = 'left',
+        progress: float = 1.0,
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+        text_color: Tuple[int, int, int] = (255, 255, 255),
+    ) -> np.ndarray:
+        """Create a single frame of a slide-in text overlay (Shivanshu-style).
+        
+        The text slides in from the specified direction based on the progress value.
+        At progress=0.0 the text is fully off-screen, at progress=1.0 it's at rest.
+        
+        Args:
+            text: Text to display
+            position: Final resting position ('bottom_left', 'bottom_right')
+            slide_from: Direction text slides from ('left', 'right', 'bottom')
+            progress: Animation progress 0.0 to 1.0 (use ease-out for smooth motion)
+            accent_color: Accent bar color
+            text_color: Text color
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        font = self._get_font('info_card', bold=True)
+
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+
+        padding_x = int(24 * self.scale)
+        padding_y = int(12 * self.scale)
+        accent_width = int(4 * self.scale)
+        card_width = text_width + padding_x * 2 + accent_width + int(12 * self.scale)
+        card_height = text_height + padding_y * 2
+
+        margin = int(80 * self.scale)
+
+        # Calculate final resting position
+        if position == 'bottom_right':
+            rest_x = self.width - margin - card_width
+            rest_y = self.height - margin - card_height
+        else:  # bottom_left
+            rest_x = margin
+            rest_y = self.height - margin - card_height
+
+        # Apply slide offset based on progress
+        slide_distance = card_width + margin + int(20 * self.scale)
+        remaining = 1.0 - min(1.0, max(0.0, progress))
+
+        if slide_from == 'left':
+            card_x = int(rest_x - slide_distance * remaining)
+        elif slide_from == 'right':
+            card_x = int(rest_x + slide_distance * remaining)
+        elif slide_from == 'bottom':
+            card_x = rest_x
+            rest_y = int(rest_y + (card_height + margin) * remaining)
+        else:
+            card_x = int(rest_x - slide_distance * remaining)
+
+        card_y = rest_y
+
+        # Only draw if at least partially visible
+        if card_x + card_width < 0 or card_x > self.width:
+            return np.array(overlay)
+
+        # Draw background
+        card_bg = PILImage.new('RGBA', (card_width, card_height), (15, 15, 15, 200))
+        paste_x = max(0, card_x)
+        paste_y = max(0, card_y)
+        overlay.paste(card_bg, (paste_x, paste_y), card_bg)
+
+        # Draw accent bar
+        accent_bar = PILImage.new('RGBA', (accent_width, card_height), (*accent_color, 240))
+        overlay.paste(accent_bar, (max(0, card_x), paste_y), accent_bar)
+
+        # Draw text
+        text_x = card_x + accent_width + int(12 * self.scale) + padding_x
+        text_y = card_y + padding_y
+        if 0 < text_x < self.width:
+            draw.text((text_x, text_y), text, font=font, fill=(*text_color, 240))
+
+        return np.array(overlay)

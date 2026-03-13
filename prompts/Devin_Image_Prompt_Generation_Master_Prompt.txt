@@ -238,6 +238,7 @@ OVERLAY TEXT RULES:
   "New York City"            -> location stamp with accent bar (bottom-left)
   "Nikola Tesla — Inventor"  -> lower third name bar (bottom-left)
   "Born: July 10, 1856"     -> info card (bottom-right)
+  "$2,300,000"               -> animated counting number overlay (for large numbers with $ prefix)
   "$2.3 Million"             -> info card for key facts
 
 PROMPT RULES:

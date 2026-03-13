@@ -29,13 +29,13 @@ class SequentialVideoOrchestrator:
     # Section-to-movement mapping for narrative-aware Ken Burns effects
     SECTION_MOVEMENT_MAP = {
         'COLD_OPEN': ['dramatic_zoom', 'zoom_in', 'push_in'],
-        'EARLY_LIFE': ['gentle_drift', 'breathing', 'pan_right', 'minimal'],
+        'EARLY_LIFE': ['gentle_drift', 'breathing', 'pan_right', 'minimal', 'float_drift'],
         'THE_SPARK': ['zoom_in', 'pan_left', 'diagonal_tl_br', 'focus_center'],
         'THE_RISE': ['zoom_in', 'pan_right', 'diagonal_tl_br', 'dramatic_zoom'],
         'THE_CONFLICT': ['pan_left', 'pan_right', 'zoom_in', 'dramatic_zoom', 'push_in', 'zoom_pulse'],
         'THE_CLIMAX': ['dramatic_zoom', 'zoom_in', 'focus_center', 'push_in', 'zoom_pulse'],
         'THE_FALL': ['zoom_out', 'pull_out', 'gentle_drift', 'breathing'],
-        'LEGACY': ['gentle_drift', 'breathing', 'zoom_out', 'pull_out', 'minimal'],
+        'LEGACY': ['gentle_drift', 'breathing', 'zoom_out', 'pull_out', 'minimal', 'float_drift'],
         'CTA': ['zoom_out', 'gentle_drift', 'minimal', 'static'],
     }
 
@@ -45,13 +45,13 @@ class SequentialVideoOrchestrator:
         'extreme_closeup': ['minimal', 'breathing', 'static'],
         'closeup': ['zoom_in', 'breathing', 'minimal', 'focus_center'],
         'medium': ['gentle_drift', 'zoom_in', 'pan_left', 'pan_right'],
-        'wide': ['gentle_drift', 'pan_right', 'pan_left', 'breathing'],
+        'wide': ['gentle_drift', 'pan_right', 'pan_left', 'breathing', 'float_drift'],
         'aerial': ['pan_right', 'pan_left', 'gentle_drift'],
         'over_shoulder': ['push_in', 'zoom_in', 'focus_center'],
         'detail': ['focus_center', 'minimal', 'breathing'],
         'silhouette': ['zoom_out', 'pull_out', 'breathing', 'gentle_drift'],
         'crowd': ['pan_right', 'pan_left', 'gentle_drift', 'zoom_out'],
-        'landscape': ['gentle_drift', 'pan_right', 'pan_left', 'zoom_out'],
+        'landscape': ['gentle_drift', 'pan_right', 'pan_left', 'zoom_out', 'float_drift'],
         'still_life': ['zoom_in', 'focus_center', 'minimal'],
     }
 
@@ -438,6 +438,10 @@ class SequentialVideoOrchestrator:
         light_leak_overlays = self._create_light_leak_overlays(clips_data)
         overlays.extend(light_leak_overlays)
 
+        # Add flash transitions at high-impact section entries (Dhruv Rathee style)
+        flash_overlays = self._create_flash_transition_overlays(clips_data)
+        overlays.extend(flash_overlays)
+
         if self.effects_intensity > 0.3:
             particles = self.clip_factory.create_particle_overlay(
                 main_video.duration,
@@ -551,14 +555,15 @@ class SequentialVideoOrchestrator:
         """Create text overlay clips for dates, locations, names from config metadata.
         
         Reads overlay_text from each image's config and renders the appropriate
-        overlay type (year stamp, location stamp, info card, lower third, or
-        date-location combo) as a composited MoviePy clip with fade in/out.
+        overlay type with slide-in animation (Shivanshu-style) for lower thirds
+        and info cards, or fade for year/location stamps.
         
         overlay_text format examples:
           "1884"                    → year stamp (top-right)
           "New York City"           → location stamp (bottom-left)  
           "1943 | New York"         → date-location combo (bottom-right)
-          "Nikola Tesla — Inventor" → lower third (bottom-left)
+          "Nikola Tesla — Inventor" → lower third with slide-in (bottom-left)
+          "$2.3 Million"            → animated number counter (center)
           "Born: July 10, 1856"     → info card (bottom-right)
         """
         import re as _re
@@ -577,22 +582,100 @@ class SequentialVideoOrchestrator:
             if not overlay_text:
                 continue
 
-            # Determine overlay type from text pattern
-            overlay_array = None
             text = overlay_text.strip()
+            overlay_duration = min(3.0, duration * 0.6)
+            overlay_start = start_time + 0.5
+
+            # Pattern: "$NUMBER" or "NUMBER+" → animated counter
+            counter_match = _re.match(r'^(\$?)([\d,]+)\+?\s*(.*)$', text)
+            if counter_match and len(counter_match.group(2).replace(',', '')) >= 4:
+                prefix = counter_match.group(1)
+                target = int(counter_match.group(2).replace(',', ''))
+                suffix = counter_match.group(3)
+                fps_for_counter = 15
+                num_frames = int(overlay_duration * fps_for_counter)
+                if num_frames > 2:
+                    counter_frames = self.text_overlay_engine.create_animated_counter_frames(
+                        target_number=target, prefix=prefix, suffix=(' ' + suffix) if suffix else '',
+                        num_frames=num_frames,
+                    )
+                    if counter_frames:
+                        def make_counter_frame(t, frames=counter_frames, fps=fps_for_counter):
+                            idx = min(int(t * fps), len(frames) - 1)
+                            return frames[idx][:, :, :3]
+
+                        def make_counter_mask(t, frames=counter_frames, fps=fps_for_counter):
+                            idx = min(int(t * fps), len(frames) - 1)
+                            return frames[idx][:, :, 3].astype(float) / 255.0
+
+                        counter_clip = VideoClip(make_counter_frame, duration=overlay_duration)
+                        counter_clip = counter_clip.set_fps(fps_for_counter)
+                        mask_clip = VideoClip(make_counter_mask, duration=overlay_duration, ismask=True)
+                        mask_clip = mask_clip.set_fps(fps_for_counter)
+                        counter_clip = counter_clip.set_mask(mask_clip)
+                        counter_clip = (
+                            counter_clip
+                            .set_start(overlay_start)
+                            .crossfadein(0.2)
+                            .crossfadeout(0.4)
+                        )
+                        overlays.append(counter_clip)
+                        print(f"  Animated counter: '{text}' at {overlay_start:.1f}s (image {image_num})")
+                        continue
+
+            # Pattern: "NAME — TITLE" → slide-in lower third
+            if '—' in text or ' - ' in text:
+                sep = '—' if '—' in text else ' - '
+                parts = [p.strip() for p in text.split(sep, 1)]
+                # Use slide-in animation
+                slide_fps = 15
+                num_frames = int(overlay_duration * slide_fps)
+                if num_frames > 2:
+                    full_text = f"{parts[0]} — {parts[1]}" if len(parts) > 1 else parts[0]
+
+                    def make_slide_frame(t, txt=full_text, dur=overlay_duration, eng=self.text_overlay_engine):
+                        # Slide in during first 0.5s, hold, then static
+                        slide_in_time = 0.4
+                        if t < slide_in_time:
+                            progress = t / slide_in_time
+                            eased = 1.0 - (1.0 - progress) ** 3  # ease-out cubic
+                        else:
+                            eased = 1.0
+                        frame = eng.create_slide_in_overlay(txt, position='bottom_left', slide_from='left', progress=eased)
+                        return frame[:, :, :3]
+
+                    def make_slide_mask(t, txt=full_text, dur=overlay_duration, eng=self.text_overlay_engine):
+                        slide_in_time = 0.4
+                        if t < slide_in_time:
+                            progress = t / slide_in_time
+                            eased = 1.0 - (1.0 - progress) ** 3
+                        else:
+                            eased = 1.0
+                        frame = eng.create_slide_in_overlay(txt, position='bottom_left', slide_from='left', progress=eased)
+                        return frame[:, :, 3].astype(float) / 255.0
+
+                    slide_clip = VideoClip(make_slide_frame, duration=overlay_duration)
+                    slide_clip = slide_clip.set_fps(slide_fps)
+                    mask_clip = VideoClip(make_slide_mask, duration=overlay_duration, ismask=True)
+                    mask_clip = mask_clip.set_fps(slide_fps)
+                    slide_clip = slide_clip.set_mask(mask_clip)
+                    slide_clip = (
+                        slide_clip
+                        .set_start(overlay_start)
+                        .crossfadeout(0.4)
+                    )
+                    overlays.append(slide_clip)
+                    print(f"  Slide-in overlay: '{text}' at {overlay_start:.1f}s (image {image_num})")
+                    continue
+
+            # Static overlay types (year stamp, location stamp, etc.)
+            overlay_array = None
 
             # Pattern: "YEAR | LOCATION" → date-location combo
             if '|' in text:
                 parts = [p.strip() for p in text.split('|', 1)]
                 overlay_array = self.text_overlay_engine.create_date_location_stamp(
                     date_text=parts[0], location_text=parts[1]
-                )
-            # Pattern: "NAME — TITLE" → lower third
-            elif '—' in text or ' - ' in text:
-                sep = '—' if '—' in text else ' - '
-                parts = [p.strip() for p in text.split(sep, 1)]
-                overlay_array = self.text_overlay_engine.create_lower_third(
-                    name=parts[0], title=parts[1]
                 )
             # Pattern: pure year (4 digits) → year stamp
             elif _re.match(r'^\d{4}$', text):
@@ -604,7 +687,9 @@ class SequentialVideoOrchestrator:
                     year=parts[0].strip(), label=parts[1].strip()
                 )
             # Pattern: starts with location-like keywords → location stamp
-            elif any(text.lower().startswith(k) for k in ('new ', 'los ', 'san ', 'st.', 'mount', 'lake', 'fort')):
+            elif any(text.lower().startswith(k) for k in ('new ', 'los ', 'san ', 'st.', 'mount', 'lake', 'fort',
+                                                           'london', 'paris', 'chicago', 'washington', 'boston',
+                                                           'mumbai', 'delhi', 'tokyo', 'berlin', 'rome')):
                 overlay_array = self.text_overlay_engine.create_location_stamp(location=text)
             # Default: info card
             else:
@@ -613,8 +698,6 @@ class SequentialVideoOrchestrator:
             if overlay_array is None:
                 continue
 
-            # Show overlay for ~3s or clip duration if shorter, with fade in/out
-            overlay_duration = min(3.0, duration * 0.6)
             rgb_array = overlay_array[:, :, :3]
             alpha_mask = overlay_array[:, :, 3].astype(float) / 255.0
 
@@ -630,8 +713,6 @@ class SequentialVideoOrchestrator:
             mask_clip = mask_clip.set_fps(self.fps)
             overlay_clip = overlay_clip.set_mask(mask_clip)
 
-            # Position overlay to start 0.5s after the image starts
-            overlay_start = start_time + 0.5
             overlay_clip = (
                 overlay_clip
                 .set_start(overlay_start)
@@ -717,8 +798,9 @@ class SequentialVideoOrchestrator:
         """Create warm light leak overlays at section transitions.
         
         Adds a brief warm golden flash at section boundaries to create a cinematic
-        transition effect. Light leaks are common in MagnatesMedia and Newsthink
-        style biography videos.
+        transition effect. Uses a mask clip so the base video is only slightly
+        affected (max 12% dimming at peak), avoiding the full-frame darkening bug
+        that occurs with set_opacity on RGB clips.
         """
         from moviepy.video.VideoClip import VideoClip
         import numpy as np
@@ -732,39 +814,91 @@ class SequentialVideoOrchestrator:
                 continue
 
             if prev_section and section != prev_section:
-                # Create a warm light leak overlay at this section boundary
                 leak_duration = 1.2
                 width, height = self.resolution
 
-                def make_leak_frame(t, dur=leak_duration, w=width, h=height):
-                    # Warm golden light that peaks at center of duration
-                    progress = t / dur
-                    # Bell curve intensity: peaks at 0.5
-                    intensity = max(0, 1.0 - (2.0 * progress - 1.0) ** 2)
+                def make_leak_frame(t, w=width, h=height):
+                    # Full-brightness warm golden frame (RGB only).
+                    # The mask controls how much of this shows through.
                     frame = np.zeros((h, w, 3), dtype=np.uint8)
-                    # Warm golden tint: R=255, G=200, B=100
-                    frame[:, :, 0] = int(255 * intensity * 0.15)
-                    frame[:, :, 1] = int(200 * intensity * 0.15)
-                    frame[:, :, 2] = int(100 * intensity * 0.15)
+                    frame[:, :, 0] = 255  # R
+                    frame[:, :, 1] = 200  # G
+                    frame[:, :, 2] = 100  # B
                     return frame
+
+                def make_leak_mask(t, dur=leak_duration, w=width, h=height):
+                    # Bell-curve mask: peaks at mid-duration, max opacity 0.12
+                    # so the base video is dimmed by at most ~12% at peak.
+                    progress = t / dur if dur > 0 else 0
+                    intensity = max(0.0, 1.0 - (2.0 * progress - 1.0) ** 2)
+                    return np.full((h, w), intensity * 0.12, dtype=np.float64)
 
                 leak_clip = VideoClip(make_leak_frame, duration=leak_duration)
                 leak_clip = leak_clip.set_fps(self.fps)
-                # Position to straddle the section boundary
+                mask_clip = VideoClip(make_leak_mask, duration=leak_duration, ismask=True)
+                mask_clip = mask_clip.set_fps(self.fps)
+                leak_clip = leak_clip.set_mask(mask_clip)
+
                 leak_start = max(0, start_time - 0.6)
-                leak_clip = (
-                    leak_clip
-                    .set_start(leak_start)
-                    .set_opacity(0.6)
-                    .crossfadein(0.3)
-                    .crossfadeout(0.3)
-                )
+                leak_clip = leak_clip.set_start(leak_start)
                 overlays.append(leak_clip)
 
             prev_section = section
 
         if overlays:
             print(f"  Light leaks: {len(overlays)} section transition effects")
+
+        return overlays
+
+    def _create_flash_transition_overlays(self, clips_data: List[Dict]) -> List:
+        """Create brief white flash overlays at high-impact section transitions.
+        
+        Dhruv Rathee-style film burn: a quick white flash that punctuates
+        major story beats (CLIMAX, CONFLICT entries). Uses a mask clip with
+        very low peak opacity (8%) so the base video is barely affected,
+        creating a subtle "camera flash" feel rather than a full white-out.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        import numpy as np
+        overlays = []
+        flash_sections = {'THE_CLIMAX', 'THE_CONFLICT', 'COLD_OPEN'}
+        prev_section = ''
+
+        for data in clips_data:
+            section = data.get('section', '')
+            start_time = data.get('start_time')
+            if not section or start_time is None or start_time <= 0:
+                continue
+
+            if prev_section and section != prev_section and section in flash_sections:
+                flash_duration = 0.5
+                width, height = self.resolution
+
+                def make_flash_frame(t, w=width, h=height):
+                    return np.full((h, w, 3), 255, dtype=np.uint8)
+
+                def make_flash_mask(t, dur=flash_duration, w=width, h=height):
+                    # Sharp attack, quick decay — mimics camera flash
+                    progress = t / dur if dur > 0 else 0
+                    # Fast rise to peak at 0.2, then exponential decay
+                    if progress < 0.2:
+                        intensity = progress / 0.2
+                    else:
+                        intensity = np.exp(-4.0 * (progress - 0.2))
+                    return np.full((h, w), max(0.0, intensity * 0.08), dtype=np.float64)
+
+                flash_clip = VideoClip(make_flash_frame, duration=flash_duration)
+                flash_clip = flash_clip.set_fps(self.fps)
+                mask_clip = VideoClip(make_flash_mask, duration=flash_duration, ismask=True)
+                mask_clip = mask_clip.set_fps(self.fps)
+                flash_clip = flash_clip.set_mask(mask_clip)
+                flash_clip = flash_clip.set_start(max(0, start_time - 0.15))
+                overlays.append(flash_clip)
+
+            prev_section = section
+
+        if overlays:
+            print(f"  Flash transitions: {len(overlays)} high-impact section entries")
 
         return overlays
 

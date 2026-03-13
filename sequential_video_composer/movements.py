@@ -31,11 +31,25 @@ class MovementStyles:
         'push_in',
         'pull_out',
         'zoom_pulse',
+        'float_drift',
     ]
 
     def __init__(self, resolution: Tuple[int, int]):
         self.width, self.height = resolution
         self.resolution = resolution
+
+    # Section-to-vignette-intensity mapping: dramatic sections get stronger edge darkening
+    SECTION_VIGNETTE_INTENSITY = {
+        'COLD_OPEN': 0.5,
+        'EARLY_LIFE': 0.3,
+        'THE_SPARK': 0.4,
+        'THE_RISE': 0.4,
+        'THE_CONFLICT': 0.55,
+        'THE_CLIMAX': 0.6,
+        'THE_FALL': 0.5,
+        'LEGACY': 0.35,
+        'CTA': 0.3,
+    }
 
     def create_animated_clip(
         self,
@@ -45,7 +59,8 @@ class MovementStyles:
         zoom_intensity: float = 1.15,
         color_grader: 'ColorGrading' = None,
         color_grade: str = None,
-        enable_vignette: bool = False
+        enable_vignette: bool = False,
+        section: str = '',
     ):
         """Create an animated clip with the specified movement style and effects.
         
@@ -85,7 +100,8 @@ class MovementStyles:
             base_array = color_grader.apply_grade(base_array, color_grade)
 
         if enable_vignette:
-            base_array = self._apply_vignette(base_array)
+            vignette_intensity = self.SECTION_VIGNETTE_INTENSITY.get(section, 0.4)
+            base_array = self._apply_vignette(base_array, intensity=vignette_intensity)
 
         scaled_img = PILImage.fromarray(base_array)
         
@@ -127,8 +143,14 @@ class MovementStyles:
         clip = clip.set_fps(30)
         return clip
 
-    def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply a subtle vignette effect to the image."""
+    def _apply_vignette(self, image: np.ndarray, intensity: float = 0.4) -> np.ndarray:
+        """Apply a vignette effect to the image.
+        
+        Args:
+            image: Input image as numpy array.
+            intensity: How strong the darkening is at edges (0.0-1.0).
+                       0.4 = subtle cinematic, 0.6 = dramatic spotlight.
+        """
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -136,8 +158,9 @@ class MovementStyles:
         center_x, center_y = cols / 2, rows / 2
         distance = np.sqrt((X - center_x) ** 2 + (Y - center_y) ** 2)
         max_distance = np.sqrt(center_x ** 2 + center_y ** 2)
-        vignette = 1 - (distance / max_distance) * 0.4
-        vignette = np.clip(vignette, 0.6, 1.0)
+        vignette = 1 - (distance / max_distance) * intensity
+        min_brightness = max(0.3, 1.0 - intensity)
+        vignette = np.clip(vignette, min_brightness, 1.0)
         vignette = np.dstack([vignette] * 3)
         return (image * vignette).astype(np.uint8)
 
@@ -228,6 +251,15 @@ class MovementStyles:
             pulse = np.sin(progress * np.pi * 4) * np.exp(-progress * 2)
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6 * progress + 0.03 * pulse
             return zoom, 0, 0
+
+        elif movement_type == 'float_drift':
+            # Shivanshu-style 3D float effect: subtle oscillating drift that
+            # makes still images feel alive. Combines gentle zoom breathing with
+            # slow horizontal/vertical oscillation for a parallax-like feel.
+            zoom = 1.0 + 0.03 * np.sin(progress * np.pi * 1.5) + (zoom_intensity - 1.0) * 0.3 * progress
+            pan_x = 0.015 * np.sin(progress * np.pi * 2.0)
+            pan_y = 0.008 * np.cos(progress * np.pi * 1.3)
+            return zoom, pan_x, pan_y
 
         elif movement_type == 'static':
             return 1.0, 0, 0

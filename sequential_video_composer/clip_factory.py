@@ -93,7 +93,8 @@ class ClipFactory:
                 zoom_intensity=self.orchestrator.zoom_intensity,
                 color_grader=self.orchestrator.color_grading,
                 color_grade=color_grade,
-                enable_vignette=self.orchestrator.enable_vignette
+                enable_vignette=self.orchestrator.enable_vignette,
+                section=section,
             )
 
             # Section-aware transition selection (pass actual previous image number for gap handling)
@@ -180,8 +181,9 @@ class ClipFactory:
                     extended_clip
                     .set_start(start_time)
                     .crossfadein(fade_duration)
-                    .crossfadeout(fade_duration)
                 )
+                if is_last_clip:
+                    positioned_clip = positioned_clip.crossfadeout(fade_duration)
                 positioned_clips.append(positioned_clip)
                 extras = []
                 if section:
@@ -219,12 +221,17 @@ class ClipFactory:
     def _concatenate_clips(self, clips_data: List[Dict]) -> CompositeVideoClip:
         """Fallback method to concatenate clips sequentially with smooth crossfades."""
         clean_clips = []
-        for data in clips_data:
+        total = len(clips_data)
+        for i, data in enumerate(clips_data):
             clip = data['clip']
             duration = data['duration']
             fade_duration = min(self.orchestrator.crossfade_duration * 0.5, duration * 0.15)
             fade_duration = max(0.3, fade_duration)
-            clean_clip = clip.crossfadein(fade_duration).crossfadeout(fade_duration)
+            clean_clip = clip.crossfadein(fade_duration)
+            # Only apply crossfadeout to the last clip to avoid brightness dips
+            # at every transition midpoint (alpha compositing: 0.25*out + 0.5*in = 75%)
+            if i == total - 1:
+                clean_clip = clean_clip.crossfadeout(fade_duration)
             clean_clips.append(clean_clip)
 
         return concatenate_videoclips(clean_clips, method="compose")

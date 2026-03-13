@@ -38,6 +38,7 @@ OVERLAY TEXT RULES:
   "New York City"            -> location stamp with pin icon (bottom-left)
   "Nikola Tesla - Inventor"  -> lower third name bar (bottom-left)
   "Born: July 10, 1856"     -> info card (bottom-right)
+  "$2,300,000"               -> animated counting number overlay (for large numbers)
   "$2.3 Million"             -> info card for financial facts
 - Use overlay_text at the FIRST image where a new date/location/person appears
 - Do NOT repeat the same overlay_text on consecutive images
