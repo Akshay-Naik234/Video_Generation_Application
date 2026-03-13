@@ -211,13 +211,13 @@ class MovementStyles:
 
         elif movement_type == 'push_in':
             # Slow deliberate push toward subject - great for tension/revelation moments
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.1 * self._ease_in_out_cubic(progress)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.1 * progress
             pan_y = -0.005 * progress  # Slight upward drift adds gravitas
             return zoom, 0, pan_y
 
         elif movement_type == 'pull_out':
             # Slow pull away from subject - great for legacy/reflection moments
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * 0.9 * self._ease_in_out_cubic(progress)
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * 0.9 * progress
             pan_y = 0.005 * progress  # Slight downward drift for melancholy
             return zoom, 0, pan_y
 

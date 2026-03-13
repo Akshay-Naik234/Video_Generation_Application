@@ -126,7 +126,9 @@ class ClipFactory:
                 fade_duration = min(0.8, max(0.3, duration * fade_ratio))
                 
                 # Apply crossfade overlap: start slightly earlier to overlap with previous clip
-                overlap_offset = fade_duration * 0.5 if i > 0 else 0
+                # Skip overlap for the last clip to ensure it extends to total_video_duration
+                is_last_clip = (i == len(clips_data) - 1)
+                overlap_offset = fade_duration * 0.5 if (i > 0 and not is_last_clip) else 0
                 adjusted_start = max(0, start_time - overlap_offset)
                 
                 positioned_clip = (
