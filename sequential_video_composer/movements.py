@@ -1,13 +1,14 @@
 """Ken Burns movement styles for dynamic image animations."""
 
 from pathlib import Path
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple, Optional, TYPE_CHECKING
 
 import numpy as np
 from PIL import Image as PILImage
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
+    from .ai_effects import DepthEstimator, ParallaxEngine
 
 
 class MovementStyles:
@@ -61,16 +62,43 @@ class MovementStyles:
         color_grade: str = None,
         enable_vignette: bool = False,
         section: str = '',
+        depth_estimator: 'Optional[DepthEstimator]' = None,
+        parallax_engine: 'Optional[ParallaxEngine]' = None,
+        enable_parallax: bool = False,
+        enable_dof: bool = False,
+        subject_center: Optional[Tuple[float, float]] = None,
     ):
         """Create an animated clip with the specified movement style and effects.
         
         Uses a memory-efficient approach with make_frame instead of creating many sub-clips.
         Pre-scales the image larger to allow for smooth zooming without per-frame resizing.
+        
+        When enable_parallax=True and depth_estimator is provided, uses AI depth
+        estimation to create 2.5D parallax Ken Burns effects where foreground
+        moves faster than background, creating a convincing 3D illusion.
+        
+        When enable_dof=True and depth_estimator is provided, applies cinematic
+        depth-of-field blur (sharp subject, blurred background).
         """
         base_img = PILImage.open(image_path)
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
-        
+
+        # --- AI Parallax path: depth-aware 2.5D Ken Burns ---
+        use_parallax = (
+            enable_parallax
+            and depth_estimator is not None
+            and parallax_engine is not None
+        )
+
+        if use_parallax:
+            return self._create_parallax_clip(
+                base_img, duration, movement_type, zoom_intensity,
+                color_grader, color_grade, enable_vignette, section,
+                depth_estimator, parallax_engine, enable_dof, subject_center,
+            )
+
+        # --- Standard (flat) Ken Burns path ---
         max_zoom = max(zoom_intensity, 1.1)
         scaled_width = int(self.width * max_zoom * 1.05)
         scaled_height = int(self.height * max_zoom * 1.05)
@@ -140,6 +168,69 @@ class MovementStyles:
         
         from moviepy.video.VideoClip import VideoClip
         clip = VideoClip(make_frame, duration=duration)
+        clip = clip.set_fps(30)
+        return clip
+
+    def _create_parallax_clip(
+        self,
+        base_img: PILImage.Image,
+        duration: float,
+        movement_type: str,
+        zoom_intensity: float,
+        color_grader,
+        color_grade: str,
+        enable_vignette: bool,
+        section: str,
+        depth_estimator,
+        parallax_engine,
+        enable_dof: bool,
+        subject_center: Optional[Tuple[float, float]],
+    ):
+        """Create a 2.5D parallax Ken Burns clip using AI depth estimation.
+
+        Foreground elements move faster than background elements, creating a
+        convincing 3D parallax illusion from a single 2D image. This technique
+        is used by top documentary and biography YouTube creators.
+        """
+        from .ai_effects import DepthOfFieldEffect
+
+        # Resize to output resolution for parallax processing
+        resized = base_img.resize(self.resolution, PILImage.LANCZOS)
+        img_array = np.array(resized)
+
+        # Apply color grading before depth estimation
+        if color_grader and color_grade:
+            img_array = color_grader.apply_grade(img_array, color_grade)
+
+        if enable_vignette:
+            vignette_intensity = self.SECTION_VIGNETTE_INTENSITY.get(section, 0.4)
+            img_array = self._apply_vignette(img_array, intensity=vignette_intensity)
+
+        # Estimate depth map
+        depth_map = depth_estimator.estimate_depth(img_array)
+
+        # Apply depth-of-field blur if enabled
+        if enable_dof:
+            dof = DepthOfFieldEffect()
+            img_array = dof.apply(img_array, depth_map, blur_strength=6.0, focus_point=0.7)
+
+        # Pre-compute a small set of keyframes to reduce per-frame computation
+        # Store img_array and depth_map for make_frame closure
+        src_img = img_array.copy()
+        src_depth = depth_map.copy()
+
+        def make_parallax_frame(t):
+            progress = t / duration if duration > 0 else 0
+            progress = max(0.0, min(1.0, progress))
+            eased = self._ease_in_out_cubic(progress)
+
+            frame = parallax_engine.create_parallax_frame(
+                src_img, src_depth, eased, movement_type, zoom_intensity - 1.0 + 0.5
+            )
+            return frame
+
+        from moviepy.video.VideoClip import VideoClip
+        clip = VideoClip(make_parallax_frame, duration=duration)
         clip = clip.set_fps(30)
         return clip
 

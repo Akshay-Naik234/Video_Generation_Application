@@ -134,6 +134,14 @@ class ClipFactory:
                 print(f"  Section: {section} | Emotion: {emotional_tone}")
             print(f"  Movement: {movement} | Color grade: {color_grade}")
 
+            # Determine if AI parallax/DOF should be used for this image
+            ai_kwargs = {}
+            if hasattr(self.orchestrator, 'depth_estimator') and self.orchestrator.depth_estimator is not None:
+                ai_kwargs['depth_estimator'] = self.orchestrator.depth_estimator
+                ai_kwargs['parallax_engine'] = self.orchestrator.parallax_engine
+                ai_kwargs['enable_parallax'] = self.orchestrator.enable_parallax
+                ai_kwargs['enable_dof'] = self.orchestrator.enable_dof
+
             clip = self.orchestrator.movements.create_animated_clip(
                 image_path=effective_image_path,
                 duration=image_duration,
@@ -143,6 +151,7 @@ class ClipFactory:
                 color_grade=color_grade,
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
+                **ai_kwargs,
             )
 
             # Clean up temp file if we created one

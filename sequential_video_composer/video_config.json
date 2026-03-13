@@ -24,5 +24,9 @@
   "audio_fade_in": 1.0,
   "audio_fade_out": 2.0,
   "channel_name": "Subscribe",
+  "ai_animation_enabled": true,
+  "enable_parallax": true,
+  "enable_dof": true,
+  "enable_weather": true,
   "audio": "../examples/audio/narration.mp3"
 }

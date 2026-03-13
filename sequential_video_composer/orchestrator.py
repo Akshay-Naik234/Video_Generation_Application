@@ -13,6 +13,10 @@ from .movements import MovementStyles
 from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
 from .text_overlays import TextOverlayEngine
+from .ai_effects import (
+    DepthEstimator, ParallaxEngine, SubjectDetector,
+    WeatherEffects, get_ai_status,
+)
 
 
 class SequentialVideoOrchestrator:
@@ -107,6 +111,10 @@ class SequentialVideoOrchestrator:
         audio_fade_in: float = 1.0,
         audio_fade_out: float = 2.0,
         channel_name: str = 'Subscribe',
+        ai_animation_enabled: bool = True,
+        enable_parallax: bool = True,
+        enable_dof: bool = True,
+        enable_weather: bool = True,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -140,6 +148,10 @@ class SequentialVideoOrchestrator:
         self.audio_fade_in: float = audio_fade_in
         self.audio_fade_out: float = audio_fade_out
         self.channel_name: str = channel_name
+        self.ai_animation_enabled: bool = ai_animation_enabled
+        self.enable_parallax: bool = enable_parallax and ai_animation_enabled
+        self.enable_dof: bool = enable_dof and ai_animation_enabled
+        self.enable_weather: bool = enable_weather and ai_animation_enabled
 
         if self.duration_config_path:
             self._load_duration_config()
@@ -149,6 +161,20 @@ class SequentialVideoOrchestrator:
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
         self.text_overlay_engine = TextOverlayEngine(resolution)
+
+        # Initialize AI effects (optional - gracefully degrades if deps missing)
+        self.depth_estimator: Optional[DepthEstimator] = None
+        self.parallax_engine: Optional[ParallaxEngine] = None
+        self.subject_detector: Optional[SubjectDetector] = None
+        self.weather_effects: Optional[WeatherEffects] = None
+
+        if self.enable_parallax or self.enable_dof:
+            self.depth_estimator = DepthEstimator(use_ai=True)
+            self.parallax_engine = ParallaxEngine(resolution)
+            self.subject_detector = SubjectDetector()
+
+        if self.enable_weather:
+            self.weather_effects = WeatherEffects()
 
     def _load_duration_config(self) -> None:
         """Load image durations, timing, and section metadata from JSON configuration file.
@@ -438,6 +464,18 @@ class SequentialVideoOrchestrator:
         overlays_found = sum(1 for d in self.image_durations.values() if d.get('overlay_text'))
         if overlays_found > 0:
             print(f"  - Text overlays: {overlays_found} images with date/location/name stamps")
+
+        # Report AI effects status
+        ai_status = get_ai_status()
+        print(f"\nAI Effects:")
+        print(f"  Depth backend: {ai_status['depth_backend']}")
+        print(f"  Parallax quality: {ai_status['parallax_quality']}")
+        if self.enable_parallax:
+            print(f"  2.5D Parallax: ENABLED")
+        if self.enable_dof:
+            print(f"  Depth-of-Field: ENABLED")
+        if self.enable_weather:
+            print(f"  Weather effects: ENABLED")
         print()
 
         numbered_images = self.discover_numbered_images()
@@ -484,6 +522,11 @@ class SequentialVideoOrchestrator:
         # Add flash transitions at high-impact section entries (Dhruv Rathee style)
         flash_overlays = self._create_flash_transition_overlays(clips_data)
         overlays.extend(flash_overlays)
+
+        # Add weather/atmosphere overlays for emotional sections
+        if self.enable_weather and self.weather_effects is not None:
+            weather_overlays = self._create_weather_overlays(clips_data)
+            overlays.extend(weather_overlays)
 
         # Add hook overlay for the first 5 seconds (most critical retention element)
         if self.enable_hook_overlay:
@@ -1091,6 +1134,102 @@ class SequentialVideoOrchestrator:
         print(f"  CTA end screen: {cta_start:.1f}s - {video_duration:.1f}s")
 
         return overlays
+
+    def _create_weather_overlays(self, clips_data: List[Dict]) -> List:
+        """Create section-aware weather/atmosphere particle overlays.
+
+        Adds emotional atmosphere effects based on the narrative section:
+        - Rain particles for THE_FALL (sadness, loss)
+        - Dust/embers for COLD_OPEN, THE_CONFLICT (tension, drama)
+        - Light particles for LEGACY, THE_SPARK (hope, remembrance)
+
+        Weather type is determined by section and emotional_tone, with emotion
+        taking priority over section defaults.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+
+        if self.weather_effects is None:
+            return overlays
+
+        # Group consecutive clips by weather type to create longer overlays
+        current_weather = None
+        current_start = None
+        current_duration = 0.0
+        current_emotion = ''
+
+        for data in clips_data:
+            section = data.get('section', '')
+            emotional_tone = data.get('emotional_tone', '')
+            start = data.get('start_time')
+            duration = data.get('duration', 0)
+
+            if start is None:
+                continue
+
+            weather = self.weather_effects.get_weather_for_section(section, emotional_tone)
+
+            if weather == current_weather and weather is not None:
+                current_duration = (start + duration) - current_start
+            else:
+                # Emit previous weather overlay if any
+                if current_weather is not None and current_start is not None and current_duration > 1.0:
+                    overlay = self._build_weather_clip(
+                        current_weather, current_start, current_duration
+                    )
+                    if overlay is not None:
+                        overlays.append(overlay)
+                        print(f"  Weather: {current_weather} at {current_start:.1f}s-{current_start + current_duration:.1f}s")
+
+                current_weather = weather
+                current_start = start
+                current_duration = duration
+
+        # Emit last group
+        if current_weather is not None and current_start is not None and current_duration > 1.0:
+            overlay = self._build_weather_clip(
+                current_weather, current_start, current_duration
+            )
+            if overlay is not None:
+                overlays.append(overlay)
+                print(f"  Weather: {current_weather} at {current_start:.1f}s-{current_start + current_duration:.1f}s")
+
+        return overlays
+
+    def _build_weather_clip(self, weather_type: str, start: float, duration: float):
+        """Build a single weather overlay MoviePy clip."""
+        from moviepy.video.VideoClip import VideoClip
+
+        try:
+            frames = self.weather_effects.create_weather_frames(
+                self.width, self.height, self.fps, duration, weather_type, intensity=0.5
+            )
+        except Exception as e:
+            print(f"  Weather effect error ({weather_type}): {e}")
+            return None
+
+        if not frames:
+            return None
+
+        num_frames = len(frames)
+
+        def make_weather_frame(t, _frames=frames, _num=num_frames, _dur=duration):
+            idx = int(t / _dur * (_num - 1)) if _dur > 0 else 0
+            idx = max(0, min(idx, _num - 1))
+            return _frames[idx][:, :, :3]
+
+        def make_weather_mask(t, _frames=frames, _num=num_frames, _dur=duration):
+            idx = int(t / _dur * (_num - 1)) if _dur > 0 else 0
+            idx = max(0, min(idx, _num - 1))
+            return _frames[idx][:, :, 3].astype(float) / 255.0
+
+        clip = VideoClip(make_weather_frame, duration=duration)
+        clip = clip.set_fps(self.fps)
+        mask = VideoClip(make_weather_mask, duration=duration, ismask=True)
+        mask = mask.set_fps(self.fps)
+        clip = clip.set_mask(mask)
+        clip = clip.set_start(start).crossfadein(0.8).crossfadeout(0.8)
+        return clip
 
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with YouTube-optimized professional settings.

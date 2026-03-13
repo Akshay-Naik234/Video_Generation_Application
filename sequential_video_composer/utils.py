@@ -32,6 +32,10 @@ def create_sequential_video(
     audio_fade_in: float = 1.0,
     audio_fade_out: float = 2.0,
     channel_name: str = 'Subscribe',
+    ai_animation_enabled: bool = True,
+    enable_parallax: bool = True,
+    enable_dof: bool = True,
+    enable_weather: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -63,6 +67,10 @@ def create_sequential_video(
         audio_fade_in: Audio fade-in duration in seconds (0 to disable)
         audio_fade_out: Audio fade-out duration in seconds (0 to disable)
         channel_name: Channel name for CTA end screen subscribe button
+        ai_animation_enabled: Master toggle for all AI animation effects (default True)
+        enable_parallax: Enable 2.5D depth parallax Ken Burns effect
+        enable_dof: Enable depth-of-field cinematic blur
+        enable_weather: Enable section-aware weather/atmosphere particles
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -94,6 +102,10 @@ def create_sequential_video(
         audio_fade_in=audio_fade_in,
         audio_fade_out=audio_fade_out,
         channel_name=channel_name,
+        ai_animation_enabled=ai_animation_enabled,
+        enable_parallax=enable_parallax,
+        enable_dof=enable_dof,
+        enable_weather=enable_weather,
         duration_config_path=duration_config_path
     )
     orchestrator.create_video()
@@ -153,5 +165,9 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         audio_fade_in=config.get('audio_fade_in', 1.0),
         audio_fade_out=config.get('audio_fade_out', 2.0),
         channel_name=config.get('channel_name', 'Subscribe'),
+        ai_animation_enabled=config.get('ai_animation_enabled', True),
+        enable_parallax=config.get('enable_parallax', True),
+        enable_dof=config.get('enable_dof', True),
+        enable_weather=config.get('enable_weather', True),
         duration_config_path=duration_config_path
     )
