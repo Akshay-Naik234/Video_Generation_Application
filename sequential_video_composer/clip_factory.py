@@ -250,22 +250,28 @@ class ClipFactory:
         """Create cinematic letterbox bars (top and bottom black bars).
         
         Adds a 2.39:1 widescreen feel for dramatic sections. Bar height is
-        ~8% of frame height on each side. Fades in/out smoothly.
+        ~8% of frame height on each side. Uses a mask clip so only the bar
+        regions are opaque while the middle of the frame stays transparent.
         """
         width, height = self.orchestrator.resolution
         bar_height = int(height * bar_height_ratio)
 
         def make_letterbox_frame(t):
-            frame = np.zeros((height, width, 4), dtype=np.uint8)
-            # Top bar
-            frame[:bar_height, :, 3] = 220  # Alpha channel
-            # Bottom bar
-            frame[height - bar_height:, :, 3] = 220
-            return frame[:, :, :3]  # Return RGB only, opacity set separately
+            # Solid black frame (RGB only)
+            return np.zeros((height, width, 3), dtype=np.uint8)
+
+        def make_mask_frame(t):
+            # Mask: 1.0 for bar regions, 0.0 for middle (transparent)
+            mask = np.zeros((height, width), dtype=np.float64)
+            mask[:bar_height, :] = 0.85  # Top bar
+            mask[height - bar_height:, :] = 0.85  # Bottom bar
+            return mask
 
         letterbox = VideoClip(make_letterbox_frame, duration=duration)
         letterbox = letterbox.set_fps(self.orchestrator.fps)
-        letterbox = letterbox.set_opacity(0.85)
+        mask_clip = VideoClip(make_mask_frame, duration=duration, ismask=True)
+        mask_clip = mask_clip.set_fps(self.orchestrator.fps)
+        letterbox = letterbox.set_mask(mask_clip)
         return letterbox
 
     def create_particle_overlay(self, duration: float, intensity: float = 0.3) -> VideoClip:

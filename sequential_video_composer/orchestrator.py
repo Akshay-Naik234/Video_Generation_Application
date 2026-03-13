@@ -464,11 +464,11 @@ class SequentialVideoOrchestrator:
 
             card_clip = VideoClip(make_card_frame, duration=card_duration)
             card_clip = card_clip.set_fps(self.fps)
-            opacity = float(alpha.mean())  # Use average alpha as opacity
+            opacity = 0.85  # Fixed opacity; alpha.mean() would be near-zero since most pixels are transparent
             card_clip = (
                 card_clip
                 .set_start(start_time)
-                .set_opacity(min(0.9, opacity))
+                .set_opacity(opacity)
                 .crossfadein(0.4)
                 .crossfadeout(0.6)
             )
