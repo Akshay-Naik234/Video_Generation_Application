@@ -20,6 +20,10 @@ def create_sequential_video(
     color_grade: str = "cinematic",
     enable_vignette: bool = True,
     enable_film_grain: bool = False,
+    enable_letterbox: bool = True,
+    enable_chapter_cards: bool = True,
+    enable_dynamic_pacing: bool = True,
+    pattern_interrupt_interval: int = 75,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -39,6 +43,10 @@ def create_sequential_video(
         color_grade: Color grading style - 'cinematic', 'documentary', 'vintage', etc.
         enable_vignette: Enable vignette effect
         enable_film_grain: Enable film grain overlay
+        enable_letterbox: Enable cinematic letterbox bars for dramatic sections
+        enable_chapter_cards: Enable chapter title cards at section transitions
+        enable_dynamic_pacing: Enable per-section speed variation
+        pattern_interrupt_interval: Seconds between pattern interrupts (default 75)
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -58,6 +66,10 @@ def create_sequential_video(
         color_grade=color_grade,
         enable_vignette=enable_vignette,
         enable_film_grain=enable_film_grain,
+        enable_letterbox=enable_letterbox,
+        enable_chapter_cards=enable_chapter_cards,
+        enable_dynamic_pacing=enable_dynamic_pacing,
+        pattern_interrupt_interval=pattern_interrupt_interval,
         duration_config_path=duration_config_path
     )
     orchestrator.create_video()
@@ -105,5 +117,9 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         color_grade=config.get('color_grade', 'cinematic'),
         enable_vignette=config.get('enable_vignette', True),
         enable_film_grain=config.get('enable_film_grain', False),
+        enable_letterbox=config.get('enable_letterbox', True),
+        enable_chapter_cards=config.get('enable_chapter_cards', True),
+        enable_dynamic_pacing=config.get('enable_dynamic_pacing', True),
+        pattern_interrupt_interval=config.get('pattern_interrupt_interval', 75),
         duration_config_path=duration_config_path
     )

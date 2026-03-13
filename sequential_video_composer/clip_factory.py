@@ -155,9 +155,13 @@ class ClipFactory:
                     continue
                 
                 # Dynamic pacing: modulate fade based on section pace multiplier
-                pace = self.get_pace_multiplier(section)
                 base_fade = self._get_fade_duration(duration, section)
-                fade_duration = base_fade / pace  # Faster pace = shorter fades
+                if self.orchestrator.enable_dynamic_pacing:
+                    pace = self.get_pace_multiplier(section)
+                    fade_duration = base_fade / pace  # Faster pace = shorter fades
+                else:
+                    pace = 1.0
+                    fade_duration = base_fade
                 fade_duration = min(0.8, max(0.2, fade_duration))
                 
                 # Pattern interrupt: use faster fade at interval boundaries
@@ -242,7 +246,7 @@ class ClipFactory:
         """
         if start_time <= 0:
             return False
-        interval = self.PATTERN_INTERRUPT_INTERVAL
+        interval = self.orchestrator.pattern_interrupt_interval
         # Trigger when we cross an interval boundary
         return (int(start_time) % interval) < 8 and start_time > interval * 0.5
 

@@ -79,6 +79,10 @@ class SequentialVideoOrchestrator:
         color_grade: str = "cinematic",
         enable_vignette: bool = True,
         enable_film_grain: bool = False,
+        enable_letterbox: bool = True,
+        enable_chapter_cards: bool = True,
+        enable_dynamic_pacing: bool = True,
+        pattern_interrupt_interval: int = 75,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -96,6 +100,10 @@ class SequentialVideoOrchestrator:
         self.color_grade = color_grade
         self.enable_vignette = enable_vignette
         self.enable_film_grain = enable_film_grain
+        self.enable_letterbox = enable_letterbox
+        self.enable_chapter_cards = enable_chapter_cards
+        self.enable_dynamic_pacing = enable_dynamic_pacing
+        self.pattern_interrupt_interval = pattern_interrupt_interval
         self.duration_config_path = Path(duration_config_path) if duration_config_path else None
         self.image_durations: Dict[int, Dict] = {}
         self.total_video_duration: float = 0
@@ -363,16 +371,18 @@ class SequentialVideoOrchestrator:
         overlays = [main_video]
 
         # Add cinematic letterbox bars for dramatic sections
-        letterbox_sections = self._get_letterbox_ranges(clips_data)
-        for start, duration in letterbox_sections:
-            letterbox = self.clip_factory.create_letterbox_overlay(duration)
-            letterbox = letterbox.set_start(start).crossfadein(0.5).crossfadeout(0.5)
-            overlays.append(letterbox)
-            print(f"  Letterbox bars: {start:.1f}s - {start + duration:.1f}s")
+        if self.enable_letterbox:
+            letterbox_sections = self._get_letterbox_ranges(clips_data)
+            for start, duration in letterbox_sections:
+                letterbox = self.clip_factory.create_letterbox_overlay(duration)
+                letterbox = letterbox.set_start(start).crossfadein(0.5).crossfadeout(0.5)
+                overlays.append(letterbox)
+                print(f"  Letterbox bars: {start:.1f}s - {start + duration:.1f}s")
 
         # Add text overlay chapter cards at section boundaries
-        chapter_overlays = self._create_chapter_card_overlays(clips_data)
-        overlays.extend(chapter_overlays)
+        if self.enable_chapter_cards:
+            chapter_overlays = self._create_chapter_card_overlays(clips_data)
+            overlays.extend(chapter_overlays)
 
         if self.effects_intensity > 0.3:
             particles = self.clip_factory.create_particle_overlay(
@@ -454,21 +464,27 @@ class SequentialVideoOrchestrator:
             if card_array is None:
                 continue
 
-            # Create a 2.5 second overlay from the RGBA array
+            # Create a 2.5 second overlay from the RGBA array.
+            # Use the alpha channel as a proper mask so only the text band
+            # is visible (transparent areas stay transparent, not black).
             card_duration = 2.5
             rgb_array = card_array[:, :, :3]
-            alpha = card_array[:, :, 3].astype(float) / 255.0
+            alpha_mask = card_array[:, :, 3].astype(np.float64) / 255.0
 
-            def make_card_frame(t, rgb=rgb_array, a=alpha):
+            def make_card_frame(t, rgb=rgb_array):
                 return rgb
+
+            def make_card_mask(t, a=alpha_mask):
+                return a
 
             card_clip = VideoClip(make_card_frame, duration=card_duration)
             card_clip = card_clip.set_fps(self.fps)
-            opacity = 0.85  # Fixed opacity; alpha.mean() would be near-zero since most pixels are transparent
+            mask_clip = VideoClip(make_card_mask, duration=card_duration, ismask=True)
+            mask_clip = mask_clip.set_fps(self.fps)
+            card_clip = card_clip.set_mask(mask_clip)
             card_clip = (
                 card_clip
                 .set_start(start_time)
-                .set_opacity(opacity)
                 .crossfadein(0.4)
                 .crossfadeout(0.6)
             )
