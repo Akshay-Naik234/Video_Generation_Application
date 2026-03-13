@@ -638,26 +638,35 @@ class SequentialVideoOrchestrator:
                 if num_frames > 2:
                     full_text = f"{parts[0]} — {parts[1]}" if len(parts) > 1 else parts[0]
 
-                    def make_slide_frame(t, txt=full_text, dur=overlay_duration, eng=self.text_overlay_engine):
-                        # Slide in during first 0.5s, hold, then static
-                        slide_in_time = 0.4
-                        if t < slide_in_time:
-                            progress = t / slide_in_time
-                            eased = 1.0 - (1.0 - progress) ** 3  # ease-out cubic
-                        else:
-                            eased = 1.0
-                        frame = eng.create_slide_in_overlay(txt, position='bottom_left', slide_from='left', progress=eased)
-                        return frame[:, :, :3]
+                    # Cache to avoid rendering the same overlay twice per frame
+                    # (once for RGB, once for mask). Store as {t_key: (rgb, alpha)}.
+                    _slide_cache = {}
 
-                    def make_slide_mask(t, txt=full_text, dur=overlay_duration, eng=self.text_overlay_engine):
-                        slide_in_time = 0.4
-                        if t < slide_in_time:
-                            progress = t / slide_in_time
-                            eased = 1.0 - (1.0 - progress) ** 3
-                        else:
-                            eased = 1.0
-                        frame = eng.create_slide_in_overlay(txt, position='bottom_left', slide_from='left', progress=eased)
-                        return frame[:, :, 3].astype(float) / 255.0
+                    def _get_slide_frame(t, txt=full_text, eng=self.text_overlay_engine):
+                        # Quantize t to frame boundaries to ensure cache hits
+                        t_key = round(t, 4)
+                        if t_key not in _slide_cache:
+                            slide_in_time = 0.4
+                            if t < slide_in_time:
+                                progress = t / slide_in_time
+                                eased = 1.0 - (1.0 - progress) ** 3  # ease-out cubic
+                            else:
+                                eased = 1.0
+                            frame = eng.create_slide_in_overlay(
+                                txt, position='bottom_left', slide_from='left', progress=eased
+                            )
+                            _slide_cache[t_key] = (frame[:, :, :3], frame[:, :, 3].astype(float) / 255.0)
+                            # Keep cache small: only store last 2 frames
+                            if len(_slide_cache) > 2:
+                                oldest = min(_slide_cache.keys())
+                                del _slide_cache[oldest]
+                        return _slide_cache[t_key]
+
+                    def make_slide_frame(t, _get=_get_slide_frame):
+                        return _get(t)[0]
+
+                    def make_slide_mask(t, _get=_get_slide_frame):
+                        return _get(t)[1]
 
                     slide_clip = VideoClip(make_slide_frame, duration=overlay_duration)
                     slide_clip = slide_clip.set_fps(slide_fps)
