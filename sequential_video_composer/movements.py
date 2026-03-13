@@ -27,7 +27,9 @@ class MovementStyles:
         'gentle_drift',
         'focus_center',
         'minimal',
-        'static'
+        'static',
+        'push_in',
+        'pull_out',
     ]
 
     def __init__(self, resolution: Tuple[int, int]):
@@ -206,6 +208,18 @@ class MovementStyles:
         elif movement_type == 'minimal':
             zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.5
             return zoom, 0, 0
+
+        elif movement_type == 'push_in':
+            # Slow deliberate push toward subject - great for tension/revelation moments
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.1 * self._ease_in_out_cubic(progress)
+            pan_y = -0.005 * progress  # Slight upward drift adds gravitas
+            return zoom, 0, pan_y
+
+        elif movement_type == 'pull_out':
+            # Slow pull away from subject - great for legacy/reflection moments
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * 0.9 * self._ease_in_out_cubic(progress)
+            pan_y = 0.005 * progress  # Slight downward drift for melancholy
+            return zoom, 0, pan_y
 
         elif movement_type == 'static':
             return 1.0, 0, 0

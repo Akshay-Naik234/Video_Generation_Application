@@ -15,9 +15,52 @@ from .clip_factory import ClipFactory
 
 
 class SequentialVideoOrchestrator:
-    """Orchestrates video creation from sequentially numbered images with professional effects."""
+    """Orchestrates video creation from sequentially numbered images with professional effects.
+    
+    Supports section-aware processing: when duration config JSON includes section metadata
+    (section, emotional_tone, shot_type, color_temperature), the orchestrator automatically
+    selects appropriate color grading, movement styles, and transitions for each image
+    based on its narrative position in the story arc.
+    """
 
     SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.tiff'}
+
+    # Section-to-movement mapping for narrative-aware Ken Burns effects
+    SECTION_MOVEMENT_MAP = {
+        'COLD_OPEN': ['dramatic_zoom', 'zoom_in', 'push_in'],
+        'EARLY_LIFE': ['gentle_drift', 'breathing', 'pan_right', 'minimal'],
+        'THE_SPARK': ['zoom_in', 'pan_left', 'diagonal_tl_br', 'focus_center'],
+        'THE_RISE': ['zoom_in', 'pan_right', 'diagonal_tl_br', 'dramatic_zoom'],
+        'THE_CONFLICT': ['pan_left', 'pan_right', 'zoom_in', 'dramatic_zoom', 'push_in'],
+        'THE_CLIMAX': ['dramatic_zoom', 'zoom_in', 'focus_center', 'push_in'],
+        'THE_FALL': ['zoom_out', 'pull_out', 'gentle_drift', 'breathing'],
+        'LEGACY': ['gentle_drift', 'breathing', 'zoom_out', 'pull_out', 'minimal'],
+        'CTA': ['zoom_out', 'gentle_drift', 'minimal', 'static'],
+    }
+
+    # Section-to-color-grade mapping for narrative-aware visual tone
+    SECTION_COLOR_MAP = {
+        'COLD_OPEN': 'cool',
+        'EARLY_LIFE': 'warm',
+        'THE_SPARK': 'documentary',
+        'THE_RISE': 'cinematic',
+        'THE_CONFLICT': 'high_contrast',
+        'THE_CLIMAX': 'dramatic',
+        'THE_FALL': 'soft',
+        'LEGACY': 'warm',
+        'CTA': 'natural',
+    }
+
+    # Emotional tone to color grade overrides
+    EMOTION_COLOR_MAP = {
+        'tension': 'high_contrast',
+        'nostalgia': 'vintage',
+        'hope': 'warm',
+        'darkness': 'dramatic',
+        'devastation': 'cool',
+        'triumph': 'cinematic',
+        'bittersweet': 'soft',
+    }
 
     def __init__(
         self,
@@ -65,7 +108,15 @@ class SequentialVideoOrchestrator:
         self.clip_factory = ClipFactory(self)
 
     def _load_duration_config(self) -> None:
-        """Load image durations and timing from JSON configuration file."""
+        """Load image durations, timing, and section metadata from JSON configuration file.
+        
+        Reads the full image prompt JSON which may include:
+        - Basic timing: image, start_time, duration, end_time
+        - Section metadata: section, emotional_tone, shot_type, color_temperature
+        
+        Section metadata enables automatic narrative-aware color grading, movement
+        selection, and transition choices that match the emotional arc of the story.
+        """
         if not self.duration_config_path or not self.duration_config_path.exists():
             print(f"Duration config file not found: {self.duration_config_path}")
             return
@@ -83,17 +134,30 @@ class SequentialVideoOrchestrator:
                 duration = img_data.get('duration')
                 start_time = img_data.get('start_time')
                 end_time = img_data.get('end_time')
+                section = img_data.get('section', '')
+                emotional_tone = img_data.get('emotional_tone', '')
+                shot_type = img_data.get('shot_type', '')
+                color_temperature = img_data.get('color_temperature', '')
                 
                 if image_num is not None:
                     self.image_durations[image_num] = {
                         'duration': float(duration) if duration is not None else self.image_duration,
                         'start_time': float(start_time) if start_time is not None else None,
-                        'end_time': float(end_time) if end_time is not None else None
+                        'end_time': float(end_time) if end_time is not None else None,
+                        'section': section,
+                        'emotional_tone': emotional_tone,
+                        'shot_type': shot_type,
+                        'color_temperature': color_temperature,
                     }
 
             print(f"Loaded timing data for {len(self.image_durations)} images from config")
             if self.total_video_duration:
                 print(f"Total video duration from config: {self.total_video_duration}s")
+            
+            # Report section metadata availability
+            sections_found = sum(1 for d in self.image_durations.values() if d.get('section'))
+            if sections_found > 0:
+                print(f"Section metadata available for {sections_found} images (section-aware processing enabled)")
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error loading duration config: {e}")
 
@@ -104,13 +168,38 @@ class SequentialVideoOrchestrator:
         return {
             'duration': self.image_duration,
             'start_time': None,
-            'end_time': None
+            'end_time': None,
+            'section': '',
+            'emotional_tone': '',
+            'shot_type': '',
+            'color_temperature': '',
         }
 
     def get_duration_for_image(self, image_number: int) -> float:
         """Get the duration for a specific image number."""
         timing = self.get_timing_for_image(image_number)
         return timing.get('duration', self.image_duration)
+
+    def get_color_grade_for_image(self, image_number: int) -> str:
+        """Get the appropriate color grade for an image based on section/emotional metadata.
+        
+        Priority: emotional_tone override > section mapping > global color_grade setting.
+        This allows each image to have its own color treatment that matches the narrative arc.
+        """
+        if self.image_durations and image_number in self.image_durations:
+            timing = self.image_durations[image_number]
+            emotional_tone = timing.get('emotional_tone', '')
+            section = timing.get('section', '')
+            
+            # Emotional tone takes priority for specific color adjustments
+            if emotional_tone and emotional_tone in self.EMOTION_COLOR_MAP:
+                return self.EMOTION_COLOR_MAP[emotional_tone]
+            
+            # Section-based color grading
+            if section and section in self.SECTION_COLOR_MAP:
+                return self.SECTION_COLOR_MAP[section]
+        
+        return self.color_grade
 
     def discover_numbered_images(self) -> List[Tuple[int, Path]]:
         """Discover and sort images by their numeric prefix."""
@@ -141,8 +230,20 @@ class SequentialVideoOrchestrator:
 
         return numbered_images
 
-    def _get_movement_for_image(self, index: int, total: int) -> str:
-        """Get movement style for an image based on its position."""
+    def _get_movement_for_image(self, index: int, total: int, image_number: int = None) -> str:
+        """Get movement style for an image based on its position and section metadata.
+        
+        If section metadata is available from the duration config, uses narrative-aware
+        movement selection that matches the emotional arc of the story.
+        """
+        # Try section-aware movement first if metadata is available
+        if image_number is not None and self.image_durations:
+            timing = self.image_durations.get(image_number, {})
+            section = timing.get('section', '')
+            if section and section in self.SECTION_MOVEMENT_MAP:
+                movements = self.SECTION_MOVEMENT_MAP[section]
+                return movements[index % len(movements)]
+
         if self.movement_style == "random":
             return random.choice(MovementStyles.MOVEMENT_TYPES)
         elif self.movement_style == "sequential":
@@ -165,8 +266,32 @@ class SequentialVideoOrchestrator:
         else:
             return self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'
 
-    def _get_transition_for_image(self, index: int, total: int) -> str:
-        """Get transition style for an image based on its position."""
+    def _get_transition_for_image(self, index: int, total: int, image_number: int = None) -> str:
+        """Get transition style for an image based on its position and section metadata.
+        
+        Uses section boundaries to apply dramatic transitions (fade_through_black)
+        at section changes, and smoother crossfades within sections.
+        """
+        # Section-aware transitions: use dramatic transitions at section boundaries
+        if image_number is not None and self.image_durations:
+            timing = self.image_durations.get(image_number, {})
+            section = timing.get('section', '')
+            
+            # Check if this is a section boundary (different section from previous image)
+            prev_number = image_number - 1
+            prev_timing = self.image_durations.get(prev_number, {})
+            prev_section = prev_timing.get('section', '')
+            
+            if section and prev_section and section != prev_section:
+                return 'fade_through_black'
+            elif section:
+                if section in ('COLD_OPEN', 'THE_CONFLICT', 'THE_CLIMAX'):
+                    return random.choice(['crossfade', 'zoom_in'])
+                elif section in ('EARLY_LIFE', 'LEGACY'):
+                    return 'crossfade'
+                else:
+                    return random.choice(['crossfade', 'slide_left', 'slide_right'])
+
         if self.transition_style == "random":
             return random.choice(TransitionEffects.TRANSITION_TYPES)
         elif self.transition_style == "sequential":
@@ -192,7 +317,9 @@ class SequentialVideoOrchestrator:
 
     def create_video(self) -> None:
         """Main method to create the sequential video with professional effects."""
-        print("Starting Sequential Video Orchestrator (Enhanced)...")
+        print("=" * 60)
+        print("Sequential Video Orchestrator (Enhanced - Retention Optimized)")
+        print("=" * 60)
         print(f"Images root: {self.images_root}")
         print(f"Output path: {self.output_path}")
         print(f"Resolution: {self.resolution}")
@@ -202,6 +329,15 @@ class SequentialVideoOrchestrator:
         print(f"Color grade: {self.color_grade}")
         if self.total_video_duration:
             print(f"Target video duration: {self.total_video_duration}s")
+
+        # Report section-aware processing status
+        sections_found = sum(1 for d in self.image_durations.values() if d.get('section'))
+        if sections_found > 0:
+            print(f"\nSection-aware processing: ENABLED ({sections_found} images with metadata)")
+            print("  - Color grading: auto per section/emotion")
+            print("  - Movement: narrative-matched Ken Burns")
+            print("  - Transitions: section-boundary aware")
+        print()
 
         numbered_images = self.discover_numbered_images()
         clips_data = self.create_image_clips(numbered_images)
@@ -246,8 +382,12 @@ class SequentialVideoOrchestrator:
         print(f"Video created successfully: {self.output_path}")
 
     def _export_video(self, video: CompositeVideoClip) -> None:
-        """Export the final video with professional settings."""
-        print("Exporting video...")
+        """Export the final video with YouTube-optimized professional settings.
+        
+        Uses CRF 18 for high quality (YouTube recommends 15-18 for uploads),
+        4 threads for faster encoding, and bf=2 for B-frame optimization.
+        """
+        print("Exporting video with YouTube-optimized settings...")
 
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -257,19 +397,29 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
+                audio_bitrate='192k',
                 temp_audiofile='temp-audio.m4a',
                 remove_temp=True,
-                threads=2,
-                preset='medium',
-                ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
+                threads=4,
+                preset='slow',
+                ffmpeg_params=[
+                    '-crf', '18',
+                    '-pix_fmt', 'yuv420p',
+                    '-bf', '2',
+                    '-g', '60',
+                    '-movflags', '+faststart',
+                ]
             )
             print(f"Video exported successfully: {self.output_path}")
         except Exception as e:
-            print(f"Export error: {e}")
-            print("Retrying with basic settings...")
+            print(f"Export error with optimized settings: {e}")
+            print("Retrying with standard settings...")
             video.write_videofile(
                 str(self.output_path),
                 fps=self.fps,
                 codec='libx264',
-                audio_codec='aac'
+                audio_codec='aac',
+                threads=2,
+                preset='medium',
+                ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
             )
