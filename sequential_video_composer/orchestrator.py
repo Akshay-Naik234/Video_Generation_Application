@@ -39,6 +39,22 @@ class SequentialVideoOrchestrator:
         'CTA': ['zoom_out', 'gentle_drift', 'minimal', 'static'],
     }
 
+    # Shot-type-to-movement preferences (override section map when shot_type is available)
+    # Close-ups get subtle movement, wide shots get drift/pan, aerial gets slow pan
+    SHOT_TYPE_MOVEMENT_MAP = {
+        'extreme_closeup': ['minimal', 'breathing', 'static'],
+        'closeup': ['zoom_in', 'breathing', 'minimal', 'focus_center'],
+        'medium': ['gentle_drift', 'zoom_in', 'pan_left', 'pan_right'],
+        'wide': ['gentle_drift', 'pan_right', 'pan_left', 'breathing'],
+        'aerial': ['pan_right', 'pan_left', 'gentle_drift'],
+        'over_shoulder': ['push_in', 'zoom_in', 'focus_center'],
+        'detail': ['focus_center', 'minimal', 'breathing'],
+        'silhouette': ['zoom_out', 'pull_out', 'breathing', 'gentle_drift'],
+        'crowd': ['pan_right', 'pan_left', 'gentle_drift', 'zoom_out'],
+        'landscape': ['gentle_drift', 'pan_right', 'pan_left', 'zoom_out'],
+        'still_life': ['zoom_in', 'focus_center', 'minimal'],
+    }
+
     # Section-to-color-grade mapping for narrative-aware visual tone
     SECTION_COLOR_MAP = {
         'COLD_OPEN': 'cool',
@@ -149,6 +165,8 @@ class SequentialVideoOrchestrator:
                 shot_type = img_data.get('shot_type', '')
                 color_temperature = img_data.get('color_temperature', '')
                 
+                overlay_text = img_data.get('overlay_text', '')
+                
                 if image_num is not None:
                     self.image_durations[image_num] = {
                         'duration': float(duration) if duration is not None else self.image_duration,
@@ -158,6 +176,7 @@ class SequentialVideoOrchestrator:
                         'emotional_tone': emotional_tone,
                         'shot_type': shot_type,
                         'color_temperature': color_temperature,
+                        'overlay_text': overlay_text,
                     }
 
             print(f"Loaded timing data for {len(self.image_durations)} images from config")
@@ -168,6 +187,9 @@ class SequentialVideoOrchestrator:
             sections_found = sum(1 for d in self.image_durations.values() if d.get('section'))
             if sections_found > 0:
                 print(f"Section metadata available for {sections_found} images (section-aware processing enabled)")
+            overlays_found = sum(1 for d in self.image_durations.values() if d.get('overlay_text'))
+            if overlays_found > 0:
+                print(f"Overlay text available for {overlays_found} images (date/location stamps enabled)")
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error loading duration config: {e}")
 
@@ -183,6 +205,7 @@ class SequentialVideoOrchestrator:
             'emotional_tone': '',
             'shot_type': '',
             'color_temperature': '',
+            'overlay_text': '',
         }
 
     def get_duration_for_image(self, image_number: int) -> float:
@@ -241,18 +264,34 @@ class SequentialVideoOrchestrator:
         return numbered_images
 
     def _get_movement_for_image(self, index: int, total: int, image_number: int = None) -> str:
-        """Get movement style for an image based on its position and section metadata.
+        """Get movement style for an image based on its position, section, and shot_type.
         
-        If section metadata is available from the duration config, uses narrative-aware
-        movement selection that matches the emotional arc of the story.
+        Priority: shot_type + section intersection > section-only > fallback.
+        When both shot_type and section are available, picks movements that appear
+        in both preference lists (intersection), giving the most contextually
+        appropriate movement. Falls back to section map if no intersection.
         """
-        # Try section-aware movement first if metadata is available
         if image_number is not None and self.image_durations:
             timing = self.image_durations.get(image_number, {})
             section = timing.get('section', '')
-            if section and section in self.SECTION_MOVEMENT_MAP:
-                movements = self.SECTION_MOVEMENT_MAP[section]
-                return movements[index % len(movements)]
+            shot_type = timing.get('shot_type', '')
+            
+            section_movements = self.SECTION_MOVEMENT_MAP.get(section, [])
+            shot_movements = self.SHOT_TYPE_MOVEMENT_MAP.get(shot_type, [])
+            
+            # Best: intersection of section + shot_type preferences
+            if section_movements and shot_movements:
+                intersection = [m for m in section_movements if m in shot_movements]
+                if intersection:
+                    return intersection[index % len(intersection)]
+            
+            # Fallback: shot_type preferences alone
+            if shot_movements:
+                return shot_movements[index % len(shot_movements)]
+            
+            # Fallback: section preferences alone
+            if section_movements:
+                return section_movements[index % len(section_movements)]
 
         if self.movement_style == "random":
             return random.choice(MovementStyles.MOVEMENT_TYPES)
@@ -351,8 +390,11 @@ class SequentialVideoOrchestrator:
         if sections_found > 0:
             print(f"\nSection-aware processing: ENABLED ({sections_found} images with metadata)")
             print("  - Color grading: auto per section/emotion")
-            print("  - Movement: narrative-matched Ken Burns")
+            print("  - Movement: narrative-matched Ken Burns (shot_type aware)")
             print("  - Transitions: section-boundary aware")
+        overlays_found = sum(1 for d in self.image_durations.values() if d.get('overlay_text'))
+        if overlays_found > 0:
+            print(f"  - Text overlays: {overlays_found} images with date/location/name stamps")
         print()
 
         numbered_images = self.discover_numbered_images()
@@ -383,6 +425,18 @@ class SequentialVideoOrchestrator:
         if self.enable_chapter_cards:
             chapter_overlays = self._create_chapter_card_overlays(clips_data)
             overlays.extend(chapter_overlays)
+
+        # Add date/location/name text overlays from config metadata
+        text_overlays = self._create_text_overlay_clips(clips_data)
+        overlays.extend(text_overlays)
+
+        # Add progress indicator overlays at section transitions
+        progress_overlays = self._create_progress_indicator_overlays(clips_data)
+        overlays.extend(progress_overlays)
+
+        # Add light leak overlays at section transitions
+        light_leak_overlays = self._create_light_leak_overlays(clips_data)
+        overlays.extend(light_leak_overlays)
 
         if self.effects_intensity > 0.3:
             particles = self.clip_factory.create_particle_overlay(
@@ -490,6 +544,227 @@ class SequentialVideoOrchestrator:
             )
             overlays.append(card_clip)
             print(f"  Chapter card: '{TextOverlayEngine.SECTION_TITLES.get(section, '')}' at {start_time:.1f}s")
+
+        return overlays
+
+    def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
+        """Create text overlay clips for dates, locations, names from config metadata.
+        
+        Reads overlay_text from each image's config and renders the appropriate
+        overlay type (year stamp, location stamp, info card, lower third, or
+        date-location combo) as a composited MoviePy clip with fade in/out.
+        
+        overlay_text format examples:
+          "1884"                    → year stamp (top-right)
+          "New York City"           → location stamp (bottom-left)  
+          "1943 | New York"         → date-location combo (bottom-right)
+          "Nikola Tesla — Inventor" → lower third (bottom-left)
+          "Born: July 10, 1856"     → info card (bottom-right)
+        """
+        import re as _re
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+
+        for data in clips_data:
+            image_num = data.get('image_num')
+            start_time = data.get('start_time')
+            duration = data.get('duration', 0)
+            if start_time is None or image_num is None:
+                continue
+
+            timing = self.image_durations.get(image_num, {})
+            overlay_text = timing.get('overlay_text', '')
+            if not overlay_text:
+                continue
+
+            # Determine overlay type from text pattern
+            overlay_array = None
+            text = overlay_text.strip()
+
+            # Pattern: "YEAR | LOCATION" → date-location combo
+            if '|' in text:
+                parts = [p.strip() for p in text.split('|', 1)]
+                overlay_array = self.text_overlay_engine.create_date_location_stamp(
+                    date_text=parts[0], location_text=parts[1]
+                )
+            # Pattern: "NAME — TITLE" → lower third
+            elif '—' in text or ' - ' in text:
+                sep = '—' if '—' in text else ' - '
+                parts = [p.strip() for p in text.split(sep, 1)]
+                overlay_array = self.text_overlay_engine.create_lower_third(
+                    name=parts[0], title=parts[1]
+                )
+            # Pattern: pure year (4 digits) → year stamp
+            elif _re.match(r'^\d{4}$', text):
+                overlay_array = self.text_overlay_engine.create_year_stamp(year=text)
+            # Pattern: "YEAR, LOCATION" → year stamp with label
+            elif _re.match(r'^\d{4},\s*.+$', text):
+                parts = text.split(',', 1)
+                overlay_array = self.text_overlay_engine.create_year_stamp(
+                    year=parts[0].strip(), label=parts[1].strip()
+                )
+            # Pattern: starts with location-like keywords → location stamp
+            elif any(text.lower().startswith(k) for k in ('new ', 'los ', 'san ', 'st.', 'mount', 'lake', 'fort')):
+                overlay_array = self.text_overlay_engine.create_location_stamp(location=text)
+            # Default: info card
+            else:
+                overlay_array = self.text_overlay_engine.create_info_card(text=text)
+
+            if overlay_array is None:
+                continue
+
+            # Show overlay for ~3s or clip duration if shorter, with fade in/out
+            overlay_duration = min(3.0, duration * 0.6)
+            rgb_array = overlay_array[:, :, :3]
+            alpha_mask = overlay_array[:, :, 3].astype(float) / 255.0
+
+            def make_overlay_frame(t, rgb=rgb_array):
+                return rgb
+
+            def make_overlay_mask(t, a=alpha_mask):
+                return a
+
+            overlay_clip = VideoClip(make_overlay_frame, duration=overlay_duration)
+            overlay_clip = overlay_clip.set_fps(self.fps)
+            mask_clip = VideoClip(make_overlay_mask, duration=overlay_duration, ismask=True)
+            mask_clip = mask_clip.set_fps(self.fps)
+            overlay_clip = overlay_clip.set_mask(mask_clip)
+
+            # Position overlay to start 0.5s after the image starts
+            overlay_start = start_time + 0.5
+            overlay_clip = (
+                overlay_clip
+                .set_start(overlay_start)
+                .crossfadein(0.3)
+                .crossfadeout(0.4)
+            )
+            overlays.append(overlay_clip)
+            print(f"  Text overlay: '{text}' at {overlay_start:.1f}s (image {image_num})")
+
+        return overlays
+
+    def _create_progress_indicator_overlays(self, clips_data: List[Dict]) -> List:
+        """Create progress indicator overlays that show story position at section transitions.
+        
+        Renders a minimal timeline dot indicator at the top of the frame whenever
+        a new section begins, showing the viewer where they are in the biography arc.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        overlays = []
+        seen_sections = set()
+
+        # Collect ordered unique sections from clips
+        all_sections = []
+        for data in clips_data:
+            section = data.get('section', '')
+            if section and section not in seen_sections:
+                all_sections.append(section)
+                seen_sections.add(section)
+
+        if len(all_sections) < 3:
+            return overlays  # Not enough sections for a meaningful indicator
+
+        seen_sections_for_overlay = set()
+        for data in clips_data:
+            section = data.get('section', '')
+            start_time = data.get('start_time')
+            if not section or section in seen_sections_for_overlay or start_time is None:
+                continue
+
+            seen_sections_for_overlay.add(section)
+
+            indicator_array = self.text_overlay_engine.create_progress_indicator(
+                sections=all_sections,
+                current_section=section,
+            )
+            if indicator_array is None:
+                continue
+
+            # Check if the indicator has any visible content
+            alpha_channel = indicator_array[:, :, 3]
+            if alpha_channel.max() == 0:
+                continue
+
+            indicator_duration = 3.0
+            rgb_array = indicator_array[:, :, :3]
+            alpha_mask = indicator_array[:, :, 3].astype(float) / 255.0
+
+            def make_frame(t, rgb=rgb_array):
+                return rgb
+
+            def make_mask(t, a=alpha_mask):
+                return a
+
+            ind_clip = VideoClip(make_frame, duration=indicator_duration)
+            ind_clip = ind_clip.set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=indicator_duration, ismask=True)
+            mask_clip = mask_clip.set_fps(self.fps)
+            ind_clip = ind_clip.set_mask(mask_clip)
+            ind_clip = (
+                ind_clip
+                .set_start(start_time + 0.3)
+                .crossfadein(0.4)
+                .crossfadeout(0.6)
+            )
+            overlays.append(ind_clip)
+
+        if overlays:
+            print(f"  Progress indicators: {len(overlays)} section markers")
+
+        return overlays
+
+    def _create_light_leak_overlays(self, clips_data: List[Dict]) -> List:
+        """Create warm light leak overlays at section transitions.
+        
+        Adds a brief warm golden flash at section boundaries to create a cinematic
+        transition effect. Light leaks are common in MagnatesMedia and Newsthink
+        style biography videos.
+        """
+        from moviepy.video.VideoClip import VideoClip
+        import numpy as np
+        overlays = []
+        prev_section = ''
+
+        for data in clips_data:
+            section = data.get('section', '')
+            start_time = data.get('start_time')
+            if not section or start_time is None or start_time <= 0:
+                continue
+
+            if prev_section and section != prev_section:
+                # Create a warm light leak overlay at this section boundary
+                leak_duration = 1.2
+                width, height = self.resolution
+
+                def make_leak_frame(t, dur=leak_duration, w=width, h=height):
+                    # Warm golden light that peaks at center of duration
+                    progress = t / dur
+                    # Bell curve intensity: peaks at 0.5
+                    intensity = max(0, 1.0 - (2.0 * progress - 1.0) ** 2)
+                    frame = np.zeros((h, w, 3), dtype=np.uint8)
+                    # Warm golden tint: R=255, G=200, B=100
+                    frame[:, :, 0] = int(255 * intensity * 0.15)
+                    frame[:, :, 1] = int(200 * intensity * 0.15)
+                    frame[:, :, 2] = int(100 * intensity * 0.15)
+                    return frame
+
+                leak_clip = VideoClip(make_leak_frame, duration=leak_duration)
+                leak_clip = leak_clip.set_fps(self.fps)
+                # Position to straddle the section boundary
+                leak_start = max(0, start_time - 0.6)
+                leak_clip = (
+                    leak_clip
+                    .set_start(leak_start)
+                    .set_opacity(0.6)
+                    .crossfadein(0.3)
+                    .crossfadeout(0.3)
+                )
+                overlays.append(leak_clip)
+
+            prev_section = section
+
+        if overlays:
+            print(f"  Light leaks: {len(overlays)} section transition effects")
 
         return overlays
 

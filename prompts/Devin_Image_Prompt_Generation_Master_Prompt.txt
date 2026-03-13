@@ -44,6 +44,7 @@ Output a single JSON file with this exact structure:
       "emotional_tone": "[tension|nostalgia|hope|darkness|devastation|triumph|bittersweet]",
       "shot_type": "[extreme_closeup|closeup|medium|wide|aerial|over_shoulder|detail|silhouette|crowd|landscape|still_life]",
       "color_temperature": "[warm|cool|neutral|mixed]",
+      "overlay_text": "[optional: date/year/location/name for on-screen text overlay, or empty string]",
       "prompt": "..."
     }
   ]
@@ -81,6 +82,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "tension",
       "shot_type": "detail",
       "color_temperature": "cool",
+      "overlay_text": "1943 | New Yorker Hotel",
       "prompt": "Extreme close-up of a hotel room door, brass number plate reading 3327, dim hallway lighting casting long shadows, peeling wallpaper visible at edges, a maid's hand reaching for the doorknob, 1943 New Yorker Hotel Manhattan atmosphere, dust particles visible in a shaft of weak winter light. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated cool blue tones, film grain texture"
     },
     {
@@ -92,6 +94,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "tension",
       "shot_type": "wide",
       "color_temperature": "cool",
+      "overlay_text": "",
       "prompt": "Wide shot of a sparse 1943 hotel room, Nikola Tesla at age 86 lying on a narrow single bed, hands folded across chest, eyes closed, gaunt face, wearing a worn dark suit, room cluttered with papers and technical drawings, two pigeons perched on the windowsill, weak grey winter light filtering through thin curtains, Room 3327 of the New Yorker Hotel, the emptiness of the room contrasting with the genius of its occupant. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated cool blue tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
     },
     {
@@ -103,6 +106,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "tension",
       "shot_type": "extreme_closeup",
       "color_temperature": "cool",
+      "overlay_text": "",
       "prompt": "Extreme close-up of Nikola Tesla's weathered hands at age 86, long thin fingers folded across his chest, prominent veins and age spots visible, a faded cuff of a once-fine suit jacket, shallow depth of field with the rest of the dark hotel room blurred behind, cold blue-grey color temperature suggesting death and stillness. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated cool tones, photorealistic skin texture with natural imperfections, film grain texture"
     },
     {
@@ -114,6 +118,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "tension",
       "shot_type": "aerial",
       "color_temperature": "cool",
+      "overlay_text": "",
       "prompt": "Aerial view of Manhattan skyline in 1943, the New Yorker Hotel prominent in frame with its art deco architecture, grey overcast winter sky, steam rising from buildings, streets below busy with 1940s automobiles and pedestrians in heavy coats, the city alive and indifferent while one of history's greatest minds lies dead in a room above. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, color graded with rich shadows and slightly desaturated tones, Kodak Tri-X black and white film aesthetic, film grain texture"
     },
     {
@@ -125,6 +130,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "nostalgia",
       "shot_type": "landscape",
       "color_temperature": "warm",
+      "overlay_text": "1856, Smiljan, Croatia",
       "prompt": "Wide establishing shot of the tiny village of Smiljan, Croatia in 1856, rolling green hills, a small stone church with a modest bell tower, scattered farmhouses with terracotta roofs, a dramatic thunderstorm approaching from the horizon with purple-black clouds and visible lightning bolts in the distance, warm golden light still touching the village while the storm rolls in, rural Eastern European countryside. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading with rich amber tones, film grain texture"
     },
     {
@@ -136,6 +142,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "nostalgia",
       "shot_type": "medium",
       "color_temperature": "warm",
+      "overlay_text": "",
       "prompt": "Medium shot inside a modest 1860s Croatian home, candlelit interior, a young woman (Nikola Tesla's mother Djuka Mandic) in traditional Serbian dress holding a newborn, her face determined and proud, a midwife in the background looking toward the window where lightning flashes illuminate the room, rough wooden furniture, embroidered textiles on the walls, warm amber candlelight contrasting with cold blue lightning flashes from outside. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and warm amber tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
     },
     {
@@ -147,6 +154,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "nostalgia",
       "shot_type": "detail",
       "color_temperature": "warm",
+      "overlay_text": "",
       "prompt": "Close-up detail shot of a flickering candle flame in a 1860s Croatian home, the warm orange glow illuminating a small wooden crucifix on the wall (Nikola Tesla's father was a Serbian Orthodox priest), a worn family Bible open on a rough-hewn table, a child's wooden toy visible at the edge of frame, warm sepia tones, intimate domestic scene suggesting modest religious upbringing. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber color grading, film grain texture"
     },
     {
@@ -158,6 +166,7 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "emotional_tone": "nostalgia",
       "shot_type": "wide",
       "color_temperature": "warm",
+      "overlay_text": "1866",
       "prompt": "Wide shot of a young Nikola Tesla at age 10 standing alone in a green field outside Smiljan, Croatia, 1866, watching a thunderstorm on the distant horizon with fascination rather than fear, wearing simple peasant clothing, wild dark hair, skinny frame, the boy silhouetted slightly against the dramatic sky, rolling green hills and farmland stretching behind him, warm golden late-afternoon light on the field contrasting with the dark purple storm clouds ahead. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading, film grain texture"
     }
   ]
@@ -216,6 +225,20 @@ IMAGE COUNT FORMULA:
 - For 12-minute video (~720s): aim for 90-110 images
 - For shorter videos (under 480s): aim for 55-70 images
 - For longer videos (over 900s): aim for 120-150 images
+
+OVERLAY TEXT RULES:
+- overlay_text is OPTIONAL — use it for ~15-25% of images (key biographical moments only)
+- Add overlay_text at the FIRST image where a new date, year, location, or person is introduced
+- Do NOT repeat the same overlay_text on consecutive images
+- Leave as empty string "" for images without overlays
+- Format patterns the video system auto-detects:
+  "1884"                     -> large cinematic year stamp (top-right)
+  "1943, New York"           -> year stamp with location label
+  "1943 | New Yorker Hotel"  -> combined date + location card (bottom-right)
+  "New York City"            -> location stamp with accent bar (bottom-left)
+  "Nikola Tesla — Inventor"  -> lower third name bar (bottom-left)
+  "Born: July 10, 1856"     -> info card (bottom-right)
+  "$2.3 Million"             -> info card for key facts
 
 PROMPT RULES:
 - EVERY prompt MUST include the biography person's full name for image generation consistency

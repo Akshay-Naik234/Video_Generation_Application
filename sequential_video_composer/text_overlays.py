@@ -1,13 +1,14 @@
-"""Text overlay system for cinematic lower thirds, quotes, and info cards.
+"""Text overlay system for cinematic lower thirds, quotes, info cards, and date stamps.
 
-Top biography channels (Biographics, The People Profiles, Biography) use text
-overlays extensively: names, dates, locations, key quotes, and chapter titles.
-This module adds that capability to the video generation pipeline.
+Top biography channels (Biographics, The People Profiles, MagnatesMedia, Newsthink)
+use text overlays extensively: names, dates, locations, key quotes, year stamps,
+and chapter titles. This module provides all overlay types needed for professional
+biography video production.
 """
 
 import numpy as np
 from PIL import Image as PILImage, ImageDraw, ImageFont
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 
 class TextOverlayEngine:
@@ -18,6 +19,10 @@ class TextOverlayEngine:
     - Chapter titles (centered section headers with fade)
     - Quote cards (stylized quote text with attribution)
     - Info cards (date, location, key fact overlays)
+    - Year stamps (large cinematic year display, top-right corner)
+    - Location stamps (city/country with map pin icon, bottom-left)
+    - Date-location combos (combined date + location, bottom-right)
+    - Progress indicators (timeline dot showing story position)
     """
 
     # Font size defaults (relative to 1080p, scaled by resolution)
@@ -29,6 +34,11 @@ class TextOverlayEngine:
         'quote_text': 36,
         'quote_attribution': 24,
         'info_card': 30,
+        'year_stamp': 72,
+        'year_stamp_label': 22,
+        'location_stamp': 28,
+        'location_stamp_sub': 20,
+        'progress_year': 18,
     }
 
     # Section-to-chapter-title mapping for automatic chapter cards
@@ -312,5 +322,295 @@ class TextOverlayEngine:
             attr_x = (self.width - attr_width) // 2
             attr_y = y + int(12 * self.scale)
             draw.text((attr_x, attr_y), attr_text, font=attr_font, fill=(200, 170, 80, 220))
+
+        return np.array(overlay)
+
+    def create_year_stamp(
+        self,
+        year: str,
+        label: str = '',
+        position: str = 'top_right',
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+        text_color: Tuple[int, int, int] = (255, 255, 255),
+    ) -> np.ndarray:
+        """Create a large cinematic year stamp overlay.
+        
+        Displays a prominent year number (e.g., "1884") in the corner with an
+        optional label below (e.g., "New York City"). Used by Biographics and
+        The People Profiles to orient viewers in the timeline.
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        year_font = self._get_font('year_stamp', bold=True)
+        label_font = self._get_font('year_stamp_label')
+
+        # Measure year text
+        year_bbox = draw.textbbox((0, 0), year, font=year_font)
+        year_width = year_bbox[2] - year_bbox[0]
+        year_height = year_bbox[3] - year_bbox[1]
+
+        label_height = 0
+        label_width = 0
+        if label:
+            label_bbox = draw.textbbox((0, 0), label, font=label_font)
+            label_width = label_bbox[2] - label_bbox[0]
+            label_height = label_bbox[3] - label_bbox[1]
+
+        # Card dimensions
+        padding_x = int(28 * self.scale)
+        padding_y = int(16 * self.scale)
+        card_content_width = max(year_width, label_width)
+        card_width = card_content_width + padding_x * 2
+        card_height = year_height + padding_y * 2 + (label_height + int(6 * self.scale) if label else 0)
+
+        margin = int(50 * self.scale)
+
+        if position == 'top_right':
+            card_x = self.width - margin - card_width
+            card_y = margin
+        elif position == 'top_left':
+            card_x = margin
+            card_y = margin
+        else:
+            card_x = self.width - margin - card_width
+            card_y = margin
+
+        # Draw semi-transparent background
+        card_bg = PILImage.new('RGBA', (card_width, card_height), (10, 10, 10, 180))
+        overlay.paste(card_bg, (card_x, card_y), card_bg)
+
+        # Draw accent line on top of card
+        line_height = int(3 * self.scale)
+        accent_line = PILImage.new('RGBA', (card_width, line_height), (*accent_color, 220))
+        overlay.paste(accent_line, (card_x, card_y), accent_line)
+
+        # Draw year (centered in card)
+        year_x = card_x + (card_width - year_width) // 2
+        year_y = card_y + padding_y
+        draw.text((year_x, year_y), year, font=year_font, fill=(*accent_color, 255))
+
+        # Draw label below year (centered, dimmer)
+        if label:
+            label_x = card_x + (card_width - label_width) // 2
+            label_y = year_y + year_height + int(6 * self.scale)
+            draw.text((label_x, label_y), label, font=label_font, fill=(*text_color, 190))
+
+        return np.array(overlay)
+
+    def create_location_stamp(
+        self,
+        location: str,
+        sub_text: str = '',
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+        text_color: Tuple[int, int, int] = (255, 255, 255),
+    ) -> np.ndarray:
+        """Create a location stamp overlay with a pin-style accent.
+        
+        Shows location name (e.g., "New York City") with an optional subtitle
+        (e.g., "United States") in the bottom-left corner. Uses a vertical
+        accent bar to mimic map pin styling.
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        loc_font = self._get_font('location_stamp', bold=True)
+        sub_font = self._get_font('location_stamp_sub')
+
+        # Measure text
+        loc_bbox = draw.textbbox((0, 0), location, font=loc_font)
+        loc_width = loc_bbox[2] - loc_bbox[0]
+        loc_height = loc_bbox[3] - loc_bbox[1]
+
+        sub_height = 0
+        sub_width = 0
+        if sub_text:
+            sub_bbox = draw.textbbox((0, 0), sub_text, font=sub_font)
+            sub_width = sub_bbox[2] - sub_bbox[0]
+            sub_height = sub_bbox[3] - sub_bbox[1]
+
+        # Card dimensions
+        padding_x = int(24 * self.scale)
+        padding_y = int(10 * self.scale)
+        accent_width = int(4 * self.scale)
+        content_width = max(loc_width, sub_width)
+        card_width = content_width + padding_x * 2 + accent_width + int(12 * self.scale)
+        card_height = loc_height + padding_y * 2 + (sub_height + int(4 * self.scale) if sub_text else 0)
+
+        # Position: bottom-left
+        margin_x = int(80 * self.scale)
+        margin_y = int(80 * self.scale)
+        card_x = margin_x
+        card_y = self.height - margin_y - card_height
+
+        # Draw background
+        card_bg = PILImage.new('RGBA', (card_width, card_height), (15, 15, 15, 185))
+        overlay.paste(card_bg, (card_x, card_y), card_bg)
+
+        # Draw accent bar on left
+        accent_bar = PILImage.new('RGBA', (accent_width, card_height), (*accent_color, 230))
+        overlay.paste(accent_bar, (card_x, card_y), accent_bar)
+
+        # Draw pin dot above accent bar
+        dot_radius = int(5 * self.scale)
+        dot_x = card_x + accent_width // 2
+        dot_y = card_y - dot_radius - int(4 * self.scale)
+        draw.ellipse(
+            [dot_x - dot_radius, dot_y - dot_radius, dot_x + dot_radius, dot_y + dot_radius],
+            fill=(*accent_color, 240)
+        )
+
+        # Draw location text
+        text_x = card_x + accent_width + int(12 * self.scale)
+        text_y = card_y + padding_y
+        draw.text((text_x, text_y), location, font=loc_font, fill=(*text_color, 250))
+
+        # Draw sub-text (dimmer)
+        if sub_text:
+            sub_y = text_y + loc_height + int(4 * self.scale)
+            draw.text((text_x, sub_y), sub_text, font=sub_font, fill=(*text_color, 160))
+
+        return np.array(overlay)
+
+    def create_date_location_stamp(
+        self,
+        date_text: str,
+        location_text: str = '',
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+    ) -> np.ndarray:
+        """Create a combined date + location stamp in the bottom-right corner.
+        
+        Shows date on the left side and location on the right side of a single
+        card, separated by a vertical divider. Used for scene-setting context.
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        date_font = self._get_font('location_stamp', bold=True)
+        loc_font = self._get_font('location_stamp_sub')
+
+        # Measure text
+        date_bbox = draw.textbbox((0, 0), date_text, font=date_font)
+        date_width = date_bbox[2] - date_bbox[0]
+        date_height = date_bbox[3] - date_bbox[1]
+
+        loc_width = 0
+        if location_text:
+            loc_bbox = draw.textbbox((0, 0), location_text, font=loc_font)
+            loc_width = loc_bbox[2] - loc_bbox[0]
+
+        # Card dimensions
+        padding_x = int(20 * self.scale)
+        padding_y = int(10 * self.scale)
+        divider_width = int(2 * self.scale) if location_text else 0
+        gap = int(16 * self.scale) if location_text else 0
+        card_width = date_width + loc_width + padding_x * 2 + divider_width + gap * 2
+        card_height = date_height + padding_y * 2
+
+        # Position: bottom-right
+        margin = int(60 * self.scale)
+        card_x = self.width - margin - card_width
+        card_y = self.height - margin - card_height
+
+        # Draw background
+        card_bg = PILImage.new('RGBA', (card_width, card_height), (10, 10, 10, 185))
+        overlay.paste(card_bg, (card_x, card_y), card_bg)
+
+        # Draw date text (accent color)
+        date_x = card_x + padding_x
+        date_y = card_y + padding_y
+        draw.text((date_x, date_y), date_text, font=date_font, fill=(*accent_color, 250))
+
+        if location_text:
+            # Draw divider
+            div_x = date_x + date_width + gap
+            div_y1 = card_y + int(6 * self.scale)
+            div_y2 = card_y + card_height - int(6 * self.scale)
+            draw.line([(div_x, div_y1), (div_x, div_y2)], fill=(*accent_color, 120), width=divider_width)
+
+            # Draw location text (white, dimmer)
+            loc_x = div_x + divider_width + gap
+            loc_y = card_y + padding_y + (date_height - (draw.textbbox((0, 0), location_text, font=loc_font)[3] - draw.textbbox((0, 0), location_text, font=loc_font)[1])) // 2
+            draw.text((loc_x, loc_y), location_text, font=loc_font, fill=(230, 230, 230, 210))
+
+        return np.array(overlay)
+
+    def create_progress_indicator(
+        self,
+        sections: List[str],
+        current_section: str,
+        accent_color: Tuple[int, int, int] = (200, 170, 80),
+    ) -> np.ndarray:
+        """Create a minimal timeline progress indicator showing story position.
+        
+        Renders a horizontal line with dots for each section at the top of the
+        frame. The current section's dot is highlighted and labeled. This gives
+        viewers a sense of where they are in the biography arc.
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        label_font = self._get_font('progress_year')
+
+        # Filter out empty-title sections (COLD_OPEN, CTA)
+        visible_sections = [s for s in sections if self.SECTION_TITLES.get(s, '')]
+        if not visible_sections or current_section not in visible_sections:
+            return np.array(overlay)
+
+        # Dimensions
+        total_width = int(self.width * 0.35)
+        start_x = self.width - int(60 * self.scale) - total_width
+        y_pos = int(40 * self.scale)
+        dot_radius = int(5 * self.scale)
+        active_radius = int(7 * self.scale)
+
+        n = len(visible_sections)
+        if n < 2:
+            return np.array(overlay)
+
+        spacing = total_width // (n - 1)
+
+        # Draw connecting line (dim)
+        line_y = y_pos + active_radius
+        draw.line(
+            [(start_x, line_y), (start_x + (n - 1) * spacing, line_y)],
+            fill=(255, 255, 255, 60),
+            width=int(2 * self.scale)
+        )
+
+        current_idx = visible_sections.index(current_section) if current_section in visible_sections else -1
+
+        for i, section in enumerate(visible_sections):
+            cx = start_x + i * spacing
+            cy = line_y
+            is_current = (i == current_idx)
+            is_past = (i < current_idx)
+
+            if is_current:
+                # Active dot (larger, accent color)
+                draw.ellipse(
+                    [cx - active_radius, cy - active_radius, cx + active_radius, cy + active_radius],
+                    fill=(*accent_color, 240)
+                )
+                # Label below dot
+                title = self.SECTION_TITLES.get(section, section)
+                if title:
+                    label_bbox = draw.textbbox((0, 0), title, font=label_font)
+                    label_width = label_bbox[2] - label_bbox[0]
+                    label_x = cx - label_width // 2
+                    label_y = cy + active_radius + int(6 * self.scale)
+                    draw.text((label_x, label_y), title, font=label_font, fill=(*accent_color, 220))
+            elif is_past:
+                # Past dot (smaller, accent color, dimmer)
+                draw.ellipse(
+                    [cx - dot_radius, cy - dot_radius, cx + dot_radius, cy + dot_radius],
+                    fill=(*accent_color, 140)
+                )
+            else:
+                # Future dot (smaller, white, dim)
+                draw.ellipse(
+                    [cx - dot_radius, cy - dot_radius, cx + dot_radius, cy + dot_radius],
+                    fill=(255, 255, 255, 70)
+                )
 
         return np.array(overlay)

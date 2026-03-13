@@ -1,0 +1,98 @@
+I need to sync images with narration audio for a biography video. Each image should display when its matching narration content plays.
+
+TASK: Analyze the attached image prompts and narration timestamps. Match each image to its corresponding narration segment based on CONTENT (what the image shows vs what the narration says), NOT by sequential order. Images and narration may be in different orders.
+
+RULES:
+1. Match images to narration by content similarity
+2. No gaps between images - timeline must be continuous
+3. No negative durations
+4. If multiple images match one narration segment, split the time equally
+5. If one image matches multiple segments, span the full time range
+6. Include section metadata for each image based on its position in the narrative arc
+7. Include emotional_tone based on the narration content at that timestamp
+8. Include shot_type from the image prompt description (close-up, wide, medium, etc.)
+9. Include color_temperature hint based on the section and emotion
+10. Include overlay_text for key biographical moments (dates, years, locations, names, facts)
+
+SECTION LABELS (assign based on timestamp position in narration):
+- COLD_OPEN: 0:00 - 0:30 (opening hook, most dramatic moment)
+- EARLY_LIFE: 0:30 - 2:00 (childhood, origin story)
+- THE_SPARK: 2:00 - 3:30 (inciting incident, the moment everything changed)
+- THE_RISE: 3:30 - 5:30 (journey upward, struggles and growth)
+- THE_CONFLICT: 5:30 - 7:30 (the enemy, betrayal, obstacle)
+- THE_CLIMAX: 7:30 - 9:00 (peak triumph or devastating defeat)
+- THE_FALL: 9:00 - 10:30 (collapse or final chapter)
+- LEGACY: 10:30 - 11:30 (what they left behind)
+- CTA: 11:30 - 12:00 (call to action)
+
+EMOTIONAL TONE OPTIONS: tension, nostalgia, hope, darkness, devastation, triumph, bittersweet
+COLOR TEMPERATURE OPTIONS: warm, cool, neutral
+
+OVERLAY TEXT RULES:
+- Add overlay_text ONLY for images where a specific date, year, location, name, or key fact is mentioned in the narration
+- NOT every image needs overlay_text - use it for ~15-25% of images (key biographical moments)
+- Format patterns the video system recognizes:
+  "1884"                     -> displays as a large cinematic year stamp (top-right corner)
+  "1943, New York"           -> year stamp with location label below
+  "1943 | New Yorker Hotel"  -> combined date + location card (bottom-right)
+  "New York City"            -> location stamp with pin icon (bottom-left)
+  "Nikola Tesla - Inventor"  -> lower third name bar (bottom-left)
+  "Born: July 10, 1856"     -> info card (bottom-right)
+  "$2.3 Million"             -> info card for financial facts
+- Use overlay_text at the FIRST image where a new date/location/person appears
+- Do NOT repeat the same overlay_text on consecutive images
+- Leave overlay_text as empty string "" for images without overlays
+
+OUTPUT FORMAT:
+{
+  "video_metadata": {
+    "person_name": "",
+    "title": "",
+    "total_duration_seconds": 0,
+    "total_images": 0,
+    "timing_mode": "TIMESTAMP_LOCKED"
+  },
+  "images": [
+    {
+      "image": 1,
+      "start_time": 0.0,
+      "duration": 0.0,
+      "end_time": 0.0,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "close-up",
+      "color_temperature": "cool",
+      "overlay_text": "1943 | New Yorker Hotel"
+    },
+    {
+      "image": 2,
+      "start_time": 5.2,
+      "duration": 4.8,
+      "end_time": 10.0,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "overlay_text": ""
+    },
+    {
+      "image": 5,
+      "start_time": 22.5,
+      "duration": 7.5,
+      "end_time": 30.0,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "landscape",
+      "color_temperature": "warm",
+      "overlay_text": "1856, Smiljan, Croatia"
+    }
+  ]
+}
+
+Provide the corrected JSON with all images properly timed, section metadata, and overlay_text for key biographical moments.
+
+FILES TO ATTACH:
+
+narration_timestamps.json - Narration segments with start, end, text
+
+Image_prompts.txt - Description of each image
