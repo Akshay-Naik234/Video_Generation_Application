@@ -115,6 +115,7 @@ class SequentialVideoOrchestrator:
         enable_parallax: bool = True,
         enable_dof: bool = True,
         enable_weather: bool = True,
+        enable_human_feel: bool = True,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -152,6 +153,7 @@ class SequentialVideoOrchestrator:
         self.enable_parallax: bool = enable_parallax and ai_animation_enabled
         self.enable_dof: bool = enable_dof and ai_animation_enabled
         self.enable_weather: bool = enable_weather and ai_animation_enabled
+        self.enable_human_feel: bool = enable_human_feel
 
         if self.duration_config_path:
             self._load_duration_config()
@@ -461,6 +463,12 @@ class SequentialVideoOrchestrator:
             print("  - Color grading: auto per section/emotion")
             print("  - Movement: narrative-matched Ken Burns (shot_type aware)")
             print("  - Transitions: section-boundary aware")
+        if self.enable_human_feel:
+            print(f"\nHuman-feel editing: ENABLED")
+            print("  - Camera breathing + micro-shake for dramatic sections")
+            print("  - Varied easing curves per section")
+            print("  - Hard cuts at dramatic entrances, breathing room at emotional moments")
+            print("  - Timing micro-variation for natural rhythm")
         overlays_found = sum(1 for d in self.image_durations.values() if d.get('overlay_text'))
         if overlays_found > 0:
             print(f"  - Text overlays: {overlays_found} images with date/location/name stamps")
@@ -744,10 +752,10 @@ class SequentialVideoOrchestrator:
                     # (once for RGB, once for mask). Store as {t_key: (rgb, alpha)}.
                     _slide_cache = {}
 
-                    def _get_slide_frame(t, txt=full_text, eng=self.text_overlay_engine):
+                    def _get_slide_frame(t, txt=full_text, eng=self.text_overlay_engine, _cache=_slide_cache):
                         # Quantize t to frame boundaries to ensure cache hits
                         t_key = round(t, 4)
-                        if t_key not in _slide_cache:
+                        if t_key not in _cache:
                             slide_in_time = 0.4
                             if t < slide_in_time:
                                 progress = t / slide_in_time
@@ -757,12 +765,12 @@ class SequentialVideoOrchestrator:
                             frame = eng.create_slide_in_overlay(
                                 txt, position='bottom_left', slide_from='left', progress=eased
                             )
-                            _slide_cache[t_key] = (frame[:, :, :3], frame[:, :, 3].astype(float) / 255.0)
+                            _cache[t_key] = (frame[:, :, :3], frame[:, :, 3].astype(float) / 255.0)
                             # Keep cache small: only store last 2 frames
-                            if len(_slide_cache) > 2:
-                                oldest = min(_slide_cache.keys())
-                                del _slide_cache[oldest]
-                        return _slide_cache[t_key]
+                            if len(_cache) > 2:
+                                oldest = min(_cache.keys())
+                                del _cache[oldest]
+                        return _cache[t_key]
 
                     def make_slide_frame(t, _get=_get_slide_frame):
                         return _get(t)[0]
@@ -1197,31 +1205,41 @@ class SequentialVideoOrchestrator:
         return overlays
 
     def _build_weather_clip(self, weather_type: str, start: float, duration: float):
-        """Build a single weather overlay MoviePy clip."""
+        """Build a single weather overlay MoviePy clip using on-the-fly frame generation.
+
+        Uses create_weather_frame() which computes each frame statelessly from
+        time t, avoiding the O(n) memory cost of pre-generating all frames.
+        A 120s section at 30fps would have needed ~28 GB; this uses O(1) memory.
+        """
         from moviepy.video.VideoClip import VideoClip
 
-        try:
-            frames = self.weather_effects.create_weather_frames(
-                self.width, self.height, self.fps, duration, weather_type, intensity=0.5
-            )
-        except Exception as e:
-            print(f"  Weather effect error ({weather_type}): {e}")
-            return None
+        # Capture references for the closure
+        weather_fx = self.weather_effects
+        w, h = self.width, self.height
 
-        if not frames:
-            return None
+        # Use a small frame cache (last 2 frames) to avoid rendering twice
+        # per frame (once for RGB, once for mask)
+        _frame_cache = {}
 
-        num_frames = len(frames)
+        def _get_weather(t, _fx=weather_fx, _w=w, _h=h, _dur=duration,
+                         _wt=weather_type, _cache=_frame_cache):
+            t_key = round(t, 3)
+            if t_key not in _cache:
+                try:
+                    frame = _fx.create_weather_frame(_w, _h, t, _dur, _wt, intensity=0.5)
+                except Exception:
+                    frame = np.zeros((_h, _w, 4), dtype=np.uint8)
+                _cache[t_key] = frame
+                if len(_cache) > 2:
+                    oldest = min(_cache.keys())
+                    del _cache[oldest]
+            return _cache[t_key]
 
-        def make_weather_frame(t, _frames=frames, _num=num_frames, _dur=duration):
-            idx = int(t / _dur * (_num - 1)) if _dur > 0 else 0
-            idx = max(0, min(idx, _num - 1))
-            return _frames[idx][:, :, :3]
+        def make_weather_frame(t, _get=_get_weather):
+            return _get(t)[:, :, :3]
 
-        def make_weather_mask(t, _frames=frames, _num=num_frames, _dur=duration):
-            idx = int(t / _dur * (_num - 1)) if _dur > 0 else 0
-            idx = max(0, min(idx, _num - 1))
-            return _frames[idx][:, :, 3].astype(float) / 255.0
+        def make_weather_mask(t, _get=_get_weather):
+            return _get(t)[:, :, 3].astype(float) / 255.0
 
         clip = VideoClip(make_weather_frame, duration=duration)
         clip = clip.set_fps(self.fps)

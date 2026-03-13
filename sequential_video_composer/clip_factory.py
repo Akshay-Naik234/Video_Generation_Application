@@ -1,5 +1,13 @@
-"""Clip factory for creating and composing video clips."""
+"""Clip factory for creating and composing video clips.
 
+Includes humanization features that make the editing rhythm feel natural:
+- Timing micro-variation: slight random variation on crossfade durations
+- Hard cuts for impact: dramatic section entries skip crossfade entirely
+- Breathing room: longer holds between intense sections
+- Editing rhythm: alternating fast/slow pacing creates visual heartbeat
+"""
+
+import hashlib
 from pathlib import Path
 from typing import List, Tuple, Dict, TYPE_CHECKING
 
@@ -14,10 +22,11 @@ if TYPE_CHECKING:
 
 
 class ClipFactory:
-    """Factory for creating and composing video clips with cinematic enhancements.
+    """Factory for creating and composing video clips with human-feel editing.
     
     Includes dynamic pacing, pattern interrupts, cinematic letterboxing,
-    and professional particle/grain overlays.
+    professional particle/grain overlays, and humanization features that
+    make the video feel like it was hand-edited by a professional.
     """
 
     # Dynamic pacing: speed multipliers per section (1.0 = normal speed)
@@ -63,6 +72,7 @@ class ClipFactory:
         Uses section metadata (when available) to select appropriate color grading
         and movement styles for each image based on its narrative position.
         Includes brightness normalization and color continuity smoothing when enabled.
+        Passes enable_human_feel through to the movement engine for organic motion.
         """
         clips_data = []
         total = len(numbered_images)
@@ -151,6 +161,7 @@ class ClipFactory:
                 color_grade=color_grade,
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
+                enable_human_feel=self.orchestrator.enable_human_feel,
                 **ai_kwargs,
             )
 
@@ -194,21 +205,40 @@ class ClipFactory:
             fade_ratio = 0.15  # Default cinematic fade
         return min(0.8, max(0.3, duration * fade_ratio))
 
+    # Sections where a hard cut (no crossfade) feels more impactful.
+    # Human editors often use hard cuts at dramatic entrances.
+    HARD_CUT_SECTIONS = {'THE_CONFLICT', 'THE_CLIMAX'}
+
+    # Sections that benefit from extra breathing room (slightly longer crossfade)
+    BREATHING_ROOM_SECTIONS = {'THE_FALL', 'LEGACY'}
+
     def create_timeline_video(self, clips_data: List[Dict]) -> CompositeVideoClip:
         """Create video with clips positioned at their exact start times.
         
         Each clip is extended by a crossfade overlap amount so consecutive clips
         naturally overlap, producing smooth cinematic transitions. Fade durations
         are scaled based on image duration and section context.
+        
+        Humanization features:
+        - Timing micro-variation: +-5-10% random jitter on crossfade durations
+        - Hard cuts: dramatic section entrances skip crossfade for impact
+        - Breathing room: extra-long fades between intense sections
+        - Editing rhythm: subtle pacing variation creates visual heartbeat
         """
         if not clips_data:
             return None
 
         has_timing = clips_data[0].get('start_time') is not None
+        enable_human = getattr(self.orchestrator, 'enable_human_feel', True)
+
+        # Pre-generate deterministic random jitter per clip for reproducible humanization
+        seed = sum(d.get('image_num', 0) for d in clips_data)
+        rng = np.random.RandomState(seed) if enable_human else None
         
         if has_timing:
             print("Creating timeline-based video with cinematic crossfade overlaps...")
             positioned_clips = []
+            prev_section = ''
             
             for i, data in enumerate(clips_data):
                 clip = data['clip']
@@ -233,6 +263,31 @@ class ClipFactory:
                 is_interrupt = self.should_pattern_interrupt(start_time)
                 if is_interrupt:
                     fade_duration = max(0.15, fade_duration * 0.5)
+
+                # --- Humanization: timing micro-variation ---
+                is_hard_cut = False
+                if enable_human and rng is not None:
+                    # Detect section boundary (entering a new section)
+                    is_section_entry = (section != prev_section and prev_section != '')
+
+                    # Hard cut at dramatic section entrances (like human editors do)
+                    if (is_section_entry and section in self.HARD_CUT_SECTIONS
+                            and i > 0):
+                        fade_duration = 0.08  # Near-instant cut
+                        is_hard_cut = True
+
+                    # Extra breathing room at emotional transitions
+                    elif is_section_entry and section in self.BREATHING_ROOM_SECTIONS:
+                        fade_duration *= 1.4  # 40% longer for emotional weight
+
+                    # Timing micro-variation: +-8% random jitter
+                    if not is_hard_cut:
+                        jitter = rng.uniform(-0.08, 0.08)
+                        fade_duration *= (1.0 + jitter)
+
+                    fade_duration = min(0.9, max(0.08, fade_duration))
+
+                prev_section = section
                 
                 # Extend each clip's duration by the overlap amount so it bleeds
                 # into the next clip's territory, creating a true crossfade overlap.
@@ -254,6 +309,8 @@ class ClipFactory:
                     extras.append(section)
                 if is_interrupt:
                     extras.append('INTERRUPT')
+                if is_hard_cut:
+                    extras.append('HARD CUT')
                 extra_str = f" [{' | '.join(extras)}]" if extras else ''
                 print(f"  Image {data['image_num']}: starts at {start_time:.2f}s, "
                       f"duration {duration}s (+{overlap:.2f}s overlap), "

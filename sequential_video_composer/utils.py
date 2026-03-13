@@ -36,6 +36,7 @@ def create_sequential_video(
     enable_parallax: bool = True,
     enable_dof: bool = True,
     enable_weather: bool = True,
+    enable_human_feel: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -71,6 +72,8 @@ def create_sequential_video(
         enable_parallax: Enable 2.5D depth parallax Ken Burns effect
         enable_dof: Enable depth-of-field cinematic blur
         enable_weather: Enable section-aware weather/atmosphere particles
+        enable_human_feel: Make video feel like human-edited (camera breathing, varied
+            easing, hard cuts, timing variation). Default True.
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -106,6 +109,7 @@ def create_sequential_video(
         enable_parallax=enable_parallax,
         enable_dof=enable_dof,
         enable_weather=enable_weather,
+        enable_human_feel=enable_human_feel,
         duration_config_path=duration_config_path
     )
     orchestrator.create_video()
@@ -169,5 +173,6 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         enable_parallax=config.get('enable_parallax', True),
         enable_dof=config.get('enable_dof', True),
         enable_weather=config.get('enable_weather', True),
+        enable_human_feel=config.get('enable_human_feel', True),
         duration_config_path=duration_config_path
     )

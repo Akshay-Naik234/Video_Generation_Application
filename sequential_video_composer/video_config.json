@@ -28,5 +28,6 @@
   "enable_parallax": true,
   "enable_dof": true,
   "enable_weather": true,
+  "enable_human_feel": true,
   "audio": "../examples/audio/narration.mp3"
 }

@@ -514,6 +514,46 @@ class WeatherEffects:
         'triumph': 'light_particles',
     }
 
+    def create_weather_frame(
+        self,
+        width: int,
+        height: int,
+        t: float,
+        duration: float,
+        weather_type: str,
+        intensity: float = 0.5,
+    ) -> np.ndarray:
+        """Create a single weather overlay frame for time t (on-the-fly, O(1) memory).
+
+        Uses stateless particle position calculations so any frame can be computed
+        independently without pre-generating all frames. This avoids OOM crashes
+        for long sections (e.g., 120s at 30fps would have needed ~28 GB).
+
+        Args:
+            width: Frame width.
+            height: Frame height.
+            t: Current time in seconds.
+            duration: Total duration in seconds.
+            weather_type: One of 'rain', 'dust', 'embers', 'light_particles'.
+            intensity: Effect intensity [0, 1].
+
+        Returns:
+            Single RGBA numpy array (H, W, 4), uint8.
+        """
+        progress = t / duration if duration > 0 else 0
+        progress = max(0.0, min(1.0, progress))
+
+        if weather_type == 'rain':
+            return self._create_rain_frame(width, height, t, progress, intensity)
+        elif weather_type == 'dust':
+            return self._create_dust_frame(width, height, t, progress, intensity)
+        elif weather_type == 'embers':
+            return self._create_ember_frame(width, height, t, progress, intensity)
+        elif weather_type == 'light_particles':
+            return self._create_light_particle_frame(width, height, t, progress, intensity)
+        else:
+            return np.zeros((height, width, 4), dtype=np.uint8)
+
     def create_weather_frames(
         self,
         width: int,
@@ -523,31 +563,25 @@ class WeatherEffects:
         weather_type: str,
         intensity: float = 0.5,
     ) -> List[np.ndarray]:
-        """Create weather overlay frames as RGBA arrays.
+        """Create weather overlay frames as RGBA arrays (legacy batch API).
 
-        Args:
-            width: Frame width.
-            height: Frame height.
-            fps: Frames per second.
-            duration: Duration in seconds.
-            weather_type: One of 'rain', 'dust', 'embers', 'light_particles'.
-            intensity: Effect intensity [0, 1].
+        WARNING: For long durations this can use significant memory.
+        Prefer create_weather_frame() for on-the-fly generation.
 
-        Returns:
-            List of RGBA numpy arrays (H, W, 4), uint8.
+        Caps internal fps at 10 to limit memory usage.
         """
-        num_frames = max(1, int(duration * fps))
+        # Cap at 10 fps for weather overlays (particles don't need full framerate)
+        effective_fps = min(fps, 10)
+        num_frames = max(1, int(duration * effective_fps))
+        # Hard cap at 300 frames (~2.4 GB max for 1080p RGBA)
+        num_frames = min(num_frames, 300)
 
-        if weather_type == 'rain':
-            return self._create_rain_frames(width, height, num_frames, intensity)
-        elif weather_type == 'dust':
-            return self._create_dust_frames(width, height, num_frames, intensity)
-        elif weather_type == 'embers':
-            return self._create_ember_frames(width, height, num_frames, intensity)
-        elif weather_type == 'light_particles':
-            return self._create_light_particle_frames(width, height, num_frames, intensity)
-        else:
-            return []
+        frames = []
+        for i in range(num_frames):
+            t = (i / max(1, num_frames - 1)) * duration
+            frame = self.create_weather_frame(width, height, t, duration, weather_type, intensity)
+            frames.append(frame)
+        return frames
 
     def get_weather_for_section(
         self, section: str, emotional_tone: str = ''
@@ -568,169 +602,122 @@ class WeatherEffects:
 
         return self.SECTION_WEATHER.get(section)
 
-    def _create_rain_frames(
-        self, w: int, h: int, num_frames: int, intensity: float
-    ) -> List[np.ndarray]:
-        """Create falling rain streak frames."""
+    # --- Stateless single-frame generators (O(1) memory) ---
+
+    def _create_rain_frame(
+        self, w: int, h: int, t: float, progress: float, intensity: float
+    ) -> np.ndarray:
+        """Create a single rain frame at time t (stateless)."""
         rng = np.random.default_rng(42)
         num_drops = int(200 * intensity)
 
-        # Initialize rain drops: x, y, speed, length
-        drops_x = rng.uniform(0, w, num_drops)
-        drops_y = rng.uniform(-h, 0, num_drops)  # Start above frame
+        # Pre-generate particle initial state (deterministic from seed)
+        drops_x0 = rng.uniform(0, w, num_drops)
+        drops_y0 = rng.uniform(-h, 0, num_drops)
         drops_speed = rng.uniform(15, 35, num_drops)
         drops_length = rng.uniform(10, 30, num_drops).astype(int)
         drops_alpha = rng.uniform(0.15, 0.45, num_drops) * intensity
 
-        frames = []
-        for f_idx in range(num_frames):
-            frame = np.zeros((h, w, 4), dtype=np.uint8)
+        frame = np.zeros((h, w, 4), dtype=np.uint8)
+        # Compute positions at time t using modular arithmetic (stateless)
+        cycle_height = h + h * 0.3  # Total travel distance before reset
+        for i in range(num_drops):
+            travel = drops_speed[i] * t * 30  # 30 = reference fps for motion speed
+            y = int((drops_y0[i] + travel) % cycle_height - h * 0.3)
+            x = int(drops_x0[i] + np.sin(t * 2 + i * 0.1) * 2) % w
+            length = drops_length[i]
+            alpha = int(drops_alpha[i] * 255)
 
-            for i in range(num_drops):
-                x = int(drops_x[i]) % w
-                y = int(drops_y[i])
-                length = drops_length[i]
-                alpha = int(drops_alpha[i] * 255)
+            if 0 <= y < h:
+                y_end = min(y + length, h)
+                if y_end > y and 0 <= x < w:
+                    frame[y:y_end, x, 0] = 180
+                    frame[y:y_end, x, 1] = 200
+                    frame[y:y_end, x, 2] = 230
+                    frame[y:y_end, x, 3] = alpha
 
-                if 0 <= y < h:
-                    y_end = min(y + length, h)
-                    if y_end > y and 0 <= x < w:
-                        # Light blue-white rain color
-                        frame[y:y_end, x, 0] = 180  # R
-                        frame[y:y_end, x, 1] = 200  # G
-                        frame[y:y_end, x, 2] = 230  # B
-                        frame[y:y_end, x, 3] = alpha
+        return frame
 
-                # Move drops down
-                drops_y[i] += drops_speed[i]
-                drops_x[i] += rng.uniform(-0.5, 0.5)
-
-                # Reset drops that fall off screen
-                if drops_y[i] > h:
-                    drops_y[i] = rng.uniform(-h * 0.3, 0)
-                    drops_x[i] = rng.uniform(0, w)
-
-            frames.append(frame)
-
-        return frames
-
-    def _create_dust_frames(
-        self, w: int, h: int, num_frames: int, intensity: float
-    ) -> List[np.ndarray]:
-        """Create floating dust mote frames."""
+    def _create_dust_frame(
+        self, w: int, h: int, t: float, progress: float, intensity: float
+    ) -> np.ndarray:
+        """Create a single dust frame at time t (stateless)."""
         rng = np.random.default_rng(123)
         num_particles = int(80 * intensity)
 
-        # Initialize particles: x, y, size, drift_speed, alpha
         px = rng.uniform(0, w, num_particles)
         py = rng.uniform(0, h, num_particles)
         sizes = rng.integers(2, 5, num_particles)
-        drift_x = rng.uniform(-0.3, 0.3, num_particles)
-        drift_y = rng.uniform(-0.5, 0.1, num_particles)  # Mostly upward
         alphas = rng.uniform(0.1, 0.35, num_particles) * intensity
-        # Phase offsets for gentle floating
         phases = rng.uniform(0, 2 * np.pi, num_particles)
 
-        frames = []
-        for f_idx in range(num_frames):
-            frame = np.zeros((h, w, 4), dtype=np.uint8)
-            t = f_idx / max(1, num_frames - 1)
+        frame = np.zeros((h, w, 4), dtype=np.uint8)
+        for i in range(num_particles):
+            x = int(px[i] + np.sin(progress * 2 * np.pi + phases[i]) * 10) % w
+            y = int(py[i] + progress * (-20 + i % 10)) % h  # Slow drift
+            s = sizes[i]
+            alpha = int(alphas[i] * 255 * (0.5 + 0.5 * np.sin(progress * np.pi * 3 + phases[i])))
+            alpha = max(0, min(255, alpha))
 
-            for i in range(num_particles):
-                # Gentle sinusoidal drift
-                x = int(px[i] + np.sin(t * 2 * np.pi + phases[i]) * 10) % w
-                y = int(py[i]) % h
-                s = sizes[i]
-                alpha = int(alphas[i] * 255 * (0.5 + 0.5 * np.sin(t * np.pi * 3 + phases[i])))
-                alpha = max(0, min(255, alpha))
+            y1, y2 = max(0, y - s), min(h, y + s)
+            x1, x2 = max(0, x - s), min(w, x + s)
+            if y2 > y1 and x2 > x1:
+                frame[y1:y2, x1:x2, 0] = 220
+                frame[y1:y2, x1:x2, 1] = 200
+                frame[y1:y2, x1:x2, 2] = 170
+                frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
 
-                # Draw particle as a small square
-                y1, y2 = max(0, y - s), min(h, y + s)
-                x1, x2 = max(0, x - s), min(w, x + s)
-                if y2 > y1 and x2 > x1:
-                    # Warm dust color
-                    frame[y1:y2, x1:x2, 0] = 220
-                    frame[y1:y2, x1:x2, 1] = 200
-                    frame[y1:y2, x1:x2, 2] = 170
-                    frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
+        return frame
 
-                # Move particles
-                px[i] += drift_x[i]
-                py[i] += drift_y[i]
-
-                if py[i] < -10:
-                    py[i] = h + 10
-                if py[i] > h + 10:
-                    py[i] = -10
-
-            frames.append(frame)
-
-        return frames
-
-    def _create_ember_frames(
-        self, w: int, h: int, num_frames: int, intensity: float
-    ) -> List[np.ndarray]:
-        """Create rising ember/spark frames for dramatic sections."""
+    def _create_ember_frame(
+        self, w: int, h: int, t: float, progress: float, intensity: float
+    ) -> np.ndarray:
+        """Create a single ember frame at time t (stateless)."""
         rng = np.random.default_rng(456)
         num_embers = int(50 * intensity)
 
-        # Initialize embers
         ex = rng.uniform(0, w, num_embers)
-        ey = rng.uniform(h * 0.5, h * 1.2, num_embers)  # Start from bottom half
+        ey0 = rng.uniform(h * 0.5, h * 1.2, num_embers)
         e_speed = rng.uniform(2, 8, num_embers)
         e_sizes = rng.integers(1, 4, num_embers)
         e_alpha = rng.uniform(0.2, 0.6, num_embers) * intensity
         e_phase = rng.uniform(0, 2 * np.pi, num_embers)
-        # Ember colors: orange to red
         e_red = rng.integers(200, 255, num_embers)
         e_green = rng.integers(80, 180, num_embers)
         e_blue = rng.integers(20, 60, num_embers)
 
-        frames = []
-        for f_idx in range(num_frames):
-            frame = np.zeros((h, w, 4), dtype=np.uint8)
-            t = f_idx / max(1, num_frames - 1)
+        frame = np.zeros((h, w, 4), dtype=np.uint8)
+        cycle_height = h * 1.2 + 20  # Total travel before reset
+        for i in range(num_embers):
+            travel = e_speed[i] * t * 30  # 30 = reference fps
+            y = int((ey0[i] - travel) % cycle_height)
+            if y > h:
+                y = int(h * 1.2 - (y - h))  # Wrap from bottom
+            x = int(ex[i] + np.sin(progress * 4 * np.pi + e_phase[i]) * 15) % w
+            s = e_sizes[i]
 
-            for i in range(num_embers):
-                x = int(ex[i] + np.sin(t * 4 * np.pi + e_phase[i]) * 15) % w
-                y = int(ey[i])
-                s = e_sizes[i]
+            life = 1.0 - max(0, (h * 0.5 - y) / (h * 0.5)) if y < h * 0.5 else 1.0
+            alpha = int(e_alpha[i] * 255 * life)
+            alpha = max(0, min(255, alpha))
 
-                # Fade out as ember rises
-                life = 1.0 - max(0, (h * 0.5 - y) / (h * 0.5)) if y < h * 0.5 else 1.0
-                alpha = int(e_alpha[i] * 255 * life)
-                alpha = max(0, min(255, alpha))
+            if 0 <= y < h:
+                y1, y2 = max(0, y - s), min(h, y + s)
+                x1, x2 = max(0, x - s), min(w, x + s)
+                if y2 > y1 and x2 > x1:
+                    frame[y1:y2, x1:x2, 0] = e_red[i]
+                    frame[y1:y2, x1:x2, 1] = e_green[i]
+                    frame[y1:y2, x1:x2, 2] = e_blue[i]
+                    frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
 
-                if 0 <= y < h:
-                    y1, y2 = max(0, y - s), min(h, y + s)
-                    x1, x2 = max(0, x - s), min(w, x + s)
-                    if y2 > y1 and x2 > x1:
-                        frame[y1:y2, x1:x2, 0] = e_red[i]
-                        frame[y1:y2, x1:x2, 1] = e_green[i]
-                        frame[y1:y2, x1:x2, 2] = e_blue[i]
-                        frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
+        return frame
 
-                # Move embers upward
-                ey[i] -= e_speed[i]
-                ex[i] += rng.uniform(-0.5, 0.5)
-
-                # Reset embers that float off
-                if ey[i] < -20:
-                    ey[i] = h + rng.uniform(10, 50)
-                    ex[i] = rng.uniform(0, w)
-
-            frames.append(frame)
-
-        return frames
-
-    def _create_light_particle_frames(
-        self, w: int, h: int, num_frames: int, intensity: float
-    ) -> List[np.ndarray]:
-        """Create floating light particle / firefly frames for hopeful sections."""
+    def _create_light_particle_frame(
+        self, w: int, h: int, t: float, progress: float, intensity: float
+    ) -> np.ndarray:
+        """Create a single light particle frame at time t (stateless)."""
         rng = np.random.default_rng(789)
         num_particles = int(40 * intensity)
 
-        # Initialize particles
         lx = rng.uniform(0, w, num_particles)
         ly = rng.uniform(0, h, num_particles)
         l_sizes = rng.integers(2, 6, num_particles)
@@ -738,34 +725,25 @@ class WeatherEffects:
         l_speed = rng.uniform(0.3, 1.5, num_particles)
         l_alpha_base = rng.uniform(0.15, 0.45, num_particles) * intensity
 
-        frames = []
-        for f_idx in range(num_frames):
-            frame = np.zeros((h, w, 4), dtype=np.uint8)
-            t = f_idx / max(1, num_frames - 1)
+        frame = np.zeros((h, w, 4), dtype=np.uint8)
+        for i in range(num_particles):
+            x = int(lx[i] + np.sin(progress * 2 * np.pi * l_speed[i] + l_phase[i]) * 20) % w
+            y = int(ly[i] + np.cos(progress * 2 * np.pi * l_speed[i] * 0.7 + l_phase[i]) * 15) % h
+            s = l_sizes[i]
 
-            for i in range(num_particles):
-                # Gentle floating motion
-                x = int(lx[i] + np.sin(t * 2 * np.pi * l_speed[i] + l_phase[i]) * 20) % w
-                y = int(ly[i] + np.cos(t * 2 * np.pi * l_speed[i] * 0.7 + l_phase[i]) * 15) % h
-                s = l_sizes[i]
+            pulse = 0.5 + 0.5 * np.sin(progress * 4 * np.pi + l_phase[i])
+            alpha = int(l_alpha_base[i] * 255 * pulse)
+            alpha = max(0, min(255, alpha))
 
-                # Pulsing glow
-                pulse = 0.5 + 0.5 * np.sin(t * 4 * np.pi + l_phase[i])
-                alpha = int(l_alpha_base[i] * 255 * pulse)
-                alpha = max(0, min(255, alpha))
+            y1, y2 = max(0, y - s), min(h, y + s)
+            x1, x2 = max(0, x - s), min(w, x + s)
+            if y2 > y1 and x2 > x1:
+                frame[y1:y2, x1:x2, 0] = 255
+                frame[y1:y2, x1:x2, 1] = 240
+                frame[y1:y2, x1:x2, 2] = 180
+                frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
 
-                y1, y2 = max(0, y - s), min(h, y + s)
-                x1, x2 = max(0, x - s), min(w, x + s)
-                if y2 > y1 and x2 > x1:
-                    # Warm golden white
-                    frame[y1:y2, x1:x2, 0] = 255
-                    frame[y1:y2, x1:x2, 1] = 240
-                    frame[y1:y2, x1:x2, 2] = 180
-                    frame[y1:y2, x1:x2, 3] = np.maximum(frame[y1:y2, x1:x2, 3], alpha)
-
-            frames.append(frame)
-
-        return frames
+        return frame
 
 
 def get_ai_status() -> dict:
