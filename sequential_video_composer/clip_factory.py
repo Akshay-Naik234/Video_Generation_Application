@@ -173,7 +173,7 @@ class ClipFactory:
                 # into the next clip's territory, creating a true crossfade overlap.
                 # The last clip is NOT extended (nothing follows it).
                 is_last_clip = (i == len(clips_data) - 1)
-                overlap = fade_duration * 0.5 if not is_last_clip else 0
+                overlap = fade_duration if not is_last_clip else 0
                 extended_clip = clip.set_duration(duration + overlap)
                 
                 positioned_clip = (
