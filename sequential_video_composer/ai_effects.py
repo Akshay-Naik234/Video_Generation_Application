@@ -435,7 +435,6 @@ class DepthOfFieldEffect:
             if i == 0:
                 result = image.astype(np.float32) * (1 - mask) + blurred.astype(np.float32) * mask
             else:
-                prev_blurred = blurred_images[i - 1].astype(np.float32)
                 result = result * (1 - mask) + blurred.astype(np.float32) * mask
 
         return np.clip(result, 0, 255).astype(np.uint8)
