@@ -818,7 +818,8 @@ class SequentialVideoOrchestrator:
                         continue
 
             # Pattern: "NAME — TITLE" → slide-in lower third
-            if '—' in text or ' - ' in text:
+            # Skip if text starts with a quote character (those are quote cards, handled below)
+            if ('—' in text or ' - ' in text) and not re.match(r'^["\u201C\u201D\u2018\u2019]', text):
                 sep = '—' if '—' in text else ' - '
                 parts = [p.strip() for p in text.split(sep, 1)]
                 # Use slide-in animation
