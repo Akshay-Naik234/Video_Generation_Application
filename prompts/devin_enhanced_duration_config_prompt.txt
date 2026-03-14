@@ -1,8 +1,28 @@
 I need to sync images with narration audio for a biography video. Each image should display when its matching narration content plays.
 
-TASK: Analyze the attached image prompts and narration timestamps. Match each image to its corresponding narration segment based on CONTENT (what the image shows vs what the narration says), NOT by sequential order. Images and narration may be in different orders.
+TASK: Analyze the image prompts and narration timestamps provided below (pasted as text). Match each image to its corresponding narration segment based on CONTENT (what the image shows vs what the narration says), NOT by sequential order. Images and narration may be in different orders.
 
-RULES:
+════════════════════════════════════════════════════════════
+INPUT METHOD (IMPORTANT — NO FILE UPLOADS REQUIRED)
+════════════════════════════════════════════════════════════
+
+Do NOT attach image files. Instead, paste the following as plain text:
+
+1. NARRATION TIMESTAMPS — Copy-paste the contents of narration_timestamps.json below
+2. IMAGE PROMPTS — Copy-paste the contents of Image_prompts.txt (the text descriptions only, NOT the actual image files)
+
+If the combined text is too long for a single message, split it across multiple messages:
+  Message 1: This prompt + narration timestamps
+  Message 2: Image prompts (images 1-50)
+  Message 3: Image prompts (images 51-100+)
+  Then say: "All data provided. Generate the duration config JSON now."
+
+The AI will wait for all parts before generating the output.
+
+════════════════════════════════════════════════════════════
+RULES
+════════════════════════════════════════════════════════════
+
 1. Match images to narration by content similarity
 2. No gaps between images - timeline must be continuous
 3. No negative durations
@@ -14,7 +34,10 @@ RULES:
 9. Include color_temperature hint based on the section and emotion
 10. Include overlay_text for key biographical moments (dates, years, locations, names, facts)
 
-SECTION LABELS (assign based on timestamp position in narration):
+════════════════════════════════════════════════════════════
+SECTION LABELS (assign based on timestamp position in narration)
+════════════════════════════════════════════════════════════
+
 - COLD_OPEN: 0:00 - 0:30 (opening hook, most dramatic moment)
 - EARLY_LIFE: 0:30 - 2:00 (childhood, origin story)
 - THE_SPARK: 2:00 - 3:30 (inciting incident, the moment everything changed)
@@ -28,7 +51,10 @@ SECTION LABELS (assign based on timestamp position in narration):
 EMOTIONAL TONE OPTIONS: tension, nostalgia, hope, darkness, devastation, triumph, bittersweet
 COLOR TEMPERATURE OPTIONS: warm, cool, neutral
 
-OVERLAY TEXT RULES:
+════════════════════════════════════════════════════════════
+OVERLAY TEXT RULES
+════════════════════════════════════════════════════════════
+
 - Add overlay_text ONLY for images where a specific date, year, location, name, or key fact is mentioned in the narration
 - NOT every image needs overlay_text - use it for ~15-25% of images (key biographical moments)
 - Format patterns the video system recognizes:
@@ -40,11 +66,15 @@ OVERLAY TEXT RULES:
   "Born: July 10, 1856"     -> info card (bottom-right)
   "$2,300,000"               -> animated counting number overlay (for large numbers)
   "$2.3 Million"             -> info card for financial facts
+  '"Quote text" — Attribution' -> quote card with attribution (centered)
 - Use overlay_text at the FIRST image where a new date/location/person appears
 - Do NOT repeat the same overlay_text on consecutive images
 - Leave overlay_text as empty string "" for images without overlays
 
-OUTPUT FORMAT:
+════════════════════════════════════════════════════════════
+OUTPUT FORMAT
+════════════════════════════════════════════════════════════
+
 {
   "video_metadata": {
     "person_name": "",
@@ -92,8 +122,12 @@ OUTPUT FORMAT:
 
 Provide the corrected JSON with all images properly timed, section metadata, and overlay_text for key biographical moments.
 
-FILES TO ATTACH:
+════════════════════════════════════════════════════════════
+PASTE YOUR DATA BELOW
+════════════════════════════════════════════════════════════
 
-narration_timestamps.json - Narration segments with start, end, text
+NARRATION TIMESTAMPS:
+(paste narration_timestamps.json contents here)
 
-Image_prompts.txt - Description of each image
+IMAGE PROMPTS:
+(paste Image_prompts.txt contents here — text descriptions only, NOT image files)
