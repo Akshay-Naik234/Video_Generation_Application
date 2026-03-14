@@ -94,7 +94,6 @@ class MovementStyles:
         parallax_engine: 'Optional[ParallaxEngine]' = None,
         enable_parallax: bool = False,
         enable_dof: bool = False,
-        subject_center: Optional[Tuple[float, float]] = None,
         enable_human_feel: bool = True,
         speed_factor: float = 1.0,
     ):
@@ -139,7 +138,7 @@ class MovementStyles:
             return self._create_parallax_clip(
                 base_img, duration, movement_type, zoom_intensity,
                 color_grader, color_grade, enable_vignette, section,
-                depth_estimator, parallax_engine, enable_dof, subject_center,
+                depth_estimator, parallax_engine, enable_dof,
                 enable_human_feel=enable_human_feel, rng=rng,
                 speed_factor=speed_factor,
             )
@@ -281,7 +280,6 @@ class MovementStyles:
         depth_estimator,
         parallax_engine,
         enable_dof: bool,
-        subject_center: Optional[Tuple[float, float]],
         enable_human_feel: bool = True,
         rng: Optional[np.random.RandomState] = None,
         speed_factor: float = 1.0,
@@ -564,7 +562,8 @@ class MovementStyles:
     # --- Easing functions ---
     # Multiple easing curves for varied motion feel per section.
 
-    def _ease_in_out_cubic(self, t: float) -> float:
+    @staticmethod
+    def _ease_in_out_cubic(t: float) -> float:
         """Standard cubic ease-in-out."""
         return 3 * t * t - 2 * t * t * t
 
@@ -608,6 +607,7 @@ class MovementStyles:
             local = (t - 0.85) / 0.15
             return 1.03 - 0.03 * local
 
-    def _dramatic_ease(self, t: float) -> float:
+    @staticmethod
+    def _dramatic_ease(t: float) -> float:
         """Dramatic easing for impactful moments."""
         return 0.5 * (np.sin((t - 0.5) * np.pi) + 1)

@@ -7,7 +7,9 @@ import random
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
 
+import numpy as np
 from moviepy.editor import AudioFileClip, CompositeVideoClip
+from moviepy.video.VideoClip import VideoClip
 
 from .transitions import TransitionEffects
 from .movements import MovementStyles
@@ -15,7 +17,7 @@ from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
 from .text_overlays import TextOverlayEngine
 from .ai_effects import (
-    DepthEstimator, ParallaxEngine, SubjectDetector,
+    DepthEstimator, ParallaxEngine,
     WeatherEffects, get_ai_status,
 )
 from .sound_design import SoundDesignEngine
@@ -175,13 +177,11 @@ class SequentialVideoOrchestrator:
         # Initialize AI effects (optional - gracefully degrades if deps missing)
         self.depth_estimator: Optional[DepthEstimator] = None
         self.parallax_engine: Optional[ParallaxEngine] = None
-        self.subject_detector: Optional[SubjectDetector] = None
         self.weather_effects: Optional[WeatherEffects] = None
 
         if self.enable_parallax or self.enable_dof:
             self.depth_estimator = DepthEstimator(use_ai=self.enable_pytorch_depth)
             self.parallax_engine = ParallaxEngine(resolution)
-            self.subject_detector = SubjectDetector()
 
         if self.enable_weather:
             self.weather_effects = WeatherEffects()
@@ -699,7 +699,6 @@ class SequentialVideoOrchestrator:
         Generates chapter title cards that appear briefly at the start of each
         new narrative section, giving viewers a sense of story progression.
         """
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
         seen_sections = set()
 
@@ -758,8 +757,6 @@ class SequentialVideoOrchestrator:
           "$2.3 Million"            → animated number counter (center)
           "Born: July 10, 1856"     → info card (bottom-right)
         """
-        import re as _re
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
 
         for data in clips_data:
@@ -780,11 +777,11 @@ class SequentialVideoOrchestrator:
 
             # Pattern: "$NUMBER" or "NUMBER+" → animated counter
             # Requires $ prefix, comma in number, or + suffix to avoid matching bare years like "1943"
-            counter_match = _re.match(r'^(\$)([\d,]+)\+?\s*(.*)$', text)
+            counter_match = re.match(r'^(\$)([\d,]+)\+?\s*(.*)$', text)
             if not counter_match:
-                counter_match = _re.match(r'^()([\d,]+)\+\s*(.*)$', text)  # "50000+"
+                counter_match = re.match(r'^()([\d,]+)\+\s*(.*)$', text)  # "50000+"
             if not counter_match:
-                counter_match = _re.match(r'^()([\d]+,[\d,]+)\s*(.*)$', text)  # "2,300,000"
+                counter_match = re.match(r'^()([\d]+,[\d,]+)\s*(.*)$', text)  # "2,300,000"
             if counter_match and len(counter_match.group(2).replace(',', '')) >= 4:
                 prefix = counter_match.group(1)
                 target = int(counter_match.group(2).replace(',', ''))
@@ -884,10 +881,10 @@ class SequentialVideoOrchestrator:
                     date_text=parts[0], location_text=parts[1]
                 )
             # Pattern: pure year (4 digits) → year stamp
-            elif _re.match(r'^\d{4}$', text):
+            elif re.match(r'^\d{4}$', text):
                 overlay_array = self.text_overlay_engine.create_year_stamp(year=text)
             # Pattern: "YEAR, LOCATION" → year stamp with label
-            elif _re.match(r'^\d{4},\s*.+$', text):
+            elif re.match(r'^\d{4},\s*.+$', text):
                 parts = text.split(',', 1)
                 overlay_array = self.text_overlay_engine.create_year_stamp(
                     year=parts[0].strip(), label=parts[1].strip()
@@ -899,12 +896,12 @@ class SequentialVideoOrchestrator:
                 overlay_array = self.text_overlay_engine.create_location_stamp(location=text)
             # Pattern: quoted text → quote card (auto-detection)
             # Matches "text in quotes" or text starting with opening quote marks
-            elif (_re.match(r'^["\u201C\u201D\u2018\u2019]', text) or
-                  _re.search(r'["\u201C\u201D]\s*[-\u2014]\s*\w', text)):
+            elif (re.match(r'^["\u201C\u201D\u2018\u2019]', text) or
+                  re.search(r'["\u201C\u201D]\s*[-\u2014]\s*\w', text)):
                 # Strip outer quotes if present
-                clean_quote = _re.sub(r'^["\u201C\u201D\u2018\u2019]+|["\u201C\u201D\u2018\u2019]+$', '', text).strip()
+                clean_quote = re.sub(r'^["\u201C\u201D\u2018\u2019]+|["\u201C\u201D\u2018\u2019]+$', '', text).strip()
                 # Try to extract attribution after dash/em-dash
-                attr_match = _re.split(r'\s*[-\u2014]\s*(?=[A-Z])', clean_quote, maxsplit=1)
+                attr_match = re.split(r'\s*[-\u2014]\s*(?=[A-Z])', clean_quote, maxsplit=1)
                 if len(attr_match) == 2:
                     overlay_array = self.text_overlay_engine.create_quote_card(
                         quote=attr_match[0].strip(), attribution=attr_match[1].strip()
@@ -950,7 +947,6 @@ class SequentialVideoOrchestrator:
         Renders a minimal timeline dot indicator at the top of the frame whenever
         a new section begins, showing the viewer where they are in the biography arc.
         """
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
         seen_sections = set()
 
@@ -1022,8 +1018,6 @@ class SequentialVideoOrchestrator:
         affected (max 12% dimming at peak), avoiding the full-frame darkening bug
         that occurs with set_opacity on RGB clips.
         """
-        from moviepy.video.VideoClip import VideoClip
-        import numpy as np
         overlays = []
         prev_section = ''
 
@@ -1078,8 +1072,6 @@ class SequentialVideoOrchestrator:
         very low peak opacity (8%) so the base video is barely affected,
         creating a subtle "camera flash" feel rather than a full white-out.
         """
-        from moviepy.video.VideoClip import VideoClip
-        import numpy as np
         overlays = []
         flash_sections = {'THE_CLIMAX', 'THE_CONFLICT', 'COLD_OPEN'}
         prev_section = ''
@@ -1130,7 +1122,6 @@ class SequentialVideoOrchestrator:
         the hook. Otherwise, look for the COLD_OPEN section's first overlay_text.
         Falls back gracefully if no hook text is available.
         """
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
 
         # Find hook text from COLD_OPEN section or first image
@@ -1186,7 +1177,6 @@ class SequentialVideoOrchestrator:
         subscriptions and engagement. This renders a subscribe button area with
         space for YouTube's built-in end screen elements.
         """
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
 
         if video_duration < 20:
@@ -1236,7 +1226,6 @@ class SequentialVideoOrchestrator:
         Weather type is determined by section and emotional_tone, with emotion
         taking priority over section defaults.
         """
-        from moviepy.video.VideoClip import VideoClip
         overlays = []
 
         if self.weather_effects is None:
@@ -1246,7 +1235,6 @@ class SequentialVideoOrchestrator:
         current_weather = None
         current_start = None
         current_duration = 0.0
-        current_emotion = ''
 
         for data in clips_data:
             section = data.get('section', '')
@@ -1293,8 +1281,6 @@ class SequentialVideoOrchestrator:
         time t, avoiding the O(n) memory cost of pre-generating all frames.
         A 120s section at 30fps would have needed ~28 GB; this uses O(1) memory.
         """
-        from moviepy.video.VideoClip import VideoClip
-
         # Capture references for the closure
         weather_fx = self.weather_effects
         w, h = self.width, self.height
@@ -1310,8 +1296,7 @@ class SequentialVideoOrchestrator:
                 try:
                     frame = _fx.create_weather_frame(_w, _h, t, _dur, _wt, intensity=0.5)
                 except Exception:
-                    import numpy as _np
-                    frame = _np.zeros((_h, _w, 4), dtype=_np.uint8)
+                    frame = np.zeros((_h, _w, 4), dtype=np.uint8)
                 _cache[t_key] = frame
                 if len(_cache) > 2:
                     oldest = min(_cache.keys())

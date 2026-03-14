@@ -7,6 +7,8 @@ Includes humanization features that make the editing rhythm feel natural:
 - Editing rhythm: alternating fast/slow pacing creates visual heartbeat
 """
 
+import os
+import tempfile
 from pathlib import Path
 from typing import List, Tuple, Dict, TYPE_CHECKING
 
@@ -108,10 +110,8 @@ class ClipFactory:
 
                 # Save processed image to temp path for the movement engine
                 proc_img = PILImage.fromarray(proc_array)
-                import tempfile
                 temp_fd, tmp_name = tempfile.mkstemp(suffix=image_path.suffix)
-                import os as _os
-                _os.close(temp_fd)
+                os.close(temp_fd)
                 temp_path = Path(tmp_name)
                 try:
                     proc_img.save(str(temp_path))

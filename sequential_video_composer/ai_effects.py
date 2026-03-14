@@ -19,7 +19,7 @@ All features are FREE and open source. No paid tools or API keys required.
 """
 
 import math
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional
 
 import numpy as np
 from PIL import Image as PILImage, ImageFilter
@@ -560,35 +560,6 @@ class WeatherEffects:
             return self._create_light_particle_frame(width, height, t, progress, intensity)
         else:
             return np.zeros((height, width, 4), dtype=np.uint8)
-
-    def create_weather_frames(
-        self,
-        width: int,
-        height: int,
-        fps: int,
-        duration: float,
-        weather_type: str,
-        intensity: float = 0.5,
-    ) -> List[np.ndarray]:
-        """Create weather overlay frames as RGBA arrays (legacy batch API).
-
-        WARNING: For long durations this can use significant memory.
-        Prefer create_weather_frame() for on-the-fly generation.
-
-        Caps internal fps at 10 to limit memory usage.
-        """
-        # Cap at 10 fps for weather overlays (particles don't need full framerate)
-        effective_fps = min(fps, 10)
-        num_frames = max(1, int(duration * effective_fps))
-        # Hard cap at 300 frames (~2.4 GB max for 1080p RGBA)
-        num_frames = min(num_frames, 300)
-
-        frames = []
-        for i in range(num_frames):
-            t = (i / max(1, num_frames - 1)) * duration
-            frame = self.create_weather_frame(width, height, t, duration, weather_type, intensity)
-            frames.append(frame)
-        return frames
 
     def get_weather_for_section(
         self, section: str, emotional_tone: str = ''

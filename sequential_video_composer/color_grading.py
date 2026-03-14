@@ -11,30 +11,6 @@ class ColorGrading:
     matched to its narrative section and emotional tone.
     """
 
-    # Mapping from narrative sections to recommended color grades
-    SECTION_GRADE_MAP = {
-        'COLD_OPEN': 'cool',
-        'EARLY_LIFE': 'warm',
-        'THE_SPARK': 'documentary',
-        'THE_RISE': 'cinematic',
-        'THE_CONFLICT': 'high_contrast',
-        'THE_CLIMAX': 'dramatic',
-        'THE_FALL': 'soft',
-        'LEGACY': 'warm',
-        'CTA': 'natural',
-    }
-
-    # Mapping from emotional tones to color grade overrides
-    EMOTION_GRADE_MAP = {
-        'tension': 'high_contrast',
-        'nostalgia': 'vintage',
-        'hope': 'warm',
-        'darkness': 'dramatic',
-        'devastation': 'cool',
-        'triumph': 'cinematic',
-        'bittersweet': 'soft',
-    }
-
     GRADE_TYPES = [
         'cinematic',
         'documentary',
@@ -210,31 +186,3 @@ class ColorGrading:
                 img[:, :, c] *= ratio
 
         return np.clip(img, 0, 255).astype(np.uint8)
-
-    def auto_grade_for_section(self, image: np.ndarray, section: str, emotional_tone: str = '') -> np.ndarray:
-        """Automatically select and apply color grading based on section and emotional tone.
-        
-        Priority: emotional_tone override > section mapping > no grading.
-        This enables each image to have its own color treatment that matches
-        the narrative arc without manual configuration.
-        
-        Args:
-            image: Input image as numpy array
-            section: Narrative section name (e.g., 'COLD_OPEN', 'THE_RISE')
-            emotional_tone: Optional emotional tone override (e.g., 'tension', 'hope')
-        
-        Returns:
-            Color-graded image as numpy array
-        """
-        # Emotional tone takes priority
-        if emotional_tone and emotional_tone in self.EMOTION_GRADE_MAP:
-            grade = self.EMOTION_GRADE_MAP[emotional_tone]
-            return self.apply_grade(image, grade)
-        
-        # Section-based grading
-        if section and section in self.SECTION_GRADE_MAP:
-            grade = self.SECTION_GRADE_MAP[section]
-            return self.apply_grade(image, grade)
-        
-        # No metadata available, return ungraded
-        return image
