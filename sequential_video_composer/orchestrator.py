@@ -819,7 +819,7 @@ class SequentialVideoOrchestrator:
 
             # Pattern: "NAME — TITLE" → slide-in lower third
             # Skip if text starts with a quote character (those are quote cards, handled below)
-            if ('—' in text or ' - ' in text) and not re.match(r'^["\u201C\u201D\u2018\u2019]', text):
+            if ('—' in text or ' - ' in text) and not re.match(r'^["\u201C\u201D\'\u2018\u2019]', text):
                 sep = '—' if '—' in text else ' - '
                 parts = [p.strip() for p in text.split(sep, 1)]
                 # Use slide-in animation
@@ -897,10 +897,10 @@ class SequentialVideoOrchestrator:
                 overlay_array = self.text_overlay_engine.create_location_stamp(location=text)
             # Pattern: quoted text → quote card (auto-detection)
             # Matches "text in quotes" or text starting with opening quote marks
-            elif (re.match(r'^["\u201C\u201D\u2018\u2019]', text) or
+            elif (re.match(r'^["\u201C\u201D\'\u2018\u2019]', text) or
                   re.search(r'["\u201C\u201D]\s*[-\u2014]\s*\w', text)):
                 # Strip outer quotes if present
-                clean_quote = re.sub(r'^["\u201C\u201D\u2018\u2019]+|["\u201C\u201D\u2018\u2019]+$', '', text).strip()
+                clean_quote = re.sub(r'^["\u201C\u201D\'\u2018\u2019]+|["\u201C\u201D\'\u2018\u2019]+$', '', text).strip()
                 # Try to extract attribution after dash/em-dash
                 attr_match = re.split(r'\s*[-\u2014]\s*(?=[A-Z])', clean_quote, maxsplit=1)
                 if len(attr_match) == 2:

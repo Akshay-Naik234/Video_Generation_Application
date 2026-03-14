@@ -32,5 +32,6 @@
   "enable_sound_design": true,
   "sound_design_intensity": 0.08,
   "enable_pytorch_depth": true,
-  "audio": "../examples/audio/narration.mp3"
+  "audio": "../examples/audio/narration.mp3",
+  "duration_config": "../image_display_duration.json"
 }
