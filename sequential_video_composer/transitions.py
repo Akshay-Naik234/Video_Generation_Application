@@ -86,13 +86,17 @@ class TransitionEffects:
     def _zoom_transition(
         self, clip1: ImageClip, clip2: ImageClip, duration: float, direction: str
     ) -> CompositeVideoClip:
-        """Zoom transition effect."""
+        """Zoom transition effect.
+        
+        zoom_in: clip1 fades out quickly, clip2 fades in slowly ("pushing forward")
+        zoom_out: clip1 fades out slowly, clip2 fades in quickly ("pulling away")
+        """
         if direction == 'in':
-            clip1_zoom = clip1.fadeout(duration * 0.7)
-            clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.7)
+            clip1_zoom = clip1.fadeout(duration * 0.5)
+            clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.8)
         else:
-            clip1_zoom = clip1.fadeout(duration * 0.7)
-            clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.7)
+            clip1_zoom = clip1.fadeout(duration * 0.8)
+            clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.5)
 
         return CompositeVideoClip([clip1_zoom, clip2_fade])
 

@@ -330,7 +330,8 @@ class SoundDesignEngine:
             start_sample = int(start_time * self.sample_rate)
             end_sample = start_sample + len(effect_audio)
 
-            if start_sample >= len(mixed) if not is_stereo else start_sample >= mixed.shape[0]:
+            num_samples = mixed.shape[0] if is_stereo else len(mixed)
+            if start_sample >= num_samples:
                 continue
 
             if is_stereo:

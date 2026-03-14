@@ -610,9 +610,6 @@ class SequentialVideoOrchestrator:
         Returns:
             New AudioFileClip with sound effects mixed in.
         """
-        import tempfile
-        import os
-
         try:
             # Extract audio as numpy array
             audio_fps = audio_clip.fps or 44100
@@ -652,19 +649,12 @@ class SequentialVideoOrchestrator:
                 master_volume=self.sound_design_intensity,
             )
 
-            # Write mixed audio to temp file and reload as AudioFileClip
-            temp_fd, temp_path = tempfile.mkstemp(suffix='.wav')
-            os.close(temp_fd)
-            try:
-                from moviepy.audio.AudioClip import AudioArrayClip
-                mixed_clip = AudioArrayClip(mixed, fps=audio_fps)
-                mixed_clip = mixed_clip.set_duration(audio_clip.duration)
-                print(f"  Sound design: mixed {len(effects_to_mix)} effects at section transitions")
-                print(f"    Master volume: {self.sound_design_intensity} ({20 * math.log10(max(self.sound_design_intensity, 0.001)):.0f} dB)")
-                return mixed_clip
-            finally:
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
+            from moviepy.audio.AudioClip import AudioArrayClip
+            mixed_clip = AudioArrayClip(mixed, fps=audio_fps)
+            mixed_clip = mixed_clip.set_duration(audio_clip.duration)
+            print(f"  Sound design: mixed {len(effects_to_mix)} effects at section transitions")
+            print(f"    Master volume: {self.sound_design_intensity} ({20 * math.log10(max(self.sound_design_intensity, 0.001)):.0f} dB)")
+            return mixed_clip
 
         except Exception as e:
             print(f"  Sound design: error mixing effects ({e}), using original audio")
