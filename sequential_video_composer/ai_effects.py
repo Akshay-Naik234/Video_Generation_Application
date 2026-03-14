@@ -243,6 +243,8 @@ class ParallaxEngine:
         progress: float,
         movement_type: str = 'zoom_in',
         intensity: float = 1.0,
+        offset_x: float = 0.0,
+        offset_y: float = 0.0,
     ) -> np.ndarray:
         """Create a single parallax frame with depth-aware movement.
 
@@ -252,6 +254,8 @@ class ParallaxEngine:
             progress: Animation progress [0, 1].
             movement_type: Type of movement (zoom_in, pan_left, etc.).
             intensity: Movement intensity multiplier.
+            offset_x: Additional horizontal offset (e.g., micro-shake).
+            offset_y: Additional vertical offset (e.g., micro-shake).
 
         Returns:
             Parallax-displaced frame (H, W, 3), uint8.
@@ -260,6 +264,10 @@ class ParallaxEngine:
 
         # Calculate base displacement based on movement type
         dx, dy, scale = self._get_displacement(movement_type, progress, intensity)
+
+        # Apply micro-shake offsets from human-feel system
+        dx += offset_x
+        dy += offset_y
 
         # Create per-pixel displacement based on depth
         # Foreground (depth ~1.0) gets MORE displacement (moves more)

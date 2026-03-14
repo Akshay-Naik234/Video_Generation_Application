@@ -141,6 +141,7 @@ class MovementStyles:
                 color_grader, color_grade, enable_vignette, section,
                 depth_estimator, parallax_engine, enable_dof, subject_center,
                 enable_human_feel=enable_human_feel, rng=rng,
+                speed_factor=speed_factor,
             )
 
         # --- Standard (flat) Ken Burns path ---
@@ -283,6 +284,7 @@ class MovementStyles:
         subject_center: Optional[Tuple[float, float]],
         enable_human_feel: bool = True,
         rng: Optional[np.random.RandomState] = None,
+        speed_factor: float = 1.0,
     ):
         """Create a 2.5D parallax Ken Burns clip using AI depth estimation.
 
@@ -321,12 +323,23 @@ class MovementStyles:
         # Humanization for parallax path
         easing_fn = self._get_easing_for_section(section) if enable_human_feel else self._ease_in_out_cubic
         use_shake = enable_human_feel and section in self.SHAKE_SECTIONS
+        if use_shake:
+            num_shake_samples = max(int(duration * 30), 60)
+            shake_x = self._generate_smooth_noise(num_shake_samples, 0.0006, rng)
+            shake_y = self._generate_smooth_noise(num_shake_samples, 0.0004, rng)
+        else:
+            shake_x = shake_y = None
         breath_freq = rng.uniform(0.3, 0.6) if enable_human_feel else 0
         breath_amp = 0.003 if enable_human_feel else 0
 
         def make_parallax_frame(t):
             progress = t / duration if duration > 0 else 0
             progress = max(0.0, min(1.0, progress))
+
+            # Apply speed ramp (same as standard path)
+            if speed_factor != 1.0:
+                progress = min(1.0, progress * speed_factor)
+
             if enable_human_feel:
                 progress = self._apply_settle(progress)
             eased = easing_fn(progress)
@@ -336,9 +349,18 @@ class MovementStyles:
             if enable_human_feel and breath_amp > 0:
                 extra_intensity = breath_amp * np.sin(2 * np.pi * breath_freq * t)
 
+            # Micro-shake for dramatic sections (consistent with standard path)
+            shake_offset_x = 0.0
+            shake_offset_y = 0.0
+            if use_shake and shake_x is not None:
+                idx = min(int(progress * (len(shake_x) - 1)), len(shake_x) - 1)
+                shake_offset_x = shake_x[idx]
+                shake_offset_y = shake_y[idx]
+
             frame = parallax_engine.create_parallax_frame(
                 src_img, src_depth, eased, movement_type,
-                zoom_intensity - 1.0 + 0.5 + extra_intensity
+                zoom_intensity - 1.0 + 0.5 + extra_intensity,
+                offset_x=shake_offset_x, offset_y=shake_offset_y
             )
             return frame
 

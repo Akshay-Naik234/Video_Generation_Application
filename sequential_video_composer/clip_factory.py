@@ -415,6 +415,7 @@ class ClipFactory:
         
         Fully vectorized: no Python for-loops per frame. Generates random bright
         spots that simulate floating dust particles in a cinematic light beam.
+        Uses a mask clip instead of set_opacity to avoid MoviePy transparency bugs.
         """
         width, height = self.orchestrator.resolution
         particle_opacity = intensity * 0.06
@@ -434,9 +435,15 @@ class ClipFactory:
                         frame[ys + dy, xs + dx, 2] = brightness
             return frame
 
+        def make_particle_mask(t, opacity=particle_opacity):
+            # Uniform low-opacity mask — only bright particle pixels show through
+            return np.full((height, width), opacity, dtype=np.float64)
+
         particle_clip = VideoClip(make_particle_frame, duration=duration)
         particle_clip = particle_clip.set_fps(15)
-        particle_clip = particle_clip.set_opacity(particle_opacity)
+        mask_clip = VideoClip(make_particle_mask, duration=duration, ismask=True)
+        mask_clip = mask_clip.set_fps(15)
+        particle_clip = particle_clip.set_mask(mask_clip)
         return particle_clip
 
     def create_film_grain_overlay(self, duration: float, intensity: float = 0.3) -> VideoClip:
@@ -444,6 +451,7 @@ class ClipFactory:
         
         Generates monochromatic noise that simulates 35mm film grain texture,
         adding a cinematic documentary aesthetic to the video.
+        Uses a mask clip instead of set_opacity to avoid MoviePy transparency bugs.
         """
         width, height = self.orchestrator.resolution
         grain_opacity = intensity * 0.08
@@ -453,7 +461,12 @@ class ClipFactory:
             grain = np.stack([noise, noise, noise], axis=-1)
             return grain
 
+        def make_grain_mask(t, opacity=grain_opacity):
+            return np.full((height, width), opacity, dtype=np.float64)
+
         grain_clip = VideoClip(make_grain_frame, duration=duration)
         grain_clip = grain_clip.set_fps(24)
-        grain_clip = grain_clip.set_opacity(grain_opacity)
+        mask_clip = VideoClip(make_grain_mask, duration=duration, ismask=True)
+        mask_clip = mask_clip.set_fps(24)
+        grain_clip = grain_clip.set_mask(mask_clip)
         return grain_clip
