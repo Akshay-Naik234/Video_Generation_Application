@@ -10,7 +10,36 @@ This prompt incorporates visual patterns from 12 top-performing biography YouTub
 You will be given:
 1. PERSON NAME — The biography subject
 2. SCRIPT — The full narration script
-3. NARRATION TIMESTAMPS — A JSON file with exact word-level timing (format: {"duration": X, "segments": [{"start": 0.0, "end": 0.0, "text": "..."}]})
+3. NARRATION TIMESTAMPS — A JSON with exact word-level timing (format: {"duration": X, "segments": [{"start": 0.0, "end": 0.0, "text": "..."}]})
+
+============================================================
+INPUT METHOD (NO FILE UPLOADS REQUIRED)
+============================================================
+
+Do NOT require file attachments. Instead, data should be pasted as plain text.
+
+If the combined text (script + timestamps) is too long for a single message, split across multiple messages:
+  Message 1: This prompt + person name + narration timestamps JSON
+  Message 2: Script (first half)
+  Message 3: Script (second half)
+  Then say: "All data provided. Generate the image prompts JSON now."
+
+Wait for all parts before generating the output.
+
+============================================================
+VIDEO SYSTEM INTEGRATION (CRITICAL)
+============================================================
+
+Your JSON output is the DIRECT INPUT to the sequential_video_composer video generation system.
+The video system reads your JSON to:
+- Control how long each image displays (start_time, duration, end_time)
+- Apply section-aware color grading, movements, and transitions
+- Render text overlays from overlay_text fields
+- Apply AI-enhanced parallax and depth-of-field effects
+- Mix programmatic sound effects at section transitions
+- Add hook overlays, chapter cards, and CTA end screens
+
+This means your timing, sections, and overlay_text MUST be accurate — they directly control the final video.
 
 ============================================================
 OUTPUT FORMAT (EXACT — DO NOT DEVIATE)
@@ -533,18 +562,21 @@ Before delivering the final JSON, verify ALL of the following. If any check FAIL
 EXAMPLE USAGE
 ============================================================
 
-User provides:
+User provides (pasted as text, NOT as file attachments):
 - Person name: [NAME]
 - Script: [FULL NARRATION TEXT]
-- Attachment: narration_timestamps.json
+- Narration timestamps: [PASTE narration_timestamps.json contents]
 
 You respond with:
-- The complete JSON file as an attachment
+- The complete JSON (this IS the duration config — no separate step needed)
 - Brief summary: total images, duration coverage, average duration, max duration
 - Scene breakdown by section (Cold Open: X images, Early Life: X images, etc.)
 - Thumbnail description and color scheme summary
 - Shot type distribution (close-ups: X%, wide shots: X%, detail: X%, etc.)
 - Color temperature distribution (warm: X%, cool: X%, neutral: X%)
 - Transition type distribution (zoom in: X, zoom out: X, location shift: X, etc.)
+
+NOTE: Save the JSON output as the duration config file. The sequential_video_composer
+reads this JSON directly — no separate duration config prompt is needed.
 
 ============================================================
