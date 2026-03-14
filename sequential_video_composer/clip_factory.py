@@ -113,8 +113,13 @@ class ClipFactory:
                 import os as _os
                 _os.close(temp_fd)
                 temp_path = Path(tmp_name)
-                proc_img.save(str(temp_path))
-                effective_image_path = temp_path
+                try:
+                    proc_img.save(str(temp_path))
+                except Exception as e:
+                    print(f"Warning: Failed to save preprocessed image: {e}")
+                    temp_path.unlink(missing_ok=True)
+                    temp_path = None
+                effective_image_path = temp_path if temp_path else image_path
             else:
                 effective_image_path = image_path
 

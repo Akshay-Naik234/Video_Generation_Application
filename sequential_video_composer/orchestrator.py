@@ -586,6 +586,7 @@ class SequentialVideoOrchestrator:
                 audio_clip = audio_clip.audio_fadein(self.audio_fade_in)
             if self.audio_fade_out > 0:
                 audio_clip = audio_clip.audio_fadeout(self.audio_fade_out)
+            if self.audio_fade_in > 0 or self.audio_fade_out > 0:
                 print(f"  Audio fades: {self.audio_fade_in}s in, {self.audio_fade_out}s out")
 
             # Mix programmatic sound effects into audio at section transitions
