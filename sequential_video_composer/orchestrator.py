@@ -1309,7 +1309,8 @@ class SequentialVideoOrchestrator:
                 try:
                     frame = _fx.create_weather_frame(_w, _h, t, _dur, _wt, intensity=0.5)
                 except Exception:
-                    frame = np.zeros((_h, _w, 4), dtype=np.uint8)
+                    import numpy as _np
+                    frame = _np.zeros((_h, _w, 4), dtype=_np.uint8)
                 _cache[t_key] = frame
                 if len(_cache) > 2:
                     oldest = min(_cache.keys())

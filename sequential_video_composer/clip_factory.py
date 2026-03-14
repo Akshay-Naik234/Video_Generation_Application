@@ -104,7 +104,7 @@ class ClipFactory:
                         prev_image_array, proc_array
                     )
 
-                prev_image_array = np.array(img.convert('RGB'))  # Store original for next comparison
+                prev_image_array = proc_array.copy()  # Store processed version for consistent comparison
 
                 # Save processed image to temp path for the movement engine
                 proc_img = PILImage.fromarray(proc_array)
