@@ -341,8 +341,10 @@ class MovementStyles:
                 progress = min(1.0, progress * speed_factor)
 
             if enable_human_feel:
-                progress = self._apply_settle(progress)
-            eased = easing_fn(progress)
+                settled = self._apply_settle(progress)
+            else:
+                settled = progress
+            eased = easing_fn(settled)
 
             # Camera breathing adds subtle zoom oscillation
             extra_intensity = 0.0
@@ -350,6 +352,7 @@ class MovementStyles:
                 extra_intensity = breath_amp * np.sin(2 * np.pi * breath_freq * t)
 
             # Micro-shake for dramatic sections (consistent with standard path)
+            # Use raw progress for shake indexing (not settled), matching standard path
             shake_offset_x = 0.0
             shake_offset_y = 0.0
             if use_shake and shake_x is not None:

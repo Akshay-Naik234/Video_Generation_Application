@@ -155,26 +155,30 @@ class ClipFactory:
                 ai_kwargs['enable_parallax'] = self.orchestrator.enable_parallax
                 ai_kwargs['enable_dof'] = self.orchestrator.enable_dof
 
-            clip = self.orchestrator.movements.create_animated_clip(
-                image_path=effective_image_path,
-                duration=image_duration,
-                movement_type=movement,
-                zoom_intensity=self.orchestrator.zoom_intensity,
-                color_grader=self.orchestrator.color_grading,
-                color_grade=color_grade,
-                enable_vignette=self.orchestrator.enable_vignette,
-                section=section,
-                enable_human_feel=self.orchestrator.enable_human_feel,
-                speed_factor=speed_factor,
-                **ai_kwargs,
-            )
-
-            # Clean up temp file if we created one
-            if effective_image_path != image_path and effective_image_path.exists():
-                try:
-                    effective_image_path.unlink()
-                except OSError:
-                    pass
+            try:
+                clip = self.orchestrator.movements.create_animated_clip(
+                    image_path=effective_image_path,
+                    duration=image_duration,
+                    movement_type=movement,
+                    zoom_intensity=self.orchestrator.zoom_intensity,
+                    color_grader=self.orchestrator.color_grading,
+                    color_grade=color_grade,
+                    enable_vignette=self.orchestrator.enable_vignette,
+                    section=section,
+                    enable_human_feel=self.orchestrator.enable_human_feel,
+                    speed_factor=speed_factor,
+                    **ai_kwargs,
+                )
+            except Exception as e:
+                print(f"Error creating clip for image {num}: {e}")
+                continue
+            finally:
+                # Clean up temp file if we created one (always, even on exception)
+                if effective_image_path != image_path and effective_image_path.exists():
+                    try:
+                        effective_image_path.unlink()
+                    except OSError:
+                        pass
 
             # Section-aware transition selection (pass actual previous image number for gap handling)
             prev_num = numbered_images[i - 1][0] if i > 0 else None

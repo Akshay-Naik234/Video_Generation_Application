@@ -630,7 +630,7 @@ class SequentialVideoOrchestrator:
 
                 if section != prev_section:
                     # Section transition — get appropriate sound effects
-                    transition_duration = data.get('crossfade_duration', 0.8)
+                    transition_duration = min(data.get('duration', 4.0) * 0.2, 0.8)
                     section_effects = sound_engine.get_effects_for_section(
                         section, transition_duration
                     )
