@@ -323,28 +323,29 @@ class SoundDesignEngine:
         if not effects:
             return narration.copy().astype(np.float32)
 
-        is_stereo = narration.ndim == 2
+        # MoviePy's to_soundarray() returns (N, nchannels) for both mono and stereo.
+        # Mono = (N, 1), stereo = (N, 2). A true 1D array is also possible.
+        is_2d = narration.ndim == 2
+        n_channels = narration.shape[1] if is_2d else 1
         mixed = narration.copy().astype(np.float64)
 
         for start_time, effect_audio, volume in effects:
             start_sample = int(start_time * self.sample_rate)
             end_sample = start_sample + len(effect_audio)
 
-            num_samples = mixed.shape[0] if is_stereo else len(mixed)
+            num_samples = mixed.shape[0]
             if start_sample >= num_samples:
                 continue
 
-            if is_stereo:
-                actual_end = min(end_sample, mixed.shape[0])
-                length = actual_end - start_sample
-                effect_slice = effect_audio[:length] * volume * master_volume
-                # Mix into both channels
-                mixed[start_sample:actual_end, 0] += effect_slice
-                mixed[start_sample:actual_end, 1] += effect_slice
+            actual_end = min(end_sample, num_samples)
+            length = actual_end - start_sample
+            effect_slice = effect_audio[:length] * volume * master_volume
+
+            if is_2d:
+                # Mix into all channels (works for both mono (N,1) and stereo (N,2))
+                for ch in range(n_channels):
+                    mixed[start_sample:actual_end, ch] += effect_slice
             else:
-                actual_end = min(end_sample, len(mixed))
-                length = actual_end - start_sample
-                effect_slice = effect_audio[:length] * volume * master_volume
                 mixed[start_sample:actual_end] += effect_slice
 
         # Soft clip to prevent distortion

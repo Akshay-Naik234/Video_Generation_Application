@@ -125,13 +125,14 @@ class ClipFactory:
             section = timing.get('section', '')
             emotional_tone = timing.get('emotional_tone', '')
 
-            # Speed ramp: adjust image duration based on emotional section
+            # Speed ramp: compute animation speed factor without changing timeline duration.
+            # Modifying image_duration would break timeline positioning (start_times from config
+            # remain fixed), causing excessive overlap and audio desync. Instead, we pass
+            # a speed_factor to the movement engine so the Ken Burns animation moves
+            # faster/slower within the original timeline slot.
+            speed_factor = 1.0
             if self.orchestrator.enable_speed_ramp and section:
-                ramp = self.SPEED_RAMP_MAP.get(section, 1.0)
-                if ramp != 1.0:
-                    image_duration = image_duration / ramp  # Slower ramp = longer display
-                    if end_time is not None and start_time is not None:
-                        end_time = start_time + image_duration
+                speed_factor = self.SPEED_RAMP_MAP.get(section, 1.0)
             
             # Section-aware movement selection
             movement = self.orchestrator._get_movement_for_image(i, total, image_number=num)
@@ -164,6 +165,7 @@ class ClipFactory:
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
                 enable_human_feel=self.orchestrator.enable_human_feel,
+                speed_factor=speed_factor,
                 **ai_kwargs,
             )
 

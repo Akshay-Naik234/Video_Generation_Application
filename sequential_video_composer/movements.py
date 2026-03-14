@@ -96,6 +96,7 @@ class MovementStyles:
         enable_dof: bool = False,
         subject_center: Optional[Tuple[float, float]] = None,
         enable_human_feel: bool = True,
+        speed_factor: float = 1.0,
     ):
         """Create an animated clip with the specified movement style and effects.
         
@@ -111,6 +112,11 @@ class MovementStyles:
         
         When enable_dof=True and depth_estimator is provided, applies cinematic
         depth-of-field blur (sharp subject, blurred background).
+        
+        speed_factor controls animation speed within the clip's timeline slot:
+        >1.0 = faster animation (e.g., 1.1 for action sections),
+        <1.0 = slower animation (e.g., 0.85 for emotional peaks).
+        The clip duration stays unchanged; only the Ken Burns motion speed varies.
         """
         base_img = PILImage.open(image_path)
         if base_img.mode != 'RGB':
@@ -199,6 +205,12 @@ class MovementStyles:
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
             progress = max(0.0, min(1.0, progress))
+
+            # Apply speed ramp: scale progress so animation moves faster/slower
+            # within the same timeline slot. Clamped to [0, 1] so it never
+            # overshoots the movement range.
+            if speed_factor != 1.0:
+                progress = min(1.0, progress * speed_factor)
 
             # Apply settle: brief deceleration at very start and end
             if enable_human_feel:
