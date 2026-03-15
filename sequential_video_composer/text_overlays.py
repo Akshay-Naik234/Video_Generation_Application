@@ -6,6 +6,8 @@ and chapter titles. This module provides all overlay types needed for profession
 biography video production.
 """
 
+import os
+import sys
 import numpy as np
 from PIL import Image as PILImage, ImageDraw, ImageFont
 from typing import Tuple, Optional, List
@@ -58,19 +60,92 @@ class TextOverlayEngine:
         'CTA': '',
     }
 
+    # Cross-platform font paths: tried in order until one works.
+    # Covers Linux (DejaVu), macOS (Helvetica/Arial), and Windows (Arial/Segoe).
+    _FONT_PATHS_REGULAR = [
+        # Linux
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+        '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
+        # macOS
+        '/System/Library/Fonts/Helvetica.ttc',
+        '/System/Library/Fonts/SFNSText.ttf',
+        '/System/Library/Fonts/Supplemental/Arial.ttf',
+        '/Library/Fonts/Arial.ttf',
+        # Windows
+        'C:/Windows/Fonts/arial.ttf',
+        'C:/Windows/Fonts/segoeui.ttf',
+        'C:/Windows/Fonts/calibri.ttf',
+    ]
+    _FONT_PATHS_BOLD = [
+        # Linux
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+        '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+        # macOS
+        '/System/Library/Fonts/Helvetica.ttc',
+        '/System/Library/Fonts/SFNSText-Bold.ttf',
+        '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+        '/Library/Fonts/Arial Bold.ttf',
+        # Windows
+        'C:/Windows/Fonts/arialbd.ttf',
+        'C:/Windows/Fonts/segoeuib.ttf',
+        'C:/Windows/Fonts/calibrib.ttf',
+    ]
+
+    # Cache resolved font paths so we only search once per process
+    _resolved_regular: Optional[str] = None
+    _resolved_bold: Optional[str] = None
+
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
         self.width, self.height = resolution
         self.scale = self.height / 1080.0
 
+    @classmethod
+    def _find_font_path(cls, bold: bool = False) -> Optional[str]:
+        """Find the first available font file on this platform."""
+        if bold and cls._resolved_bold is not None:
+            return cls._resolved_bold
+        if not bold and cls._resolved_regular is not None:
+            return cls._resolved_regular
+
+        candidates = cls._FONT_PATHS_BOLD if bold else cls._FONT_PATHS_REGULAR
+        for path in candidates:
+            if os.path.isfile(path):
+                if bold:
+                    cls._resolved_bold = path
+                else:
+                    cls._resolved_regular = path
+                return path
+
+        # Fallback: try regular paths for bold if no bold font found
+        if bold:
+            for path in cls._FONT_PATHS_REGULAR:
+                if os.path.isfile(path):
+                    cls._resolved_bold = path
+                    return path
+        return None
+
     def _get_font(self, size_key: str, bold: bool = False) -> ImageFont.FreeTypeFont:
-        """Get a font at the appropriate size for the resolution."""
+        """Get a font at the appropriate size for the resolution.
+
+        Searches common font locations across Linux, macOS, and Windows.
+        Caches the resolved font path so subsequent calls are instant.
+        Falls back to PIL default only as a last resort.
+        """
         base_size = self.FONT_SIZES.get(size_key, 30)
-        scaled_size = int(base_size * self.scale)
+        scaled_size = max(12, int(base_size * self.scale))
+        font_path = self._find_font_path(bold=bold)
+        if font_path:
+            try:
+                return ImageFont.truetype(font_path, scaled_size)
+            except (OSError, IOError):
+                pass
+        # Last resort: PIL default with size (Pillow 10+ supports size arg)
         try:
-            if bold:
-                return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", scaled_size)
-            return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", scaled_size)
-        except (OSError, IOError):
+            return ImageFont.load_default(size=scaled_size)
+        except TypeError:
+            # Pillow < 10 doesn't support size= kwarg
             return ImageFont.load_default()
 
     def create_lower_third(
