@@ -115,14 +115,14 @@ class SequentialVideoOrchestrator:
         audio_fade_in: float = 2.0,
         audio_fade_out: float = 3.5,
         channel_name: str = 'LifeSpark Chronicles',
-        ai_animation_enabled: bool = True,
-        enable_parallax: bool = True,
-        enable_dof: bool = True,
-        enable_weather: bool = True,
+        ai_animation_enabled: bool = False,
+        enable_parallax: bool = False,
+        enable_dof: bool = False,
+        enable_weather: bool = False,
         enable_human_feel: bool = True,
         enable_sound_design: bool = True,
         sound_design_intensity: float = 0.12,
-        enable_pytorch_depth: bool = True,
+        enable_pytorch_depth: bool = False,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -491,16 +491,19 @@ class SequentialVideoOrchestrator:
             print(f"  - Text overlays: {overlays_found} images with date/location/name stamps")
 
         # Report AI effects status
-        ai_status = get_ai_status()
-        print(f"\nAI Effects:")
-        print(f"  Depth backend: {ai_status['depth_backend']}")
-        print(f"  Parallax quality: {ai_status['parallax_quality']}")
-        if self.enable_parallax:
-            print(f"  2.5D Parallax: ENABLED")
-        if self.enable_dof:
-            print(f"  Depth-of-Field: ENABLED")
-        if self.enable_weather:
-            print(f"  Weather effects: ENABLED")
+        if self.ai_animation_enabled:
+            ai_status = get_ai_status()
+            print(f"\nAI Effects:")
+            print(f"  Depth backend: {ai_status['depth_backend']}")
+            print(f"  Parallax quality: {ai_status['parallax_quality']}")
+            if self.enable_parallax:
+                print(f"  2.5D Parallax: ENABLED")
+            if self.enable_dof:
+                print(f"  Depth-of-Field: ENABLED")
+            if self.enable_weather:
+                print(f"  Weather effects: ENABLED")
+        else:
+            print(f"\nAI Effects: DISABLED")
         print()
 
         numbered_images = self.discover_numbered_images()
@@ -540,15 +543,7 @@ class SequentialVideoOrchestrator:
         progress_overlays = self._create_progress_indicator_overlays(clips_data)
         overlays.extend(progress_overlays)
 
-        # Add light leak overlays at section transitions
-        light_leak_overlays = self._create_light_leak_overlays(clips_data)
-        overlays.extend(light_leak_overlays)
-
-        # Add flash transitions at high-impact section entries (Dhruv Rathee style)
-        flash_overlays = self._create_flash_transition_overlays(clips_data)
-        overlays.extend(flash_overlays)
-
-        # Add weather/atmosphere overlays for emotional sections
+        # Weather/atmosphere overlays — only when AI animation is enabled
         if self.enable_weather and self.weather_effects is not None:
             weather_overlays = self._create_weather_overlays(clips_data)
             overlays.extend(weather_overlays)
@@ -562,13 +557,6 @@ class SequentialVideoOrchestrator:
         if self.enable_cta_end_screen:
             cta_overlays = self._create_cta_end_screen_overlay(main_video.duration)
             overlays.extend(cta_overlays)
-
-        if self.effects_intensity > 0.3:
-            particles = self.clip_factory.create_particle_overlay(
-                main_video.duration,
-                self.effects_intensity * 0.15
-            )
-            overlays.append(particles)
 
         if self.enable_film_grain and self.effects_intensity > 0.5:
             grain = self.clip_factory.create_film_grain_overlay(

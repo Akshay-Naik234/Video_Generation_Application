@@ -32,14 +32,14 @@ def create_sequential_video(
     audio_fade_in: float = 2.0,
     audio_fade_out: float = 3.5,
     channel_name: str = 'LifeSpark Chronicles',
-    ai_animation_enabled: bool = True,
-    enable_parallax: bool = True,
-    enable_dof: bool = True,
-    enable_weather: bool = True,
+    ai_animation_enabled: bool = False,
+    enable_parallax: bool = False,
+    enable_dof: bool = False,
+    enable_weather: bool = False,
     enable_human_feel: bool = True,
     enable_sound_design: bool = True,
     sound_design_intensity: float = 0.12,
-    enable_pytorch_depth: bool = True,
+    enable_pytorch_depth: bool = False,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -71,7 +71,7 @@ def create_sequential_video(
         audio_fade_in: Audio fade-in duration in seconds (0 to disable)
         audio_fade_out: Audio fade-out duration in seconds (0 to disable)
         channel_name: Channel name for CTA end screen subscribe button
-        ai_animation_enabled: Master toggle for all AI animation effects (default True)
+        ai_animation_enabled: Master toggle for all AI animation effects (default False)
         enable_parallax: Enable 2.5D depth parallax Ken Burns effect
         enable_dof: Enable depth-of-field cinematic blur
         enable_weather: Enable section-aware weather/atmosphere particles
@@ -82,7 +82,7 @@ def create_sequential_video(
         sound_design_intensity: Master volume for sound effects (0.0-1.0). Default 0.08
             (~-22 dB below narration).
         enable_pytorch_depth: Use PyTorch MiDaS for AI depth estimation when available.
-            Default True.
+            Default False.
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -181,13 +181,13 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         audio_fade_in=config.get('audio_fade_in', 2.0),
         audio_fade_out=config.get('audio_fade_out', 3.5),
         channel_name=config.get('channel_name', 'LifeSpark Chronicles'),
-        ai_animation_enabled=config.get('ai_animation_enabled', True),
-        enable_parallax=config.get('enable_parallax', True),
-        enable_dof=config.get('enable_dof', True),
-        enable_weather=config.get('enable_weather', True),
+        ai_animation_enabled=config.get('ai_animation_enabled', False),
+        enable_parallax=config.get('enable_parallax', False),
+        enable_dof=config.get('enable_dof', False),
+        enable_weather=config.get('enable_weather', False),
         enable_human_feel=config.get('enable_human_feel', True),
         enable_sound_design=config.get('enable_sound_design', True),
         sound_design_intensity=config.get('sound_design_intensity', 0.12),
-        enable_pytorch_depth=config.get('enable_pytorch_depth', True),
+        enable_pytorch_depth=config.get('enable_pytorch_depth', False),
         duration_config_path=duration_config_path
     )
