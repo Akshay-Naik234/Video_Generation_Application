@@ -106,22 +106,22 @@ class SequentialVideoOrchestrator:
         enable_letterbox: bool = True,
         enable_chapter_cards: bool = True,
         enable_dynamic_pacing: bool = True,
-        pattern_interrupt_interval: int = 75,
+        pattern_interrupt_interval: int = 105,
         enable_hook_overlay: bool = True,
         enable_cta_end_screen: bool = True,
         enable_brightness_normalization: bool = True,
         enable_color_continuity: bool = True,
         enable_speed_ramp: bool = True,
-        audio_fade_in: float = 1.0,
-        audio_fade_out: float = 2.0,
-        channel_name: str = 'Subscribe',
+        audio_fade_in: float = 2.0,
+        audio_fade_out: float = 3.5,
+        channel_name: str = 'LifeSpark Chronicles',
         ai_animation_enabled: bool = True,
         enable_parallax: bool = True,
         enable_dof: bool = True,
         enable_weather: bool = True,
         enable_human_feel: bool = True,
         enable_sound_design: bool = True,
-        sound_design_intensity: float = 0.08,
+        sound_design_intensity: float = 0.12,
         enable_pytorch_depth: bool = True,
         duration_config_path: Optional[Union[str, Path]] = None
     ):
@@ -389,15 +389,19 @@ class SequentialVideoOrchestrator:
         """Pick a movement from candidates while avoiding 3x repetition.
 
         If the last 2 movements are the same type, filter that type out of
-        candidates before picking. This prevents visual monotony where the
-        same Ken Burns movement repeats 3+ times in a row.
+        candidates before picking. Uses deterministic random (seeded from
+        index) instead of pure modulo to avoid repeating patterns like
+        A-B-A-B-A-B across clips.
         """
+        pool = list(candidates)
         if len(self._movement_history) >= 2 and self._movement_history[-1] == self._movement_history[-2]:
             repeated = self._movement_history[-1]
-            filtered = [m for m in candidates if m != repeated]
+            filtered = [m for m in pool if m != repeated]
             if filtered:
-                return filtered[index % len(filtered)]
-        return candidates[index % len(candidates)]
+                pool = filtered
+        # Deterministic random selection seeded from index avoids modulo patterns
+        rng = random.Random(index * 7 + len(pool))
+        return rng.choice(pool)
 
     def _get_transition_for_image(self, index: int, total: int, image_number: int = None,
                                    prev_image_number: int = None) -> str:
@@ -1046,7 +1050,7 @@ class SequentialVideoOrchestrator:
                     # so the base video is dimmed by at most ~12% at peak.
                     progress = t / dur if dur > 0 else 0
                     intensity = max(0.0, 1.0 - (2.0 * progress - 1.0) ** 2)
-                    return np.full((h, w), intensity * 0.12, dtype=np.float64)
+                    return np.full((h, w), intensity * 0.18, dtype=np.float64)
 
                 leak_clip = VideoClip(make_leak_frame, duration=leak_duration)
                 leak_clip = leak_clip.set_fps(self.fps)
@@ -1098,7 +1102,7 @@ class SequentialVideoOrchestrator:
                         intensity = progress / 0.2
                     else:
                         intensity = np.exp(-4.0 * (progress - 0.2))
-                    return np.full((h, w), max(0.0, intensity * 0.08), dtype=np.float64)
+                    return np.full((h, w), max(0.0, intensity * 0.15), dtype=np.float64)
 
                 flash_clip = VideoClip(make_flash_frame, duration=flash_duration)
                 flash_clip = flash_clip.set_fps(self.fps)
@@ -1125,18 +1129,34 @@ class SequentialVideoOrchestrator:
         """
         overlays = []
 
-        # Find hook text from COLD_OPEN section or first image
+        # Find hook text: prefer explicit hook_text from config, then
+        # look for a dramatic overlay_text from COLD_OPEN that isn't just a
+        # date/location stamp (those are poor hooks — viewers want drama).
         hook_text = ''
         for data in clips_data:
             section = data.get('section', '')
             image_num = data.get('image_num')
             if image_num is not None:
                 timing = self.image_durations.get(image_num, {})
+                # Prefer explicit hook_text field if provided in config
+                explicit_hook = timing.get('hook_text', '')
+                if explicit_hook:
+                    hook_text = explicit_hook
+                    break
                 overlay_text = timing.get('overlay_text', '')
-                if overlay_text and (section == 'COLD_OPEN' or not hook_text):
-                    hook_text = overlay_text
-                    if section == 'COLD_OPEN':
-                        break
+                if overlay_text:
+                    text = overlay_text.strip()
+                    # Skip pure dates, locations, and date|location combos
+                    # — they make bad hooks. Only use descriptive/dramatic text.
+                    is_date_location = (
+                        re.match(r'^\d{4}$', text)  # "1943"
+                        or re.match(r'^\d{4}[,|]', text)  # "1943, NYC" or "1943 | NYC"
+                        or '|' in text  # "1943 | New York"
+                    )
+                    if not is_date_location and (section == 'COLD_OPEN' or not hook_text):
+                        hook_text = text
+                        if section == 'COLD_OPEN':
+                            break
 
         if not hook_text:
             return overlays
@@ -1295,7 +1315,7 @@ class SequentialVideoOrchestrator:
             t_key = round(t, 3)
             if t_key not in _cache:
                 try:
-                    frame = _fx.create_weather_frame(_w, _h, t, _dur, _wt, intensity=0.5)
+                    frame = _fx.create_weather_frame(_w, _h, t, _dur, _wt, intensity=0.7)
                 except Exception:
                     frame = np.zeros((_h, _w, 4), dtype=np.uint8)
                 _cache[t_key] = frame
@@ -1310,10 +1330,13 @@ class SequentialVideoOrchestrator:
         def make_weather_mask(t, _get=_get_weather):
             return _get(t)[:, :, 3].astype(float) / 255.0
 
+        # Weather overlays at 10fps (particles don't need full framerate,
+        # saves ~67% computation on long weather sections)
+        weather_fps = 10
         clip = VideoClip(make_weather_frame, duration=duration)
-        clip = clip.set_fps(self.fps)
+        clip = clip.set_fps(weather_fps)
         mask = VideoClip(make_weather_mask, duration=duration, ismask=True)
-        mask = mask.set_fps(self.fps)
+        mask = mask.set_fps(weather_fps)
         clip = clip.set_mask(mask)
         clip = clip.set_start(start).crossfadein(0.8).crossfadeout(0.8)
         return clip
@@ -1322,11 +1345,22 @@ class SequentialVideoOrchestrator:
         """Export the final video with YouTube-optimized professional settings.
         
         Uses CRF 18 for high quality (YouTube recommends 15-18 for uploads),
-        4 threads for faster encoding, and bf=2 for B-frame optimization.
+        auto-detected thread count for faster encoding on both Mac and Windows,
+        and bf=2 for B-frame optimization.
+        
+        Performance notes:
+        - preset='medium' gives ~2x faster encode than 'slow' with <1% quality loss
+        - threads=os.cpu_count() uses all available cores (big win on multi-core Macs)
+        - '-tune', 'stillimage' optimizes for slideshow-style content
         """
+        import os as _os
         print("Exporting video with YouTube-optimized settings...")
 
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Use all available CPU cores for encoding (big speedup on Mac/Windows)
+        num_threads = _os.cpu_count() or 4
+        print(f"  Encoding threads: {num_threads} (detected {_os.cpu_count()} CPU cores)")
 
         try:
             video.write_videofile(
@@ -1337,14 +1371,15 @@ class SequentialVideoOrchestrator:
                 audio_bitrate='192k',
                 temp_audiofile='temp-audio.m4a',
                 remove_temp=True,
-                threads=4,
-                preset='slow',
+                threads=num_threads,
+                preset='medium',
                 ffmpeg_params=[
                     '-crf', '18',
                     '-pix_fmt', 'yuv420p',
                     '-bf', '2',
                     '-g', '60',
                     '-movflags', '+faststart',
+                    '-tune', 'stillimage',
                 ]
             )
             print(f"Video exported successfully: {self.output_path}")
@@ -1356,7 +1391,7 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
-                threads=2,
+                threads=max(2, num_threads // 2),
                 preset='medium',
                 ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
             )

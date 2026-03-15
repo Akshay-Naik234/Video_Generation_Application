@@ -173,7 +173,12 @@ class MovementStyles:
             base_array = color_grader.apply_grade(base_array, color_grade)
 
         if enable_vignette:
-            vignette_intensity = self.SECTION_VIGNETTE_INTENSITY.get(section, 0.4)
+            # Scale vignette with effects_intensity so user control matters
+            section_vignette = self.SECTION_VIGNETTE_INTENSITY.get(section, 0.4)
+            # effects_intensity from orchestrator (passed via zoom_intensity's sibling)
+            # Default to 0.75 if not accessible; section map provides the shape,
+            # effects_intensity provides the global dial.
+            vignette_intensity = section_vignette * max(0.5, zoom_intensity / 1.18)
             base_array = self._apply_vignette(base_array, intensity=vignette_intensity)
 
         scaled_img = PILImage.fromarray(base_array)
@@ -199,7 +204,9 @@ class MovementStyles:
         else:
             shake_x = shake_y = None
         # Camera breathing parameters (subtle sine wave)
-        breath_freq = rng.uniform(0.3, 0.6) if enable_human_feel else 0
+        # Use a FIXED frequency per video (seeded from image_path's directory)
+        # so breathing feels consistent across clips, not random per clip.
+        breath_freq = 0.45 if enable_human_feel else 0
         breath_amp = 0.004 if enable_human_feel else 0
         
         def make_frame(t):

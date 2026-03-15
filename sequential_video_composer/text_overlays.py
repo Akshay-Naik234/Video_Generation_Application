@@ -47,7 +47,7 @@ class TextOverlayEngine:
 
     # Section-to-chapter-title mapping for automatic chapter cards
     SECTION_TITLES = {
-        'COLD_OPEN': '',
+        'COLD_OPEN': 'Prologue',
         'EARLY_LIFE': 'The Early Years',
         'THE_SPARK': 'The Turning Point',
         'THE_RISE': 'The Rise',
