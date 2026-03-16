@@ -1,17 +1,21 @@
 """Sequential Video Orchestrator - Main orchestration class."""
 
+import os
 import re
 import json
 import random
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
 
+import numpy as np
 from moviepy.editor import AudioFileClip, CompositeVideoClip
+from moviepy.video.VideoClip import VideoClip
 
 from .transitions import TransitionEffects
 from .movements import MovementStyles
 from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
+from .text_overlays import TextOverlayEngine
 
 
 class SequentialVideoOrchestrator:
@@ -35,6 +39,8 @@ class SequentialVideoOrchestrator:
         color_grade: str = "cinematic",
         enable_vignette: bool = True,
         enable_film_grain: bool = False,
+        enable_text_overlays: bool = True,
+        overlay_accent_color: Tuple[int, int, int] = (218, 165, 32),
         duration_config_path: Optional[Union[str, Path]] = None
     ):
         self.images_root = Path(images_root)
@@ -52,8 +58,11 @@ class SequentialVideoOrchestrator:
         self.color_grade = color_grade
         self.enable_vignette = enable_vignette
         self.enable_film_grain = enable_film_grain
+        self.enable_text_overlays = enable_text_overlays
+        self.overlay_accent_color = overlay_accent_color
         self.duration_config_path = Path(duration_config_path) if duration_config_path else None
         self.image_durations: Dict[int, Dict] = {}
+        self.overlay_texts: Dict[int, str] = {}
         self.total_video_duration: float = 0
 
         if self.duration_config_path:
@@ -63,6 +72,7 @@ class SequentialVideoOrchestrator:
         self.movements = MovementStyles(resolution)
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
+        self.text_overlay_engine = TextOverlayEngine(resolution)
 
     def _load_duration_config(self) -> None:
         """Load image durations and timing from JSON configuration file."""
@@ -83,6 +93,7 @@ class SequentialVideoOrchestrator:
                 duration = img_data.get('duration')
                 start_time = img_data.get('start_time')
                 end_time = img_data.get('end_time')
+                overlay_text = img_data.get('overlay_text', '')
                 
                 if image_num is not None:
                     self.image_durations[image_num] = {
@@ -90,8 +101,12 @@ class SequentialVideoOrchestrator:
                         'start_time': float(start_time) if start_time is not None else None,
                         'end_time': float(end_time) if end_time is not None else None
                     }
+                    if overlay_text:
+                        self.overlay_texts[image_num] = overlay_text
 
             print(f"Loaded timing data for {len(self.image_durations)} images from config")
+            if self.overlay_texts:
+                print(f"Found {len(self.overlay_texts)} overlay text entries")
             if self.total_video_duration:
                 print(f"Total video duration from config: {self.total_video_duration}s")
         except (json.JSONDecodeError, KeyError) as e:
@@ -232,6 +247,11 @@ class SequentialVideoOrchestrator:
             )
             overlays.append(grain)
 
+        # Text overlays from duration config
+        if self.enable_text_overlays and self.overlay_texts:
+            text_clips = self._create_text_overlay_clips(clips_data)
+            overlays.extend(text_clips)
+
         if len(overlays) > 1:
             main_video = CompositeVideoClip(overlays)
 
@@ -244,6 +264,67 @@ class SequentialVideoOrchestrator:
 
         self._export_video(main_video)
         print(f"Video created successfully: {self.output_path}")
+
+    def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
+        """Create MoviePy clips for all overlay text entries.
+
+        Each overlay text is rendered once as a static RGBA image using
+        TextOverlayEngine, then turned into a VideoClip positioned at the
+        corresponding image's start_time. The overlay fades in and out
+        smoothly and is displayed for the image's duration.
+
+        This is lightweight: each overlay is a single pre-rendered image
+        (not per-frame computation), so it adds minimal render time.
+        """
+        text_clips = []
+        engine = self.text_overlay_engine
+
+        print(f"\nCreating {len(self.overlay_texts)} text overlays...")
+
+        for data in clips_data:
+            image_num = data.get('image_num')
+            if image_num not in self.overlay_texts:
+                continue
+
+            overlay_text = self.overlay_texts[image_num]
+            start_time = data.get('start_time')
+            duration = data.get('duration', 0)
+
+            if start_time is None or duration <= 0:
+                continue
+
+            # Render the overlay as a static RGBA frame
+            overlay_rgba = engine.render_overlay_text(overlay_text)
+
+            # Split into RGB and alpha mask
+            rgb_frame = overlay_rgba[:, :, :3]
+            alpha_mask = overlay_rgba[:, :, 3].astype(np.float64) / 255.0
+
+            # Create a static image clip (no per-frame computation)
+            def make_frame(_t, _rgb=rgb_frame):
+                return _rgb
+
+            def make_mask(_t, _alpha=alpha_mask):
+                return _alpha
+
+            clip = VideoClip(make_frame, duration=duration)
+            clip = clip.set_fps(1)  # Static image, 1fps is enough
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True)
+            mask_clip = mask_clip.set_fps(1)
+            clip = clip.set_mask(mask_clip)
+
+            # Fade in/out for smooth appearance (0.5s in, 0.4s out)
+            fade_in = min(0.5, duration * 0.15)
+            fade_out = min(0.4, duration * 0.12)
+            clip = clip.set_start(start_time).crossfadein(fade_in).crossfadeout(fade_out)
+
+            text_clips.append(clip)
+
+            overlay_type = TextOverlayEngine.classify_overlay_text(overlay_text)
+            print(f"  Image {image_num}: [{overlay_type}] \"{overlay_text[:50]}...\" "
+                  f"at {start_time:.1f}s ({duration:.1f}s)")
+
+        return text_clips
 
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings."""

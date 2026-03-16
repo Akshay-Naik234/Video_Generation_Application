@@ -12,5 +12,6 @@
   "color_grade": "cinematic",
   "enable_vignette": true,
   "enable_film_grain": false,
+  "enable_text_overlays": true,
   "audio": "../examples/audio/narration.mp3"
 }

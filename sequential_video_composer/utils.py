@@ -20,6 +20,7 @@ def create_sequential_video(
     color_grade: str = "cinematic",
     enable_vignette: bool = True,
     enable_film_grain: bool = False,
+    enable_text_overlays: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
@@ -39,6 +40,7 @@ def create_sequential_video(
         color_grade: Color grading style - 'cinematic', 'documentary', 'vintage', etc.
         enable_vignette: Enable vignette effect
         enable_film_grain: Enable film grain overlay
+        enable_text_overlays: Enable stylish text overlay rendering from duration config
         duration_config_path: Optional path to JSON file with per-image durations
     """
     from .orchestrator import SequentialVideoOrchestrator
@@ -58,6 +60,7 @@ def create_sequential_video(
         color_grade=color_grade,
         enable_vignette=enable_vignette,
         enable_film_grain=enable_film_grain,
+        enable_text_overlays=enable_text_overlays,
         duration_config_path=duration_config_path
     )
     orchestrator.create_video()
@@ -105,5 +108,6 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         color_grade=config.get('color_grade', 'cinematic'),
         enable_vignette=config.get('enable_vignette', True),
         enable_film_grain=config.get('enable_film_grain', False),
+        enable_text_overlays=config.get('enable_text_overlays', True),
         duration_config_path=duration_config_path
     )
