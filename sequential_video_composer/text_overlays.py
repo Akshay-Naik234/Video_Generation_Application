@@ -88,9 +88,14 @@ class TextOverlayEngine:
     _resolved_regular: Optional[str] = None
     _resolved_bold: Optional[str] = None
 
-    def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
+    # Default accent color (golden)
+    DEFAULT_ACCENT_COLOR = (218, 165, 32)
+
+    def __init__(self, resolution: Tuple[int, int] = (1920, 1080),
+                 accent_color: Tuple[int, int, int] = (218, 165, 32)):
         self.width, self.height = resolution
         self.scale = self.height / 1080.0
+        self.accent_color = accent_color
 
     # ---- Font discovery ----
 
@@ -972,27 +977,35 @@ class TextOverlayEngine:
         # Default: info card (works for dates, facts, short context text)
         return 'info_card'
 
-    def render_overlay_text(self, text: str) -> np.ndarray:
+    def render_overlay_text(self, text: str,
+                             accent_color: Optional[Tuple[int, int, int]] = None
+                             ) -> np.ndarray:
         """Auto-classify and render overlay text into the appropriate visual style.
 
         This is the main entry point for the orchestrator. Given any overlay_text
         string from the duration config JSON, it determines the best visual
         representation and renders it.
+
+        Args:
+            text: The overlay text from image_display_duration.json.
+            accent_color: Optional override for the accent color. If None,
+                          uses the instance's accent_color (set at init).
         """
         import re as _re
         overlay_type = self.classify_overlay_text(text)
         stripped = text.strip()
+        ac = accent_color or self.accent_color
 
         if overlay_type == 'year_stamp':
-            return self.create_year_stamp(stripped)
+            return self.create_year_stamp(stripped, accent_color=ac)
 
         elif overlay_type == 'date_location':
             parts = _re.split(r'\s*[\||\-\u2013\u2014]\s*', stripped, maxsplit=1)
             date_part = parts[0].strip()
             loc_part = parts[1].strip() if len(parts) > 1 else ''
             if _re.match(r'^\d{3,4}$', date_part):
-                return self.create_year_stamp(date_part, label=loc_part)
-            return self.create_date_location_stamp(date_part, loc_part)
+                return self.create_year_stamp(date_part, label=loc_part, accent_color=ac)
+            return self.create_date_location_stamp(date_part, loc_part, accent_color=ac)
 
         elif overlay_type == 'quote':
             parts = _re.split(r'\s*[\u2014\u2013]\s*|\s+--\s+', stripped, maxsplit=1)
@@ -1000,7 +1013,7 @@ class TextOverlayEngine:
             attribution = parts[1].strip() if len(parts) > 1 else ''
             # Strip quote marks
             quote_text = _re.sub(r'^[\u201C\u201D\u2018\u2019"\']+|[\u201C\u201D\u2018\u2019"\']+$', '', quote_text).strip()
-            return self.create_quote_card(quote_text, attribution)
+            return self.create_quote_card(quote_text, attribution, accent_color=ac)
 
         elif overlay_type == 'lower_third':
             parts = _re.split(r'\s*[\u2014\u2013]\s*|\s+--\s+', stripped, maxsplit=1)
@@ -1008,8 +1021,8 @@ class TextOverlayEngine:
             title = parts[1].strip() if len(parts) > 1 else ''
             # Strip any quotes from name
             name = _re.sub(r'^[\u201C\u201D\u2018\u2019"\']+|[\u201C\u201D\u2018\u2019"\']+$', '', name).strip()
-            return self.create_lower_third(name, title)
+            return self.create_lower_third(name, title, accent_color=ac)
 
         else:
             # info_card / default
-            return self.create_slide_in_overlay(stripped, progress=1.0)
+            return self.create_slide_in_overlay(stripped, progress=1.0, accent_color=ac)

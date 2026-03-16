@@ -72,7 +72,7 @@ class SequentialVideoOrchestrator:
         self.movements = MovementStyles(resolution)
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
-        self.text_overlay_engine = TextOverlayEngine(resolution)
+        self.text_overlay_engine = TextOverlayEngine(resolution, accent_color=overlay_accent_color)
 
     def _load_duration_config(self) -> None:
         """Load image durations and timing from JSON configuration file."""
