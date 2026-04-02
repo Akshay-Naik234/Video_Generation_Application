@@ -13,5 +13,6 @@
     "color_grade": "cinematic",
     "enable_vignette": true,
     "enable_film_grain": false,
+    "enable_text_overlays": true,
     "duration_config": "image_display_duration.json"
 }
