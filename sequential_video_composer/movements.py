@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 
 import numpy as np
-from PIL import Image as PILImage
+from PIL import Image as PILImage, ImageFilter
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
@@ -69,12 +69,20 @@ class MovementStyles:
             new_width = int(scaled_height * orig_aspect)
         
         resized_img = base_img.resize((new_width, new_height), PILImage.LANCZOS)
-        
-        canvas = PILImage.new('RGB', (scaled_width, scaled_height), (0, 0, 0))
+
+        # Use a blurred, darkened version of the image as the canvas so any
+        # letterbox area (source aspect != target aspect) shows a soft
+        # extension of the image instead of a hard black bar when the
+        # Ken Burns pan/zoom nears the edge of the frame.
+        background = base_img.resize((scaled_width, scaled_height), PILImage.LANCZOS)
+        background = background.filter(ImageFilter.GaussianBlur(radius=max(20, scaled_height // 40)))
+        bg_array = np.array(background).astype(np.float32) * 0.45
+        canvas = PILImage.fromarray(np.clip(bg_array, 0, 255).astype(np.uint8))
+
         paste_x = (scaled_width - new_width) // 2
         paste_y = (scaled_height - new_height) // 2
         canvas.paste(resized_img, (paste_x, paste_y))
-        
+
         base_img = canvas
         base_array = np.array(base_img)
 

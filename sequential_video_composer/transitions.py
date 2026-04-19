@@ -70,15 +70,25 @@ class TransitionEffects:
     def _slide(
         self, clip1: ImageClip, clip2: ImageClip, duration: float, direction: str
     ) -> CompositeVideoClip:
-        """Slide transition in specified direction."""
+        """Slide transition in specified direction with eased motion.
+
+        Uses a cubic ease-out so the incoming clip decelerates into its final
+        position rather than sliding at constant velocity — this eliminates the
+        abrupt "stop" at the end of a linear slide.
+        """
+        def ease(t: float) -> float:
+            # Cubic ease-out: fast start, gentle landing.
+            p = max(0.0, min(1.0, t / duration))
+            return 1.0 - (1.0 - p) ** 3
+
         if direction == 'left':
-            pos_func = lambda t: (self.width - (self.width * t / duration), 0)
+            pos_func = lambda t: (self.width * (1.0 - ease(t)), 0)
         elif direction == 'right':
-            pos_func = lambda t: (-self.width + (self.width * t / duration), 0)
+            pos_func = lambda t: (-self.width * (1.0 - ease(t)), 0)
         elif direction == 'up':
-            pos_func = lambda t: (0, self.height - (self.height * t / duration))
+            pos_func = lambda t: (0, self.height * (1.0 - ease(t)))
         else:
-            pos_func = lambda t: (0, -self.height + (self.height * t / duration))
+            pos_func = lambda t: (0, -self.height * (1.0 - ease(t)))
 
         clip2_moving = clip2.set_start(clip1.duration - duration).set_position(pos_func)
         return CompositeVideoClip([clip1, clip2_moving])
@@ -118,7 +128,16 @@ class TransitionEffects:
     def _wipe(
         self, clip1: ImageClip, clip2: ImageClip, duration: float, direction: str
     ) -> CompositeVideoClip:
-        """Wipe transition effect."""
-        clip1_fade = clip1.fadeout(duration * 0.3)
-        clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.5)
+        """Wipe-style transition: crossfade with a small directional bias.
+
+        Both clips are overlapped for the full transition window so there is
+        no visible dip to black at the boundary. The wipe flavour is preserved
+        via a slight asymmetry in fade timing.
+        """
+        clip1_fade = clip1.crossfadeout(duration)
+        clip2_fade = (
+            clip2
+            .set_start(clip1.duration - duration)
+            .crossfadein(duration * 0.8)
+        )
         return CompositeVideoClip([clip1_fade, clip2_fade])
