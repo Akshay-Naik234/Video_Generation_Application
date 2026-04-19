@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 
 import numpy as np
-from PIL import Image as PILImage, ImageFilter
+from PIL import Image as PILImage
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
@@ -69,20 +69,12 @@ class MovementStyles:
             new_width = int(scaled_height * orig_aspect)
         
         resized_img = base_img.resize((new_width, new_height), PILImage.LANCZOS)
-
-        # Use a blurred, darkened version of the image as the canvas so any
-        # letterbox area (source aspect != target aspect) shows a soft
-        # extension of the image instead of a hard black bar when the
-        # Ken Burns pan/zoom nears the edge of the frame.
-        background = base_img.resize((scaled_width, scaled_height), PILImage.LANCZOS)
-        background = background.filter(ImageFilter.GaussianBlur(radius=max(20, scaled_height // 40)))
-        bg_array = np.array(background).astype(np.float32) * 0.45
-        canvas = PILImage.fromarray(np.clip(bg_array, 0, 255).astype(np.uint8))
-
+        
+        canvas = PILImage.new('RGB', (scaled_width, scaled_height), (0, 0, 0))
         paste_x = (scaled_width - new_width) // 2
         paste_y = (scaled_height - new_height) // 2
         canvas.paste(resized_img, (paste_x, paste_y))
-
+        
         base_img = canvas
         base_array = np.array(base_img)
 
@@ -97,34 +89,45 @@ class MovementStyles:
         center_x = scaled_width / 2.0
         center_y = scaled_height / 2.0
         
+        out_w, out_h = self.resolution
+
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
             progress = max(0.0, min(1.0, progress))
             eased = self._ease_in_out_cubic(progress)
-            
+
             zoom, pan_x, pan_y = self._calculate_movement(
                 movement_type, eased, zoom_intensity
             )
-            
+
             crop_width = self.width / zoom
             crop_height = self.height / zoom
-            
+
             offset_x = pan_x * crop_width * 0.5
             offset_y = pan_y * crop_height * 0.5
-            
+
             left = center_x - crop_width / 2.0 + offset_x
             top = center_y - crop_height / 2.0 + offset_y
-            right = left + crop_width
-            bottom = top + crop_height
-            
-            left = max(0, min(left, scaled_width - crop_width))
-            top = max(0, min(top, scaled_height - crop_height))
-            right = left + crop_width
-            bottom = top + crop_height
-            
-            cropped = scaled_img.crop((int(left), int(top), int(right), int(bottom)))
-            
-            final = cropped.resize(self.resolution, PILImage.LANCZOS)
+
+            # Clamp with floats (not ints) so motion stays smooth at the
+            # edges and we never snap to integer pixel boundaries.
+            left = max(0.0, min(left, scaled_width - crop_width))
+            top = max(0.0, min(top, scaled_height - crop_height))
+
+            # Use a single affine transform with sub-pixel coordinates rather
+            # than PIL.Image.crop()+resize(). Integer cropping produces the
+            # classic "Ken Burns shake": a slow pan of e.g. 0.3 px/frame
+            # snaps 0,0,0,1,0,0,1,... and the image visibly stutters/jitters
+            # every ~4 frames. An affine transform with float offsets gives
+            # true sub-pixel motion.
+            sx = crop_width / out_w
+            sy = crop_height / out_h
+            final = scaled_img.transform(
+                (out_w, out_h),
+                PILImage.AFFINE,
+                (sx, 0.0, left, 0.0, sy, top),
+                resample=PILImage.BICUBIC,
+            )
             return np.array(final)
         
         from moviepy.video.VideoClip import VideoClip
