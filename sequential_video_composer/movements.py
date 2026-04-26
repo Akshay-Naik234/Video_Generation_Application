@@ -89,34 +89,45 @@ class MovementStyles:
         center_x = scaled_width / 2.0
         center_y = scaled_height / 2.0
         
+        out_w, out_h = self.resolution
+
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
             progress = max(0.0, min(1.0, progress))
             eased = self._ease_in_out_cubic(progress)
-            
+
             zoom, pan_x, pan_y = self._calculate_movement(
                 movement_type, eased, zoom_intensity
             )
-            
+
             crop_width = self.width / zoom
             crop_height = self.height / zoom
-            
+
             offset_x = pan_x * crop_width * 0.5
             offset_y = pan_y * crop_height * 0.5
-            
+
             left = center_x - crop_width / 2.0 + offset_x
             top = center_y - crop_height / 2.0 + offset_y
-            right = left + crop_width
-            bottom = top + crop_height
-            
-            left = max(0, min(left, scaled_width - crop_width))
-            top = max(0, min(top, scaled_height - crop_height))
-            right = left + crop_width
-            bottom = top + crop_height
-            
-            cropped = scaled_img.crop((int(left), int(top), int(right), int(bottom)))
-            
-            final = cropped.resize(self.resolution, PILImage.LANCZOS)
+
+            # Clamp with floats (not ints) so motion stays smooth at the
+            # edges and we never snap to integer pixel boundaries.
+            left = max(0.0, min(left, scaled_width - crop_width))
+            top = max(0.0, min(top, scaled_height - crop_height))
+
+            # Use a single affine transform with sub-pixel coordinates rather
+            # than PIL.Image.crop()+resize(). Integer cropping produces the
+            # classic "Ken Burns shake": a slow pan of e.g. 0.3 px/frame
+            # snaps 0,0,0,1,0,0,1,... and the image visibly stutters/jitters
+            # every ~4 frames. An affine transform with float offsets gives
+            # true sub-pixel motion.
+            sx = crop_width / out_w
+            sy = crop_height / out_h
+            final = scaled_img.transform(
+                (out_w, out_h),
+                PILImage.AFFINE,
+                (sx, 0.0, left, 0.0, sy, top),
+                resample=PILImage.BICUBIC,
+            )
             return np.array(final)
         
         from moviepy.video.VideoClip import VideoClip
