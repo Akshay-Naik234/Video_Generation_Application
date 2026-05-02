@@ -61,6 +61,11 @@ class MovementStyles:
         'float_up',
         'reveal_left',
         'reveal_right',
+        # Map & geography movements
+        'map_zoom',
+        'map_pan',
+        # Timeline / chronology
+        'timeline_reveal',
     ]
 
     # Movements grouped by documentary section / emotional tone
@@ -489,6 +494,29 @@ class MovementStyles:
             # Pan from left to right to reveal the scene.
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
             pan_x = -0.15 * (1.0 - self._ease_in_out_quart(eased))
+            return zoom, pan_x, 0
+
+        elif movement_type == 'map_zoom':
+            # Smooth geographic zoom into a map location.
+            # Starts wide, slowly accelerates zoom into focal point.
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.6 * self._ease_in_quad(eased)
+            # Slight drift toward center-bottom where locations often sit
+            pan_y = 0.03 * eased
+            return zoom, 0, pan_y
+
+        elif movement_type == 'map_pan':
+            # Smooth geographic pan across a map (left to right).
+            # Simulates tracing a travel route across the map.
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.18 * self._ease_in_out_quart(eased)
+            pan_y = 0.03 * np.sin(eased * np.pi)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'timeline_reveal':
+            # Progressive left-to-right reveal for timeline images.
+            # Slow pan right with slight zoom to reveal dates/events.
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
+            pan_x = -0.18 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         else:

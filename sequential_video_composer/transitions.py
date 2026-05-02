@@ -52,6 +52,7 @@ class TransitionEffects:
         'push_right',
         'luma_fade',
         'fade_through_warm',
+        'ink_splash',
     ]
 
     # Transitions grouped by documentary section
@@ -104,6 +105,7 @@ class TransitionEffects:
             'push_left': lambda c1, c2, d: self._push(c1, c2, d, 'left'),
             'push_right': lambda c1, c2, d: self._push(c1, c2, d, 'right'),
             'luma_fade': self._luma_fade,
+            'ink_splash': self._ink_splash,
         }.get(transition_type, self._crossfade)
 
         return handler(clip1, clip2, duration)
@@ -428,3 +430,46 @@ class TransitionEffects:
         warm = warm.set_start(clip1.duration - duration).set_opacity(0.4)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, warm])
+
+    def _ink_splash(
+        self, clip1: ImageClip, clip2: ImageClip, duration: float
+    ) -> CompositeVideoClip:
+        """Ink splash: black ink spreads across frame then clears to reveal next image."""
+        overlap_start = clip1.duration - duration
+
+        def ink_mask(t):
+            progress = t / duration if duration > 0 else 1
+            frame = np.zeros((self.height, self.width), dtype=np.float64)
+            # Ink spreads from center outward in first half
+            if progress < 0.5:
+                p = progress * 2  # 0->1 in first half
+                radius = int(max(self.width, self.height) * p * 0.8)
+                cx, cy = self.width // 2, self.height // 2
+                Y, X = np.ogrid[:self.height, :self.width]
+                dist = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2)
+                # Ink blob with rough edges
+                noise = np.random.random((self.height, self.width)) * radius * 0.3
+                mask = (dist - noise) < radius
+                frame[mask] = 1.0
+            else:
+                # Ink clears in second half (show clip2)
+                frame[:] = 1.0
+            return frame
+
+        # clip1 fades to black via ink
+        clip1_part = clip1.fadeout(duration * 0.5)
+        clip2_part = clip2.set_start(overlap_start + duration * 0.4).fadein(duration * 0.3)
+
+        # Black overlay that grows then shrinks
+        def black_ink(t):
+            progress = t / duration if duration > 0 else 1
+            alpha = np.sin(progress * np.pi)  # peaks at 0.5
+            frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+            return frame
+
+        ink = VideoClip(black_ink, duration=duration).set_fps(30)
+        ink = ink.set_start(overlap_start)
+        ink_opacity = lambda t: np.sin(min(t / duration, 1.0) * np.pi) * 0.95
+        ink = ink.set_opacity(0.9)
+
+        return CompositeVideoClip([clip1_part, ink, clip2_part])

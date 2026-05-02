@@ -462,6 +462,68 @@ class DocumentaryEffects:
         clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
+    def create_spotlight(
+        self, duration: float, intensity: float = 0.7
+    ) -> VideoClip:
+        """Spotlight effect: circular illumination on center, rest in shadow."""
+        w, h = self.width, self.height
+        cx, cy = w // 2, h // 2
+        max_radius = int(min(w, h) * 0.35)
+
+        Y, X = np.ogrid[:h, :w]
+        dist_from_center = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float64)
+
+        def make_frame(t):
+            progress = t / duration if duration > 0 else 0
+            # Spotlight slowly drifts and breathes
+            offset_x = int(np.sin(progress * np.pi * 2) * w * 0.03)
+            offset_y = int(np.cos(progress * np.pi * 1.5) * h * 0.02)
+            radius = max_radius + int(np.sin(progress * np.pi) * max_radius * 0.1)
+
+            dist = np.sqrt((X - cx - offset_x) ** 2 + (Y - cy - offset_y) ** 2)
+            # Dark vignette outside spotlight
+            shadow = np.clip((dist - radius) / (radius * 0.5), 0, 1)
+            frame = np.zeros((h, w, 3), dtype=np.uint8)
+            shadow_val = (shadow * 180 * intensity).astype(np.uint8)
+            frame[:, :, 0] = shadow_val
+            frame[:, :, 1] = shadow_val
+            frame[:, :, 2] = shadow_val
+            return frame
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = clip.set_opacity(min(intensity * 0.7, 0.6))
+        return clip
+
+    def create_photo_frame(
+        self, duration: float, intensity: float = 0.7
+    ) -> VideoClip:
+        """Photo frame: 3D border with drop shadow giving physical photo feel."""
+        w, h = self.width, self.height
+        border = int(min(w, h) * 0.04)
+        shadow_offset = int(border * 0.4)
+
+        def make_frame(t):
+            frame = np.zeros((h, w, 3), dtype=np.uint8)
+            # Drop shadow (dark area offset from border)
+            frame[border + shadow_offset:h - border + shadow_offset,
+                  border + shadow_offset:w - border + shadow_offset] = 40
+            # Border area (white/cream frame)
+            frame[0:border, :] = 220  # top border
+            frame[h - border:h, :] = 220  # bottom border
+            frame[:, 0:border] = 220  # left border
+            frame[:, w - border:w] = 220  # right border
+            # Inner shadow on the frame edge
+            inner = int(border * 0.3)
+            frame[border:border + inner, border:w - border] = 180
+            frame[h - border - inner:h - border, border:w - border] = 200
+            frame[border:h - border, border:border + inner] = 180
+            frame[border:h - border, w - border - inner:w - border] = 200
+            return frame
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = clip.set_opacity(min(intensity * 0.5, 0.45))
+        return clip
+
     def get_section_effects(
         self,
         section: str,
@@ -477,6 +539,15 @@ class DocumentaryEffects:
         effect_names = self.SECTION_EFFECTS.get(section, ['film_grain', 'dust_particles'])
         effect_names = effect_names[:max_effects]
 
+        return self.get_effects_by_names(effect_names, duration, effects_intensity)
+
+    def get_effects_by_names(
+        self,
+        effect_names: list,
+        duration: float,
+        effects_intensity: float = 0.7
+    ) -> list:
+        """Create effect clips from a list of effect names."""
         creators = {
             'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
             'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
@@ -490,6 +561,8 @@ class DocumentaryEffects:
             'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
             'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.35),
             'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
+            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.7),
+            'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.6),
         }
 
         clips = []
