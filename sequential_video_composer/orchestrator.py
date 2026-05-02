@@ -1,4 +1,10 @@
-"""Sequential Video Orchestrator - Main orchestration class."""
+"""Sequential Video Orchestrator — Main orchestration class.
+
+Enhanced with documentary-style section-aware animation selection:
+movements, transitions, and visual effects are chosen based on the
+section (COLD_OPEN, EARLY_LIFE, …) and emotional_tone from the
+duration config JSON.
+"""
 
 import os
 import re
@@ -16,6 +22,7 @@ from .movements import MovementStyles
 from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
 from .text_overlays import TextOverlayEngine
+from .effects import DocumentaryEffects
 
 
 class SequentialVideoOrchestrator:
@@ -41,7 +48,8 @@ class SequentialVideoOrchestrator:
         enable_film_grain: bool = False,
         enable_text_overlays: bool = True,
         overlay_accent_color: Tuple[int, int, int] = (218, 165, 32),
-        duration_config_path: Optional[Union[str, Path]] = None
+        duration_config_path: Optional[Union[str, Path]] = None,
+        enable_documentary_effects: bool = True,
     ):
         self.images_root = Path(images_root)
         self.output_path = Path(output_path)
@@ -61,8 +69,12 @@ class SequentialVideoOrchestrator:
         self.enable_text_overlays = enable_text_overlays
         self.overlay_accent_color = overlay_accent_color
         self.duration_config_path = Path(duration_config_path) if duration_config_path else None
+        self.enable_documentary_effects = enable_documentary_effects
         self.image_durations: Dict[int, Dict] = {}
         self.overlay_texts: Dict[int, str] = {}
+        self.image_sections: Dict[int, str] = {}
+        self.image_tones: Dict[int, str] = {}
+        self.image_shot_types: Dict[int, str] = {}
         self.total_video_duration: float = 0
 
         if self.duration_config_path:
@@ -73,9 +85,10 @@ class SequentialVideoOrchestrator:
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
         self.text_overlay_engine = TextOverlayEngine(resolution, accent_color=overlay_accent_color)
+        self.effects = DocumentaryEffects(resolution)
 
     def _load_duration_config(self) -> None:
-        """Load image durations and timing from JSON configuration file."""
+        """Load image durations, timing, sections, and tones from JSON config."""
         if not self.duration_config_path or not self.duration_config_path.exists():
             print(f"Duration config file not found: {self.duration_config_path}")
             return
@@ -86,7 +99,7 @@ class SequentialVideoOrchestrator:
 
             metadata = config.get('video_metadata', {})
             self.total_video_duration = metadata.get('total_duration_seconds', 0)
-            
+
             images_data = config.get('images', [])
             for img_data in images_data:
                 image_num = img_data.get('image')
@@ -94,7 +107,10 @@ class SequentialVideoOrchestrator:
                 start_time = img_data.get('start_time')
                 end_time = img_data.get('end_time')
                 overlay_text = img_data.get('overlay_text', '')
-                
+                section = img_data.get('section', '')
+                tone = img_data.get('emotional_tone', '')
+                shot_type = img_data.get('shot_type', '')
+
                 if image_num is not None:
                     self.image_durations[image_num] = {
                         'duration': float(duration) if duration is not None else self.image_duration,
@@ -103,10 +119,18 @@ class SequentialVideoOrchestrator:
                     }
                     if overlay_text:
                         self.overlay_texts[image_num] = overlay_text
+                    if section:
+                        self.image_sections[image_num] = section
+                    if tone:
+                        self.image_tones[image_num] = tone
+                    if shot_type:
+                        self.image_shot_types[image_num] = shot_type
 
             print(f"Loaded timing data for {len(self.image_durations)} images from config")
             if self.overlay_texts:
                 print(f"Found {len(self.overlay_texts)} overlay text entries")
+            if self.image_sections:
+                print(f"Found section data for {len(self.image_sections)} images")
             if self.total_video_duration:
                 print(f"Total video duration from config: {self.total_video_duration}s")
         except (json.JSONDecodeError, KeyError) as e:
@@ -156,8 +180,26 @@ class SequentialVideoOrchestrator:
 
         return numbered_images
 
-    def _get_movement_for_image(self, index: int, total: int) -> str:
-        """Get movement style for an image based on its position."""
+    def _get_movement_for_image(self, index: int, total: int, image_num: int = 0) -> str:
+        """Get movement style for an image based on section, tone, and position.
+
+        When a duration config with section/tone data is available, the
+        movement is chosen from section-appropriate and tone-appropriate
+        pools. Otherwise falls back to the legacy position-based logic.
+        """
+        section = self.image_sections.get(image_num, '')
+        tone = self.image_tones.get(image_num, '')
+
+        # Section-aware documentary mode
+        if self.movement_style in ('documentary', 'random') and section:
+            section_pool = MovementStyles.SECTION_MOVEMENTS.get(section, [])
+            tone_pool = MovementStyles.TONE_MOVEMENTS.get(tone, [])
+
+            # Build a weighted pool: section movements + tone movements
+            pool = section_pool + tone_pool
+            if pool:
+                return random.choice(pool)
+
         if self.movement_style == "random":
             return random.choice(MovementStyles.MOVEMENT_TYPES)
         elif self.movement_style == "sequential":
@@ -175,13 +217,28 @@ class SequentialVideoOrchestrator:
             else:
                 return random.choice(['zoom_out', 'focus_center', 'gentle_drift'])
         elif self.movement_style == "documentary":
-            subtle_movements = ['zoom_in', 'gentle_drift', 'zoom_out', 'focus_center', 'breathing', 'minimal']
+            subtle_movements = [
+                'parallax_depth', 'gentle_drift', 'push_in', 'float_up',
+                'breathing', 'crane_up', 'orbit', 'zoom_in',
+            ]
             return subtle_movements[index % len(subtle_movements)]
         else:
             return self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'
 
-    def _get_transition_for_image(self, index: int, total: int) -> str:
-        """Get transition style for an image based on its position."""
+    def _get_transition_for_image(self, index: int, total: int, image_num: int = 0) -> str:
+        """Get transition style for an image based on section and position.
+
+        When section data is available, uses section-appropriate transitions
+        for documentary feel. Otherwise falls back to legacy logic.
+        """
+        section = self.image_sections.get(image_num, '')
+
+        # Section-aware mode
+        if self.transition_style in ('cinematic', 'random') and section:
+            section_pool = TransitionEffects.SECTION_TRANSITIONS.get(section, [])
+            if section_pool:
+                return random.choice(section_pool)
+
         if self.transition_style == "random":
             return random.choice(TransitionEffects.TRANSITION_TYPES)
         elif self.transition_style == "sequential":
@@ -207,7 +264,7 @@ class SequentialVideoOrchestrator:
 
     def create_video(self) -> None:
         """Main method to create the sequential video with professional effects."""
-        print("Starting Sequential Video Orchestrator (Enhanced)...")
+        print("Starting Sequential Video Orchestrator (Documentary Enhanced)...")
         print(f"Images root: {self.images_root}")
         print(f"Output path: {self.output_path}")
         print(f"Resolution: {self.resolution}")
@@ -215,6 +272,7 @@ class SequentialVideoOrchestrator:
         print(f"Transition style: {self.transition_style}")
         print(f"Movement style: {self.movement_style}")
         print(f"Color grade: {self.color_grade}")
+        print(f"Documentary effects: {self.enable_documentary_effects}")
         if self.total_video_duration:
             print(f"Target video duration: {self.total_video_duration}s")
 
@@ -233,19 +291,25 @@ class SequentialVideoOrchestrator:
 
         overlays = [main_video]
 
-        if self.effects_intensity > 0.3:
-            particles = self.clip_factory.create_particle_overlay(
-                main_video.duration,
-                self.effects_intensity * 0.15
-            )
-            overlays.append(particles)
+        # Documentary effects (section-aware overlays)
+        if self.enable_documentary_effects:
+            doc_overlays = self._create_documentary_effect_overlays(clips_data)
+            overlays.extend(doc_overlays)
+        else:
+            # Legacy particle/grain overlays
+            if self.effects_intensity > 0.3:
+                particles = self.clip_factory.create_particle_overlay(
+                    main_video.duration,
+                    self.effects_intensity * 0.15
+                )
+                overlays.append(particles)
 
-        if self.enable_film_grain and self.effects_intensity > 0.5:
-            grain = self.clip_factory.create_film_grain_overlay(
-                main_video.duration,
-                self.effects_intensity * 0.1
-            )
-            overlays.append(grain)
+            if self.enable_film_grain and self.effects_intensity > 0.5:
+                grain = self.clip_factory.create_film_grain_overlay(
+                    main_video.duration,
+                    self.effects_intensity * 0.1
+                )
+                overlays.append(grain)
 
         # Text overlays from duration config
         if self.enable_text_overlays and self.overlay_texts:
@@ -265,17 +329,59 @@ class SequentialVideoOrchestrator:
         self._export_video(main_video)
         print(f"Video created successfully: {self.output_path}")
 
-    def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
-        """Create MoviePy clips for all overlay text entries.
+    def _create_documentary_effect_overlays(self, clips_data: List[Dict]) -> List:
+        """Create section-aware documentary effect overlays.
 
-        Each overlay text is rendered once as a static RGBA image using
-        TextOverlayEngine, then turned into a VideoClip positioned at the
-        corresponding image's start_time. The overlay fades in and out
-        smoothly and is displayed for the image's duration.
-
-        This is lightweight: each overlay is a single pre-rendered image
-        (not per-frame computation), so it adds minimal render time.
+        Groups consecutive images by section, then applies the appropriate
+        visual effects (film grain, light leaks, dust particles, etc.) as
+        overlays spanning each section's time range.
         """
+        if not self.image_sections:
+            # No section data — apply global light effects
+            dur = clips_data[-1].get('end_time') or clips_data[-1].get('start_time', 0) + clips_data[-1].get('duration', 0)
+            if dur <= 0:
+                return []
+            return [
+                self.effects.create_film_grain(dur, self.effects_intensity * 0.12),
+                self.effects.create_dust_particles(dur, self.effects_intensity * 0.15),
+            ]
+
+        # Group clips by section to find time ranges
+        sections: Dict[str, Dict] = {}
+        for data in clips_data:
+            img_num = data.get('image_num')
+            section = self.image_sections.get(img_num, 'UNKNOWN')
+            start = data.get('start_time', 0) or 0
+            end = data.get('end_time') or (start + data.get('duration', 0))
+
+            if section not in sections:
+                sections[section] = {'start': start, 'end': end}
+            else:
+                sections[section]['start'] = min(sections[section]['start'], start)
+                sections[section]['end'] = max(sections[section]['end'], end)
+
+        effect_clips = []
+        print(f"\nCreating documentary effect overlays for {len(sections)} sections...")
+
+        for section, times in sections.items():
+            sec_duration = times['end'] - times['start']
+            if sec_duration <= 0:
+                continue
+
+            section_effects = self.effects.get_section_effects(
+                section, sec_duration, self.effects_intensity, max_effects=2
+            )
+            for fx in section_effects:
+                fx = fx.set_start(times['start'])
+                effect_clips.append(fx)
+
+            print(f"  {section}: {times['start']:.1f}s - {times['end']:.1f}s "
+                  f"({sec_duration:.1f}s) — {len(section_effects)} effects")
+
+        return effect_clips
+
+    def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
+        """Create MoviePy clips for all overlay text entries."""
         text_clips = []
         engine = self.text_overlay_engine
 
@@ -293,14 +399,11 @@ class SequentialVideoOrchestrator:
             if start_time is None or duration <= 0:
                 continue
 
-            # Render the overlay as a static RGBA frame
             overlay_rgba = engine.render_overlay_text(overlay_text)
 
-            # Split into RGB and alpha mask
             rgb_frame = overlay_rgba[:, :, :3]
             alpha_mask = overlay_rgba[:, :, 3].astype(np.float64) / 255.0
 
-            # Create a static image clip (no per-frame computation)
             def make_frame(_t, _rgb=rgb_frame):
                 return _rgb
 
@@ -308,12 +411,11 @@ class SequentialVideoOrchestrator:
                 return _alpha
 
             clip = VideoClip(make_frame, duration=duration)
-            clip = clip.set_fps(1)  # Static image, 1fps is enough
+            clip = clip.set_fps(1)
             mask_clip = VideoClip(make_mask, duration=duration, ismask=True)
             mask_clip = mask_clip.set_fps(1)
             clip = clip.set_mask(mask_clip)
 
-            # Fade in/out for smooth appearance (0.5s in, 0.4s out)
             fade_in = min(0.5, duration * 0.15)
             fade_out = min(0.4, duration * 0.12)
             clip = clip.set_start(start_time).crossfadein(fade_in).crossfadeout(fade_out)

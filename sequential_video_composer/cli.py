@@ -43,11 +43,17 @@ Image Naming Convention:
 
 Transition Styles:
   random, sequential, cinematic, crossfade, slide_left, slide_right, slide_up, slide_down,
-  zoom_in, zoom_out, fade_through_black, fade_through_white, wipe_left, wipe_right
+  zoom_in, zoom_out, fade_through_black, fade_through_white, wipe_left, wipe_right,
+  whip_pan, light_leak, film_burn, glitch, blur_through, flash_cut, iris_wipe,
+  morph_dissolve, zoom_blur, push_left, push_right, luma_fade, fade_through_warm
 
 Movement Styles:
-  random, sequential, dramatic_sequence, zoom_in, zoom_out, pan_left, pan_right, pan_up,
-  pan_down, diagonal_tl_br, diagonal_tr_bl, breathing, dramatic_zoom, gentle_drift, focus_center
+  random, sequential, dramatic_sequence, documentary,
+  zoom_in, zoom_out, pan_left, pan_right, pan_up, pan_down,
+  diagonal_tl_br, diagonal_tr_bl, breathing, dramatic_zoom, gentle_drift, focus_center,
+  parallax_depth, push_in, push_out, orbit, whip_pan, dolly_zoom, handheld_drift,
+  crane_up, crane_down, spiral_zoom, tilt_shift, dutch_tilt, rack_focus, bounce_zoom,
+  float_up, reveal_left, reveal_right
 
 Color Grades:
   cinematic, documentary, vintage, modern, warm, cool, high_contrast, soft, dramatic, natural
@@ -167,6 +173,19 @@ Color Grades:
         help='Path to JSON file with per-image durations (overrides --duration)'
     )
 
+    parser.add_argument(
+        '--documentary-effects',
+        action='store_true',
+        default=True,
+        help='Enable documentary effects (light leaks, film grain, dust, etc.) (default: enabled)'
+    )
+
+    parser.add_argument(
+        '--no-documentary-effects',
+        action='store_true',
+        help='Disable documentary effects'
+    )
+
     args = parser.parse_args()
 
     if args.config:
@@ -203,14 +222,16 @@ Color Grades:
             duration_config_path = None
 
         enable_vignette = args.vignette and not args.no_vignette
+        enable_documentary_effects = args.documentary_effects and not args.no_documentary_effects
 
         print(f"Creating video from images in: {images_path}")
         print(f"  Transition style: {args.transition}")
         print(f"  Movement style: {args.movement}")
         print(f"  Color grade: {args.color_grade}")
+        print(f"  Documentary effects: {enable_documentary_effects}")
         if duration_config_path:
             print(f"  Duration config: {duration_config_path}")
-        
+
         create_sequential_video(
             images_root=images_path,
             output_path=args.output,
@@ -226,7 +247,8 @@ Color Grades:
             color_grade=args.color_grade,
             enable_vignette=enable_vignette,
             enable_film_grain=args.film_grain,
-            duration_config_path=duration_config_path
+            duration_config_path=duration_config_path,
+            enable_documentary_effects=enable_documentary_effects,
         )
 
     else:

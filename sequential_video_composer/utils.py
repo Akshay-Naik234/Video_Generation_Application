@@ -21,10 +21,11 @@ def create_sequential_video(
     enable_vignette: bool = True,
     enable_film_grain: bool = False,
     enable_text_overlays: bool = True,
-    duration_config_path: Optional[Union[str, Path]] = None
+    duration_config_path: Optional[Union[str, Path]] = None,
+    enable_documentary_effects: bool = True,
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
-    
+
     Args:
         images_root: Path to directory containing numbered images (1.png, 2.jpg, etc.)
         output_path: Output video file path
@@ -36,15 +37,18 @@ def create_sequential_video(
         effects_intensity: Overall effects intensity (0.0 to 1.0)
         audio_path: Optional path to audio file
         transition_style: Transition style - 'random', 'sequential', 'cinematic', or specific type
-        movement_style: Movement style - 'random', 'sequential', 'dramatic_sequence', or specific type
+        movement_style: Movement style - 'random', 'sequential', 'dramatic_sequence',
+            'documentary', or specific type
         color_grade: Color grading style - 'cinematic', 'documentary', 'vintage', etc.
         enable_vignette: Enable vignette effect
         enable_film_grain: Enable film grain overlay
         enable_text_overlays: Enable stylish text overlay rendering from duration config
         duration_config_path: Optional path to JSON file with per-image durations
+        enable_documentary_effects: Enable section-aware documentary effects
+            (light leaks, film grain, dust particles, camera shake, etc.)
     """
     from .orchestrator import SequentialVideoOrchestrator
-    
+
     orchestrator = SequentialVideoOrchestrator(
         images_root=images_root,
         output_path=output_path,
@@ -61,7 +65,8 @@ def create_sequential_video(
         enable_vignette=enable_vignette,
         enable_film_grain=enable_film_grain,
         enable_text_overlays=enable_text_overlays,
-        duration_config_path=duration_config_path
+        duration_config_path=duration_config_path,
+        enable_documentary_effects=enable_documentary_effects,
     )
     orchestrator.create_video()
 
@@ -109,5 +114,6 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         enable_vignette=config.get('enable_vignette', True),
         enable_film_grain=config.get('enable_film_grain', False),
         enable_text_overlays=config.get('enable_text_overlays', True),
-        duration_config_path=duration_config_path
+        duration_config_path=duration_config_path,
+        enable_documentary_effects=config.get('enable_documentary_effects', True),
     )

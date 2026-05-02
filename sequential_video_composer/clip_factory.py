@@ -41,7 +41,7 @@ class ClipFactory:
             start_time = timing.get('start_time')
             end_time = timing.get('end_time')
             
-            movement = self.orchestrator._get_movement_for_image(i, total)
+            movement = self.orchestrator._get_movement_for_image(i, total, image_num=num)
             print(f"  Duration: {image_duration}s")
             print(f"  Start time: {start_time}s")
             print(f"  End time: {end_time}s")
@@ -57,7 +57,7 @@ class ClipFactory:
                 enable_vignette=self.orchestrator.enable_vignette
             )
 
-            transition = self.orchestrator._get_transition_for_image(i, total)
+            transition = self.orchestrator._get_transition_for_image(i, total, image_num=num)
             clips_data.append({
                 'clip': clip,
                 'transition': transition,
