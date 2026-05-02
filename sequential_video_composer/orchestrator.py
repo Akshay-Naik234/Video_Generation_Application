@@ -338,7 +338,12 @@ class SequentialVideoOrchestrator:
         """
         if not self.image_sections:
             # No section data — apply global light effects
-            dur = clips_data[-1].get('end_time') or clips_data[-1].get('start_time', 0) + clips_data[-1].get('duration', 0)
+            last = clips_data[-1]
+            end_time = last.get('end_time')
+            if end_time is not None:
+                dur = end_time
+            else:
+                dur = (last.get('start_time') or 0) + last.get('duration', 0)
             if dur <= 0:
                 return []
             return [
