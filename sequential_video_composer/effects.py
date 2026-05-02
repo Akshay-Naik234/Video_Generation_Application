@@ -297,7 +297,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        clip = clip.set_opacity(min(intensity * 1.0, 0.6))
+        clip = clip.set_opacity(min(intensity * 0.7, 0.35))
         return clip
 
     def create_film_scratches(
@@ -395,14 +395,20 @@ class DocumentaryEffects:
         def make_frame(t):
             for ft in flash_times:
                 if ft <= t <= ft + flash_duration:
-                    progress = (t - ft) / flash_duration
-                    brightness = (1.0 - progress) * intensity
-                    val = int(brightness * 255)
-                    return np.full((h, w, 3), val, dtype=np.uint8)
+                    return np.full((h, w, 3), 255, dtype=np.uint8)
             return np.zeros((h, w, 3), dtype=np.uint8)
 
+        def make_mask(t):
+            for ft in flash_times:
+                if ft <= t <= ft + flash_duration:
+                    progress = (t - ft) / flash_duration
+                    brightness = (1.0 - progress) * intensity
+                    return np.full((h, w), brightness * 0.6, dtype=np.float64)
+            return np.zeros((h, w), dtype=np.float64)
+
         clip = VideoClip(make_frame, duration=duration).set_fps(30)
-        clip = clip.set_opacity(0.8)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(30)
+        clip = clip.set_mask(mask_clip)
         return clip
 
     def create_warm_wash(
@@ -424,40 +430,42 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        clip = clip.set_opacity(min(intensity * 1.5, 0.7))
+        clip = clip.set_opacity(min(intensity * 1.0, 0.4))
         return clip
 
     def create_film_burn_overlay(
         self, duration: float, intensity: float = 0.3
     ) -> VideoClip:
-        """Film burn edge effect — warm overexposed edges.
+        """Film burn edge effect — warm overexposed edges only.
 
-        Simulates film damage with warm bright areas creeping in from
-        the frame edges. Used for climactic moments.
+        Simulates film damage with warm bright areas at the very edges
+        of the frame. The center stays clear so the image is always visible.
         """
         w, h = self.width, self.height
 
         def make_frame(t):
-            phase = (t * 0.1) % 1.0
+            phase = (t * 0.15) % 1.0
             y_coords = np.linspace(0, 1, h, dtype=np.float32)[:, np.newaxis]
             x_coords = np.linspace(0, 1, w, dtype=np.float32)[np.newaxis, :]
 
-            # Distance from edges
+            # Distance from edges — steeper falloff so only extreme edges glow
             edge = np.minimum(
                 np.minimum(x_coords, 1 - x_coords),
                 np.minimum(y_coords, 1 - y_coords)
             )
-            burn = np.exp(-edge * (6 + 4 * np.sin(phase * 2 * np.pi)))
+            burn = np.exp(-edge * (15 + 5 * np.sin(phase * 2 * np.pi)))
+            # Clamp: only edges within 10% of frame edge get the burn
+            burn = burn * (edge < 0.12).astype(np.float32)
 
             frame = np.zeros((h, w, 3), dtype=np.float32)
-            frame[:, :, 0] = burn * 255 * intensity
-            frame[:, :, 1] = burn * 180 * intensity
-            frame[:, :, 2] = burn * 80 * intensity
+            frame[:, :, 0] = burn * 200 * intensity
+            frame[:, :, 1] = burn * 120 * intensity
+            frame[:, :, 2] = burn * 40 * intensity
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(12)
-        clip = clip.set_opacity(min(intensity * 1.2, 0.7))
+        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = clip.set_opacity(min(intensity * 0.8, 0.4))
         return clip
 
     def create_spotlight(
