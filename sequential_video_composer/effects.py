@@ -495,31 +495,52 @@ class DocumentaryEffects:
     def create_photo_frame(
         self, duration: float, intensity: float = 0.7
     ) -> VideoClip:
-        """Photo frame: 3D border with drop shadow giving physical photo feel."""
+        """Photo frame: subtle border with inner shadow giving physical photo feel.
+
+        Only renders the thin border edges — the interior is fully transparent
+        so the underlying image shows through cleanly.
+        """
         w, h = self.width, self.height
-        border = int(min(w, h) * 0.04)
-        shadow_offset = int(border * 0.4)
+        border = int(min(w, h) * 0.025)
+
+        # Pre-compute static frame and mask
+        static_frame = np.zeros((h, w, 3), dtype=np.uint8)
+        static_mask = np.zeros((h, w), dtype=np.float64)
+
+        # Border area (cream/white frame)
+        static_frame[0:border, :] = 210
+        static_frame[h - border:h, :] = 210
+        static_frame[:, 0:border] = 210
+        static_frame[:, w - border:w] = 210
+        # Inner shadow on frame edge (slightly darker)
+        inner = max(2, int(border * 0.3))
+        static_frame[border:border + inner, border:w - border] = 170
+        static_frame[h - border - inner:h - border, border:w - border] = 190
+        static_frame[border:h - border, border:border + inner] = 170
+        static_frame[border:h - border, w - border - inner:w - border] = 190
+
+        # Mask: only the border region is visible, interior is transparent
+        static_mask[0:border, :] = 1.0
+        static_mask[h - border:h, :] = 1.0
+        static_mask[:, 0:border] = 1.0
+        static_mask[:, w - border:w] = 1.0
+        static_mask[border:border + inner, border:w - border] = 0.6
+        static_mask[h - border - inner:h - border, border:w - border] = 0.6
+        static_mask[border:h - border, border:border + inner] = 0.6
+        static_mask[border:h - border, w - border - inner:w - border] = 0.6
+
+        opacity = min(intensity * 0.45, 0.35)
+        static_mask *= opacity
 
         def make_frame(t):
-            frame = np.zeros((h, w, 3), dtype=np.uint8)
-            # Drop shadow (dark area offset from border)
-            frame[border + shadow_offset:h - border + shadow_offset,
-                  border + shadow_offset:w - border + shadow_offset] = 40
-            # Border area (white/cream frame)
-            frame[0:border, :] = 220  # top border
-            frame[h - border:h, :] = 220  # bottom border
-            frame[:, 0:border] = 220  # left border
-            frame[:, w - border:w] = 220  # right border
-            # Inner shadow on the frame edge
-            inner = int(border * 0.3)
-            frame[border:border + inner, border:w - border] = 180
-            frame[h - border - inner:h - border, border:w - border] = 200
-            frame[border:h - border, border:border + inner] = 180
-            frame[border:h - border, w - border - inner:w - border] = 200
-            return frame
+            return static_frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        clip = clip.set_opacity(min(intensity * 0.5, 0.45))
+        def make_mask(t):
+            return static_mask
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(4)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(4)
+        clip = clip.set_mask(mask_clip)
         return clip
 
     def get_section_effects(

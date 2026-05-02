@@ -116,8 +116,8 @@ class MovementStyles:
             base_img = base_img.convert('RGB')
 
         max_zoom = max(zoom_intensity, 1.35)
-        scaled_width = int(self.width * max_zoom * 1.3)
-        scaled_height = int(self.height * max_zoom * 1.3)
+        scaled_width = int(self.width * max_zoom * 1.6)
+        scaled_height = int(self.height * max_zoom * 1.6)
 
         orig_width, orig_height = base_img.size
         orig_aspect = orig_width / orig_height
