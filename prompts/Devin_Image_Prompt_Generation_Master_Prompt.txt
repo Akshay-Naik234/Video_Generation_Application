@@ -44,14 +44,17 @@ The video system reads your JSON to:
 - Add hook overlays, chapter cards, and CTA end screens
 
 DOCUMENTARY ANIMATION SYSTEM (v2.0):
-The video system now uses section + emotional_tone to automatically select from 30 movement styles,
+The video system now uses section + emotional_tone to automatically select from 31 movement styles,
 24 transition types, and 12 cinematic effect overlays. Your JSON fields directly control which
 animations are applied:
 
   section -> selects movement pool (e.g., COLD_OPEN: dramatic_zoom, push_in, handheld_drift)
   emotional_tone -> refines movement choice (e.g., tension: dutch_tilt, rack_focus; triumph: crane_up, dolly_zoom)
+  shot_type -> guides framing and composition for image generation (extreme_closeup, closeup, medium, wide, aerial, etc.)
+  color_temperature -> guides color grading per section (warm, cool, neutral, golden, mixed)
   section -> selects transition pool (e.g., THE_CONFLICT: glitch, flash_cut, whip_pan)
   section -> selects effect overlays (e.g., EARLY_LIFE: light_leak + dust_particles; THE_CLIMAX: film_burn + flash_strobe)
+  overlay_text -> renders on-screen text overlays (dates, locations, quotes, names, financial figures)
 
 Available movement styles per section:
   COLD_OPEN: dramatic_zoom, push_in, handheld_drift, rack_focus, dutch_tilt
@@ -64,6 +67,15 @@ Available movement styles per section:
   LEGACY: parallax_depth, gentle_drift, zoom_out, float_up, orbit
   CTA: zoom_out, gentle_drift, breathing, minimal, parallax_depth
 
+Emotional tone -> movement refinement:
+  tension: handheld_drift, dutch_tilt, push_in, rack_focus, whip_pan
+  nostalgia: gentle_drift, parallax_depth, float_up, breathing, zoom_in
+  hope: crane_up, float_up, reveal_left, parallax_depth, zoom_in
+  darkness: dutch_tilt, handheld_drift, push_in, crane_down, rack_focus
+  devastation: handheld_drift, zoom_out, crane_down, dutch_tilt, breathing
+  triumph: crane_up, dolly_zoom, orbit, spiral_zoom, dramatic_zoom
+  bittersweet: parallax_depth, gentle_drift, float_up, zoom_out, breathing
+
 Available transition types per section:
   COLD_OPEN: flash_cut, glitch, whip_pan, fade_through_black, zoom_blur
   EARLY_LIFE: crossfade, light_leak, morph_dissolve, fade_through_warm, luma_fade
@@ -75,7 +87,32 @@ Available transition types per section:
   LEGACY: light_leak, crossfade, fade_through_warm, morph_dissolve, luma_fade
   CTA: crossfade, fade_through_black, morph_dissolve, light_leak, luma_fade
 
-This means your timing, sections, emotional_tone, and overlay_text MUST be accurate — they directly control the final video animations.
+Available cinematic effect overlays per section (auto-applied, 2 per section):
+  COLD_OPEN: film_grain, vignette_pulse, camera_shake, chromatic_aberration
+  EARLY_LIFE: light_leak, dust_particles, film_grain, warm_wash
+  THE_SPARK: light_leak, film_grain, dust_particles, lens_flare
+  THE_RISE: lens_flare, light_leak, film_grain, dust_particles
+  THE_CONFLICT: camera_shake, chromatic_aberration, film_scratches, film_grain
+  THE_CLIMAX: flash_strobe, film_burn_overlay, vignette_pulse, film_grain
+  THE_FALL: film_grain, dust_particles, film_scratches, vignette_pulse
+  LEGACY: light_leak, dust_particles, warm_wash, film_grain
+  CTA: film_grain, dust_particles, vignette_pulse
+
+All 12 effect overlay types:
+  light_leak — warm light sweep across frame (nostalgia, beauty)
+  film_grain — subtle grain with random flicker (cinematic texture)
+  dust_particles — floating particles with drift (atmosphere, age)
+  camera_shake — micro-jitter handheld feel (tension, urgency)
+  cinematic_bars — letterbox bars for widescreen feel (drama)
+  lens_flare — animated flare across frame (energy, hope)
+  chromatic_aberration — RGB channel split at edges (distortion, unease)
+  film_scratches — vertical scratch lines (vintage, decay)
+  vignette_pulse — breathing dark edges (focus, intensity)
+  flash_strobe — periodic bright flash (climax, impact)
+  warm_wash — amber color wash overlay (warmth, nostalgia)
+  film_burn_overlay — overexposed burn effect (destruction, climax)
+
+This means your timing, sections, emotional_tone, shot_type, color_temperature, and overlay_text MUST be accurate — they directly control the final video animations, transitions, and cinematic effects.
 
 ============================================================
 OUTPUT FORMAT (EXACT — DO NOT DEVIATE)
