@@ -71,22 +71,22 @@ class DocumentaryEffects:
             v_falloff = np.exp(-2.0 * (y_coords - 0.3) ** 2)
 
             combined = gaussian[np.newaxis, :] * v_falloff
-            frame[:, :, 0] = combined * 255 * 0.95 * intensity
-            frame[:, :, 1] = combined * 200 * 0.65 * intensity
-            frame[:, :, 2] = combined * 100 * 0.25 * intensity
+            frame[:, :, 0] = combined * 255 * intensity
+            frame[:, :, 1] = combined * 210 * intensity
+            frame[:, :, 2] = combined * 120 * intensity
 
             # Secondary cooler streak offset
             center2 = int(((phase + 0.4) % 1.0) * w * 1.4 - w * 0.2)
             g2 = np.exp(-0.5 * ((x_coords - center2) / max(spread * 0.6, 1)) ** 2)
-            secondary = g2[np.newaxis, :] * v_falloff * 0.4
-            frame[:, :, 0] += secondary * 200 * intensity
-            frame[:, :, 1] += secondary * 160 * intensity
-            frame[:, :, 2] += secondary * 80 * intensity
+            secondary = g2[np.newaxis, :] * v_falloff * 0.5
+            frame[:, :, 0] += secondary * 220 * intensity
+            frame[:, :, 1] += secondary * 180 * intensity
+            frame[:, :, 2] += secondary * 100 * intensity
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        clip = clip.set_opacity(intensity)
+        clip = clip.set_opacity(min(intensity * 1.5, 0.85))
         return clip
 
     def create_film_grain(
@@ -119,7 +119,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        clip = clip.set_opacity(intensity * 0.6)
+        clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
     def create_dust_particles(
@@ -162,32 +162,39 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        clip = clip.set_opacity(intensity * 0.5)
+        clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
     def create_camera_shake(
         self, duration: float, intensity: float = 0.5
     ) -> VideoClip:
-        """Subtle camera shake overlay (transparent with position offset).
+        """Camera shake overlay with visible jitter effect.
 
-        Returns a small transparent clip that, when composited, gives the
-        appearance of handheld camera movement. Used for tension scenes.
+        Creates horizontal scan-line displacement and slight color channel
+        offset to simulate handheld camera vibration. Used for tension scenes.
         """
         w, h = self.width, self.height
-        amp = 3.0 * self.scale * intensity
+        amp = intensity * 8.0 * self.scale
 
         def make_frame(t):
-            # The overlay is fully transparent — shake is achieved via position
-            return np.zeros((h, w, 3), dtype=np.uint8)
+            frame = np.zeros((h, w, 3), dtype=np.uint8)
+            # Create visible scan-line jitter bands
+            freq1, freq2 = 5.7, 9.3
+            shift = int(amp * np.sin(t * freq1 * 2 * np.pi) + amp * 0.4 * np.sin(t * freq2 * 2 * np.pi))
+            # Horizontal displacement bands
+            band_height = max(2, int(4 * self.scale))
+            for y_start in range(0, h, band_height * 8):
+                y_end = min(h, y_start + band_height)
+                offset = int(shift * np.sin(y_start * 0.05 + t * 20))
+                brightness = int(abs(offset) * 12 * intensity)
+                brightness = min(brightness, 60)
+                frame[y_start:y_end, :, 0] = brightness
+                frame[y_start:y_end, :, 1] = brightness
+                frame[y_start:y_end, :, 2] = brightness
+            return frame
 
-        def position_func(t):
-            dx = amp * np.sin(t * 7.3 * 2 * np.pi) + amp * 0.5 * np.sin(t * 11.7 * 2 * np.pi)
-            dy = amp * np.cos(t * 5.9 * 2 * np.pi) + amp * 0.5 * np.cos(t * 9.1 * 2 * np.pi)
-            return (int(dx), int(dy))
-
-        clip = VideoClip(make_frame, duration=duration).set_fps(30)
-        clip = clip.set_position(position_func)
-        clip = clip.set_opacity(0)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = clip.set_opacity(min(intensity * 0.8, 0.5))
         return clip
 
     def create_cinematic_bars(
@@ -262,7 +269,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        clip = clip.set_opacity(intensity)
+        clip = clip.set_opacity(min(intensity * 1.5, 0.8))
         return clip
 
     def create_chromatic_aberration(
@@ -292,7 +299,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        clip = clip.set_opacity(intensity * 0.4)
+        clip = clip.set_opacity(min(intensity * 1.0, 0.6))
         return clip
 
     def create_film_scratches(
@@ -335,7 +342,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(12)
-        clip = clip.set_opacity(intensity * 0.3)
+        clip = clip.set_opacity(min(intensity * 0.8, 0.5))
         return clip
 
     def create_vignette_pulse(
@@ -397,7 +404,7 @@ class DocumentaryEffects:
             return np.zeros((h, w, 3), dtype=np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(30)
-        clip = clip.set_opacity(0.6)
+        clip = clip.set_opacity(0.8)
         return clip
 
     def create_warm_wash(
@@ -419,7 +426,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        clip = clip.set_opacity(intensity)
+        clip = clip.set_opacity(min(intensity * 1.5, 0.7))
         return clip
 
     def create_film_burn_overlay(
@@ -452,7 +459,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(12)
-        clip = clip.set_opacity(intensity * 0.5)
+        clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
     def get_section_effects(
@@ -471,18 +478,18 @@ class DocumentaryEffects:
         effect_names = effect_names[:max_effects]
 
         creators = {
-            'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.3),
-            'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.15),
-            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.2),
-            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.4),
+            'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
+            'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
+            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.5, particle_count=50),
+            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.6),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
-            'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.2),
-            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.25),
-            'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.12),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.35),
-            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.6),
-            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.12),
-            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.25),
+            'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
+            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.5),
+            'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.6),
+            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
+            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.35),
+            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
         }
 
         clips = []

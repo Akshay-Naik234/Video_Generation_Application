@@ -190,10 +190,10 @@ class TransitionEffects:
 
         blur_clip = VideoClip(blur_frame, duration=duration).set_fps(30)
         blur_clip = blur_clip.set_start(overlap_start)
-        blur_clip = blur_clip.set_opacity(0.5)
+        blur_clip = blur_clip.set_opacity(0.7)
 
-        clip1_fade = clip1.fadeout(duration * 0.4)
-        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.4)
+        clip1_fade = clip1.fadeout(duration * 0.3)
+        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.3)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, blur_clip])
 
@@ -218,7 +218,7 @@ class TransitionEffects:
             return frame
 
         leak_clip = VideoClip(leak_frame, duration=duration).set_fps(30)
-        leak_clip = leak_clip.set_start(overlap_start).set_opacity(0.35)
+        leak_clip = leak_clip.set_start(overlap_start).set_opacity(0.6)
 
         clip1_fade = clip1.fadeout(duration * 0.6)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.6)
@@ -249,7 +249,7 @@ class TransitionEffects:
             return frame
 
         burn_clip = VideoClip(burn_frame, duration=duration).set_fps(30)
-        burn_clip = burn_clip.set_start(overlap_start).set_opacity(0.4)
+        burn_clip = burn_clip.set_start(overlap_start).set_opacity(0.65)
 
         clip1_fade = clip1.fadeout(duration * 0.5)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.5)
@@ -278,10 +278,10 @@ class TransitionEffects:
             return frame
 
         glitch_clip = VideoClip(glitch_frame, duration=duration).set_fps(30)
-        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.3)
+        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.55)
 
-        clip1_fade = clip1.fadeout(duration * 0.3)
-        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.3)
+        clip1_fade = clip1.fadeout(duration * 0.25)
+        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.25)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, glitch_clip])
 
@@ -300,7 +300,7 @@ class TransitionEffects:
             return np.full((self.height, self.width, 3), val, dtype=np.uint8)
 
         bloom = VideoClip(bloom_frame, duration=duration).set_fps(30)
-        bloom = bloom.set_start(clip1.duration - duration).set_opacity(0.4)
+        bloom = bloom.set_start(clip1.duration - duration).set_opacity(0.6)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, bloom])
 
@@ -383,7 +383,7 @@ class TransitionEffects:
             return frame
 
         radial_clip = VideoClip(radial_frame, duration=duration).set_fps(30)
-        radial_clip = radial_clip.set_start(overlap_start).set_opacity(0.25)
+        radial_clip = radial_clip.set_start(overlap_start).set_opacity(0.5)
 
         clip1_fade = clip1.fadeout(duration * 0.5)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.5)
@@ -425,6 +425,6 @@ class TransitionEffects:
             return frame
 
         warm = VideoClip(warm_mid, duration=duration).set_fps(30)
-        warm = warm.set_start(clip1.duration - duration).set_opacity(0.2)
+        warm = warm.set_start(clip1.duration - duration).set_opacity(0.4)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, warm])

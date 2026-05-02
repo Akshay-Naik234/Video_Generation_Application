@@ -110,9 +110,9 @@ class MovementStyles:
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.25)
-        scaled_width = int(self.width * max_zoom * 1.15)
-        scaled_height = int(self.height * max_zoom * 1.15)
+        max_zoom = max(zoom_intensity, 1.35)
+        scaled_width = int(self.width * max_zoom * 1.3)
+        scaled_height = int(self.height * max_zoom * 1.3)
 
         orig_width, orig_height = base_img.size
         orig_aspect = orig_width / orig_height
@@ -263,8 +263,8 @@ class MovementStyles:
         return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
-        """Apply subtle handheld camera micro-shake by shifting pixels."""
-        amplitude = 2.0 * (self.width / 1920)
+        """Apply handheld camera micro-shake by shifting pixels."""
+        amplitude = 4.0 * (self.width / 1920)
         freq1, freq2 = 3.7, 5.3
         dx = int(amplitude * np.sin(t * freq1 * 2 * np.pi))
         dy = int(amplitude * np.cos(t * freq2 * 2 * np.pi))
@@ -311,38 +311,38 @@ class MovementStyles:
 
         elif movement_type == 'pan_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.04 * eased
+            pan_x = -0.12 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.04 * eased
+            pan_x = 0.12 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = -0.04 * eased
+            pan_y = -0.12 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = 0.04 * eased
+            pan_y = 0.12 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_x = 0.02 * eased
-            pan_y = 0.02 * eased
+            pan_x = 0.08 * eased
+            pan_y = 0.08 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'diagonal_tr_bl':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_x = -0.02 * eased
-            pan_y = 0.02 * eased
+            pan_x = -0.08 * eased
+            pan_y = 0.08 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'breathing':
-            zoom = 1.0 + 0.04 * np.sin(raw_progress * np.pi * 2)
+            zoom = 1.0 + 0.08 * np.sin(raw_progress * np.pi * 2)
             return zoom, 0, 0
 
         elif movement_type == 'dramatic_zoom':
@@ -350,9 +350,9 @@ class MovementStyles:
             return zoom, 0, 0
 
         elif movement_type == 'gentle_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.02 * np.sin(raw_progress * np.pi)
-            pan_y = 0.01 * np.cos(raw_progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
+            pan_x = 0.06 * np.sin(raw_progress * np.pi)
+            pan_y = 0.03 * np.cos(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'focus_center':
@@ -369,93 +369,95 @@ class MovementStyles:
         # ---- Documentary-style advanced movements ----
 
         elif movement_type == 'parallax_depth':
-            # Simulates 2.5D depth: slow zoom with layered pan offsets.
-            # The foreground (pan) moves faster than the background (zoom).
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
+            # Simulates 2.5D depth: slow zoom with pronounced layered pan.
+            # The foreground (pan) moves faster than the background (zoom)
+            # creating a visible depth separation effect.
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
             phase = raw_progress * np.pi
-            pan_x = 0.035 * np.sin(phase)
-            pan_y = 0.018 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.10 * np.sin(phase)
+            pan_y = 0.05 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
             # Cinematic slow push into the subject with acceleration.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.1 * self._ease_in_quad(eased)
-            pan_y = -0.008 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.5 * self._ease_in_quad(eased)
+            pan_y = -0.03 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'push_out':
             # Reverse push — pulling away from the subject.
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * self._ease_in_quad(eased) * 0.9
-            pan_y = 0.008 * eased
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * self._ease_in_quad(eased) * 1.2
+            pan_y = 0.03 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'orbit':
             # Camera arcs around the subject in an elliptical path.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            angle = eased * np.pi * 0.6
-            pan_x = 0.04 * np.sin(angle)
-            pan_y = 0.015 * (1 - np.cos(angle))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            angle = eased * np.pi * 0.8
+            pan_x = 0.12 * np.sin(angle)
+            pan_y = 0.04 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
             # Fast horizontal pan with ease-in / ease-out and motion blur.
             whip = self._ease_in_out_quint(eased)
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = 0.1 * whip
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.20 * whip
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
             # Vertigo effect: zoom in while pulling camera back (or vice versa).
             # Zoom increases while the visible area stays roughly the same size,
             # creating a disorienting perspective shift.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
-            # Counter-pan slightly to keep subject centered
-            pan_y = -0.015 * np.sin(eased * np.pi)
-            return zoom, 0, pan_y
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.8 * eased
+            # Counter-pan to create vertigo effect
+            pan_y = -0.04 * np.sin(eased * np.pi)
+            pan_x = 0.02 * np.sin(eased * np.pi * 2)
+            return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
             # Organic handheld camera feel with irregular micro-movements.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = 0.015 * np.sin(raw_progress * np.pi * 3.1)
-            pan_x += 0.008 * np.sin(raw_progress * np.pi * 7.3)
-            pan_y = 0.012 * np.cos(raw_progress * np.pi * 2.7)
-            pan_y += 0.005 * np.cos(raw_progress * np.pi * 5.9)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.04 * np.sin(raw_progress * np.pi * 3.1)
+            pan_x += 0.02 * np.sin(raw_progress * np.pi * 7.3)
+            pan_y = 0.03 * np.cos(raw_progress * np.pi * 2.7)
+            pan_y += 0.015 * np.cos(raw_progress * np.pi * 5.9)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
             # Vertical crane shot moving upward, slight zoom out.
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.3)
-            pan_y = -0.06 * self._ease_in_out_quart(eased)
+            pan_y = -0.15 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             # Vertical crane shot moving downward, slight zoom in.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.5
-            pan_y = 0.06 * self._ease_in_out_quart(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
+            pan_y = 0.15 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
             # Zoom in with a slow spiral pan creating a dramatic reveal.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased
-            angle = eased * np.pi * 1.5
-            radius = 0.025 * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
+            angle = eased * np.pi * 2.0
+            radius = 0.08 * (1.0 - eased)
             pan_x = radius * np.cos(angle)
             pan_y = radius * np.sin(angle)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tilt_shift':
             # Slow pan with tilt-shift (miniature) effect.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.03 * eased
-            pan_y = -0.01 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
+            pan_x = 0.08 * eased
+            pan_y = -0.03 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
-            # Slow zoom with a slight diagonal drift suggesting camera tilt.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            tilt = 0.02 * np.sin(eased * np.pi * 0.5)
+            # Slow zoom with diagonal drift suggesting camera tilt.
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
+            tilt = 0.07 * np.sin(eased * np.pi * 0.5)
             pan_x = tilt
-            pan_y = tilt * 0.5
+            pan_y = tilt * 0.6
             return zoom, pan_x, pan_y
 
         elif movement_type == 'rack_focus':
@@ -472,21 +474,21 @@ class MovementStyles:
 
         elif movement_type == 'float_up':
             # Gentle upward drift with slow zoom — dreamy, reflective feel.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
-            pan_y = -0.04 * self._ease_in_out_sine(eased)
-            pan_x = 0.008 * np.sin(raw_progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            pan_y = -0.10 * self._ease_in_out_sine(eased)
+            pan_x = 0.025 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             # Pan from right to left to reveal the scene.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = 0.06 * (1.0 - self._ease_in_out_quart(eased))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.15 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             # Pan from left to right to reveal the scene.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = -0.06 * (1.0 - self._ease_in_out_quart(eased))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = -0.15 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         else:
