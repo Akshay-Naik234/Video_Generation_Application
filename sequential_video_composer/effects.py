@@ -168,33 +168,31 @@ class DocumentaryEffects:
     def create_camera_shake(
         self, duration: float, intensity: float = 0.5
     ) -> VideoClip:
-        """Camera shake overlay with visible jitter effect.
+        """Subtle camera shake overlay — gentle scan-line displacement.
 
-        Creates horizontal scan-line displacement and slight color channel
-        offset to simulate handheld camera vibration. Used for tension scenes.
+        Creates very subtle horizontal scan-line bands to simulate handheld
+        camera vibration. Kept deliberately mild to avoid jarring shaking.
         """
         w, h = self.width, self.height
-        amp = intensity * 8.0 * self.scale
+        amp = intensity * 3.0 * self.scale
 
         def make_frame(t):
             frame = np.zeros((h, w, 3), dtype=np.uint8)
-            # Create visible scan-line jitter bands
-            freq1, freq2 = 5.7, 9.3
-            shift = int(amp * np.sin(t * freq1 * 2 * np.pi) + amp * 0.4 * np.sin(t * freq2 * 2 * np.pi))
-            # Horizontal displacement bands
-            band_height = max(2, int(4 * self.scale))
-            for y_start in range(0, h, band_height * 8):
+            freq1 = 2.5
+            shift = int(amp * np.sin(t * freq1 * 2 * np.pi))
+            band_height = max(2, int(6 * self.scale))
+            for y_start in range(0, h, band_height * 12):
                 y_end = min(h, y_start + band_height)
-                offset = int(shift * np.sin(y_start * 0.05 + t * 20))
-                brightness = int(abs(offset) * 12 * intensity)
-                brightness = min(brightness, 60)
+                offset = int(shift * np.sin(y_start * 0.03 + t * 8))
+                brightness = int(abs(offset) * 6 * intensity)
+                brightness = min(brightness, 30)
                 frame[y_start:y_end, :, 0] = brightness
                 frame[y_start:y_end, :, 1] = brightness
                 frame[y_start:y_end, :, 2] = brightness
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        clip = clip.set_opacity(min(intensity * 0.8, 0.5))
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = clip.set_opacity(min(intensity * 0.4, 0.25))
         return clip
 
     def create_cinematic_bars(
@@ -552,7 +550,7 @@ class DocumentaryEffects:
             'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
             'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
             'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.5, particle_count=50),
-            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.6),
+            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.35),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
             'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.5),

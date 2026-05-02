@@ -205,10 +205,6 @@ class MovementStyles:
             if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
 
-            # Handheld micro-shake
-            if movement_type == 'handheld_drift':
-                frame = self._apply_handheld_shake(frame, t)
-
             return frame
 
         from moviepy.video.VideoClip import VideoClip
@@ -347,7 +343,8 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'breathing':
-            zoom = 1.0 + 0.08 * np.sin(raw_progress * np.pi * 2)
+            # Gentle, slow breathing zoom — one smooth cycle.
+            zoom = 1.0 + 0.04 * np.sin(raw_progress * np.pi)
             return zoom, 0, 0
 
         elif movement_type == 'dramatic_zoom':
@@ -411,22 +408,17 @@ class MovementStyles:
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
-            # Vertigo effect: zoom in while pulling camera back (or vice versa).
-            # Zoom increases while the visible area stays roughly the same size,
-            # creating a disorienting perspective shift.
+            # Vertigo-style zoom with slight downward drift — smooth, not jittery.
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.8 * eased
-            # Counter-pan to create vertigo effect
-            pan_y = -0.04 * np.sin(eased * np.pi)
-            pan_x = 0.02 * np.sin(eased * np.pi * 2)
+            pan_y = -0.03 * eased
+            pan_x = 0.01 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
-            # Organic handheld camera feel with irregular micro-movements.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.04 * np.sin(raw_progress * np.pi * 3.1)
-            pan_x += 0.02 * np.sin(raw_progress * np.pi * 7.3)
-            pan_y = 0.03 * np.cos(raw_progress * np.pi * 2.7)
-            pan_y += 0.015 * np.cos(raw_progress * np.pi * 5.9)
+            # Subtle organic handheld camera feel — smooth slow drift, not jittery.
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
+            pan_x = 0.025 * np.sin(raw_progress * np.pi * 1.2)
+            pan_y = 0.015 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
@@ -442,10 +434,10 @@ class MovementStyles:
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
-            # Zoom in with a slow spiral pan creating a dramatic reveal.
+            # Zoom in with a slow spiral pan — smooth arc, not jittery.
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
-            angle = eased * np.pi * 2.0
-            radius = 0.08 * (1.0 - eased)
+            angle = eased * np.pi * 1.2
+            radius = 0.05 * (1.0 - eased)
             pan_x = radius * np.cos(angle)
             pan_y = radius * np.sin(angle)
             return zoom, pan_x, pan_y
@@ -458,11 +450,11 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
-            # Slow zoom with diagonal drift suggesting camera tilt.
+            # Slow zoom with smooth diagonal drift — no oscillation.
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
-            tilt = 0.07 * np.sin(eased * np.pi * 0.5)
+            tilt = 0.05 * eased
             pan_x = tilt
-            pan_y = tilt * 0.6
+            pan_y = tilt * 0.5
             return zoom, pan_x, pan_y
 
         elif movement_type == 'rack_focus':
