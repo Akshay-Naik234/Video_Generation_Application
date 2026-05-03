@@ -155,11 +155,11 @@ class TransitionEffects:
         color_clip = ColorClip(
             size=self.resolution,
             color=color,
-            duration=duration * 0.4
-        ).set_start(clip1.duration - duration * 0.5)
+            duration=duration * 0.25
+        ).set_start(clip1.duration - duration * 0.45)
 
-        clip1_fade = clip1.fadeout(duration * 0.5)
-        clip2_fade = clip2.set_start(clip1.duration - duration * 0.3).fadein(duration * 0.5)
+        clip1_fade = clip1.fadeout(duration * 0.35)
+        clip2_fade = clip2.set_start(clip1.duration - duration * 0.4).fadein(duration * 0.35)
 
         return CompositeVideoClip([clip1_fade, color_clip, clip2_fade])
 
@@ -251,7 +251,7 @@ class TransitionEffects:
             return frame
 
         burn_clip = VideoClip(burn_frame, duration=duration).set_fps(30)
-        burn_clip = burn_clip.set_start(overlap_start).set_opacity(0.65)
+        burn_clip = burn_clip.set_start(overlap_start).set_opacity(0.40)
 
         clip1_fade = clip1.fadeout(duration * 0.5)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.5)
@@ -280,7 +280,7 @@ class TransitionEffects:
             return frame
 
         glitch_clip = VideoClip(glitch_frame, duration=duration).set_fps(30)
-        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.55)
+        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.25)
 
         clip1_fade = clip1.fadeout(duration * 0.25)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.25)

@@ -38,7 +38,7 @@ class SequentialVideoOrchestrator:
         fps: int = 30,
         image_duration: float = 4.0,
         crossfade_duration: float = 1.5,
-        zoom_intensity: float = 1.20,
+        zoom_intensity: float = 1.06,
         effects_intensity: float = 0.7,
         audio_path: Optional[Union[str, Path]] = None,
         transition_style: str = "random",
@@ -657,8 +657,8 @@ class SequentialVideoOrchestrator:
         draw = ImageDraw.Draw(img)
 
         # Try to load a nice font, fallback to default
-        font_size_loc = int(h * 0.035)
-        font_size_year = int(h * 0.045)
+        font_size_loc = int(h * 0.07)
+        font_size_year = int(h * 0.085)
         try:
             font_loc = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size_loc)
             font_year = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size_year)
@@ -666,13 +666,13 @@ class SequentialVideoOrchestrator:
             font_loc = ImageFont.load_default()
             font_year = ImageFont.load_default()
 
-        # Pin position: slightly above center
+        # Pin position: lower-third area so it stays readable during map_zoom
         pin_x = int(w * 0.5)
-        pin_y = int(h * 0.42)
+        pin_y = int(h * 0.50)
 
         # Draw glowing pin marker (circle + stem)
-        pin_glow_r = int(h * 0.025)
-        pin_r = int(h * 0.015)
+        pin_glow_r = int(h * 0.055)
+        pin_r = int(h * 0.035)
         # Outer glow
         for offset in range(pin_glow_r, pin_r, -1):
             alpha = int(80 * (1 - (offset - pin_r) / (pin_glow_r - pin_r)))
@@ -686,31 +686,47 @@ class SequentialVideoOrchestrator:
             fill=(255, 80, 30, 240)
         )
         # Pin stem
-        stem_len = int(h * 0.03)
+        stem_len = int(h * 0.04)
         draw.line(
             [(pin_x, pin_y + pin_r), (pin_x, pin_y + pin_r + stem_len)],
             fill=(255, 80, 30, 200), width=max(2, int(pin_r * 0.4))
         )
 
-        # Draw location text below pin
-        text_y = pin_y + pin_r + stem_len + int(h * 0.015)
+        # Draw location text below pin with background panel
+        text_y = pin_y + pin_r + stem_len + int(h * 0.02)
+        pad = int(h * 0.015)
+
+        # Measure all text first to draw background panel
+        loc_bbox = draw.textbbox((0, 0), location, font=font_loc) if location else (0, 0, 0, 0)
+        year_bbox = draw.textbbox((0, 0), year, font=font_year) if year else (0, 0, 0, 0)
+        loc_w = loc_bbox[2] - loc_bbox[0]
+        year_w = year_bbox[2] - year_bbox[0]
+        loc_h = loc_bbox[3] - loc_bbox[1]
+        year_h = year_bbox[3] - year_bbox[1]
+        max_text_w = max(loc_w, year_w)
+        total_text_h = (loc_h + int(h * 0.02) + year_h) if year else loc_h
+
+        # Semi-transparent dark background panel
+        if location or year:
+            panel_x1 = pin_x - max_text_w // 2 - pad * 2
+            panel_y1 = text_y - pad
+            panel_x2 = pin_x + max_text_w // 2 + pad * 2
+            panel_y2 = text_y + total_text_h + pad * 2
+            draw.rounded_rectangle(
+                [panel_x1, panel_y1, panel_x2, panel_y2],
+                radius=int(h * 0.01),
+                fill=(0, 0, 0, 160)
+            )
+
         if location:
-            bbox = draw.textbbox((0, 0), location, font=font_loc)
-            text_w = bbox[2] - bbox[0]
-            text_x = pin_x - text_w // 2
-            # Text shadow
-            draw.text((text_x + 2, text_y + 2), location, fill=(0, 0, 0, 150), font=font_loc)
-            draw.text((text_x, text_y), location, fill=(255, 255, 255, 230), font=font_loc)
-            text_y += int(h * 0.04)
+            text_x = pin_x - loc_w // 2
+            draw.text((text_x, text_y), location, fill=(255, 255, 255, 240), font=font_loc)
+            text_y += loc_h + int(h * 0.02)
 
         # Draw year text
         if year:
-            bbox = draw.textbbox((0, 0), year, font=font_year)
-            text_w = bbox[2] - bbox[0]
-            text_x = pin_x - text_w // 2
-            # Year text shadow
-            draw.text((text_x + 2, text_y + 2), year, fill=(0, 0, 0, 150), font=font_year)
-            draw.text((text_x, text_y), year, fill=(255, 200, 80, 240), font=font_year)
+            text_x = pin_x - year_w // 2
+            draw.text((text_x, text_y), year, fill=(255, 200, 80, 250), font=font_year)
 
         # Convert to numpy
         overlay_rgba = np.array(img)

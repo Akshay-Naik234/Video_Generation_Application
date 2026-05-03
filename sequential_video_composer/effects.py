@@ -349,7 +349,8 @@ class DocumentaryEffects:
         """Breathing vignette that slowly pulses darker/lighter.
 
         Creates a dynamic vignette that subtly breathes, adding an organic
-        cinematic feel beyond a static vignette.
+        cinematic feel beyond a static vignette.  Kept very subtle to
+        avoid darkening the image excessively.
         """
         w, h = self.width, self.height
 
@@ -361,7 +362,7 @@ class DocumentaryEffects:
         base_vignette = np.clip(dist / max_dist, 0, 1)
 
         def make_frame(t):
-            pulse = 0.3 + 0.1 * np.sin(t * 0.5 * 2 * np.pi)
+            pulse = 0.15 + 0.05 * np.sin(t * 0.5 * 2 * np.pi)
             vig = (base_vignette * pulse * intensity * 255).astype(np.uint8)
             frame = np.zeros((h, w, 3), dtype=np.uint8)
             frame[:, :, 0] = vig
@@ -370,7 +371,7 @@ class DocumentaryEffects:
             return frame
 
         def make_mask(t):
-            pulse = 0.3 + 0.1 * np.sin(t * 0.5 * 2 * np.pi)
+            pulse = 0.15 + 0.05 * np.sin(t * 0.5 * 2 * np.pi)
             return base_vignette * pulse * intensity
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
@@ -471,33 +472,34 @@ class DocumentaryEffects:
     def create_spotlight(
         self, duration: float, intensity: float = 0.7
     ) -> VideoClip:
-        """Spotlight effect: circular illumination on center, rest in shadow."""
+        """Spotlight effect: very subtle centre-bright, edges slightly darker.
+
+        Uses a large radius and gentle falloff so it enhances focus on the
+        centre without making the rest of the image too dark.
+        """
         w, h = self.width, self.height
         cx, cy = w // 2, h // 2
-        max_radius = int(min(w, h) * 0.35)
+        max_radius = int(min(w, h) * 0.50)
 
         Y, X = np.ogrid[:h, :w]
-        dist_from_center = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float64)
 
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
-            # Spotlight slowly drifts and breathes
-            offset_x = int(np.sin(progress * np.pi * 2) * w * 0.03)
-            offset_y = int(np.cos(progress * np.pi * 1.5) * h * 0.02)
+            offset_x = int(np.sin(progress * np.pi * 2) * w * 0.02)
+            offset_y = int(np.cos(progress * np.pi * 1.5) * h * 0.015)
             radius = max_radius + int(np.sin(progress * np.pi) * max_radius * 0.1)
 
             dist = np.sqrt((X - cx - offset_x) ** 2 + (Y - cy - offset_y) ** 2)
-            # Dark vignette outside spotlight
-            shadow = np.clip((dist - radius) / (radius * 0.5), 0, 1)
+            shadow = np.clip((dist - radius) / (radius * 0.8), 0, 1)
             frame = np.zeros((h, w, 3), dtype=np.uint8)
-            shadow_val = (shadow * 180 * intensity).astype(np.uint8)
+            shadow_val = (shadow * 60 * intensity).astype(np.uint8)
             frame[:, :, 0] = shadow_val
             frame[:, :, 1] = shadow_val
             frame[:, :, 2] = shadow_val
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        clip = clip.set_opacity(min(intensity * 0.7, 0.6))
+        clip = clip.set_opacity(min(intensity * 0.35, 0.25))
         return clip
 
     def create_photo_frame(
@@ -584,11 +586,11 @@ class DocumentaryEffects:
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
             'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.5),
             'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.6),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.3),
             'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
-            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.35),
+            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.2),
             'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
-            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.7),
+            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.4),
             'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.6),
         }
 

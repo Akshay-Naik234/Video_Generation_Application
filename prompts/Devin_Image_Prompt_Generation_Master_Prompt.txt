@@ -147,10 +147,48 @@ Output a single JSON file with this exact structure:
       "shot_type": "[extreme_closeup|closeup|medium|wide|aerial|over_shoulder|detail|silhouette|crowd|landscape|still_life]",
       "color_temperature": "[warm|cool|neutral|mixed]",
       "overlay_text": "[optional: date/year/location/name for on-screen text overlay, or empty string]",
+      "movement_type": "[optional: specific movement — ken_burns|slow_zoom|gentle_drift|dramatic_zoom|breathing|focus_center|pan_left|pan_right|parallax_depth|push_in|push_out|orbit|whip_pan|dolly_zoom|handheld_drift|crane_up|crane_down|spiral_zoom|dutch_tilt|bounce_zoom|float_up|reveal_left|reveal_right|map_zoom|map_pan|timeline_reveal]",
+      "transition_type": "[optional: specific transition — crossfade|fade_through_black|fade_through_white|fade_through_warm|wipe_left|wipe_right|zoom_in|zoom_out|whip_pan|light_leak|film_burn|glitch|blur_through|flash_cut|iris_wipe|morph_dissolve|zoom_blur|push_left|push_right|luma_fade|ink_splash]",
+      "effects": "[optional: array of effect overlays — e.g. [\"film_grain\", \"dust_particles\"]. Available: light_leak|film_grain|dust_particles|camera_shake|cinematic_bars|lens_flare|chromatic_aberration|film_scratches|vignette_pulse|flash_strobe|warm_wash|film_burn_overlay|spotlight|photo_frame]",
+      "map_label": "[optional: for map/geography images — 'Location | Year' e.g. 'Nashville, TN | 2004'. Renders a pin + label overlay on the image]",
+      "text_animation": "[optional: animation style for overlay_text — bounce|typewriter|highlight|slide_up|fade_in. Default: fade_in]",
       "prompt": "..."
     }
   ]
 }
+
+PER-IMAGE ANIMATION CONTROL:
+When you specify movement_type, transition_type, or effects for an image, the video system uses
+YOUR choice instead of auto-selecting from section pools. This gives you precise creative control.
+
+WHEN TO USE PER-IMAGE FIELDS (guidelines):
+- movement_type: Specify when the scene needs a specific animation:
+  * Map/geography images → use "map_zoom" or "map_pan"
+  * Timeline/chronology images → use "timeline_reveal" or "reveal_left"
+  * Shocking reveals → use "dolly_zoom" or "dramatic_zoom"
+  * Emotional close-ups → use "push_in" or "focus_center"
+  * Triumph/victory moments → use "crane_up"
+  * Decline/loss moments → use "crane_down"
+  * If unsure, omit and let the section pool pick automatically
+- transition_type: Specify for key story beats:
+  * Section boundaries → use stronger transitions (film_burn, flash_cut, zoom_blur)
+  * Within calm sections → use gentle transitions (crossfade, morph_dissolve)
+  * Time jumps → use flash_cut or fade_through_black
+  * If unsure, omit and let the section pool pick automatically
+- effects: Specify as an array when you want specific overlays:
+  * Vintage/historical scenes → ["film_grain", "dust_particles"]
+  * Tense/conflict scenes → ["camera_shake", "chromatic_aberration"]
+  * Nostalgic/warm scenes → ["light_leak", "warm_wash"]
+  * If unsure, omit and let the section pool auto-apply 2 effects
+- map_label: REQUIRED for any map or geography image. Format: "City, State/Country | Year"
+  * The system renders a glowing pin marker with location and year text overlay
+  * Example: "West Reading, PA | 1989", "Nashville, TN | 2004", "Tokyo, Japan | 2024"
+- text_animation: Choose based on emotional context:
+  * bounce → playful, energetic moments
+  * typewriter → factual reveals, statistics
+  * highlight → key quotes, important statements
+  * slide_up → general information, dates
+  * fade_in → default, works for everything
 
 ============================================================
 EXAMPLE JSON OUTPUT (study this — your output MUST match this quality)
@@ -185,6 +223,10 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "shot_type": "detail",
       "color_temperature": "cool",
       "overlay_text": "1943 | New Yorker Hotel",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": ["film_grain", "vignette_pulse"],
+      "text_animation": "typewriter",
       "prompt": "Extreme close-up of a hotel room door, brass number plate reading 3327, dim hallway lighting casting long shadows, peeling wallpaper visible at edges, a maid's hand reaching for the doorknob, 1943 New Yorker Hotel Manhattan atmosphere, dust particles visible in a shaft of weak winter light. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated cool blue tones, film grain texture"
     },
     {
@@ -226,13 +268,17 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
     {
       "image": 5,
       "start_time": 22.5,
-      "duration": 7.5,
-      "end_time": 30.0,
+      "duration": 5.0,
+      "end_time": 27.5,
       "section": "EARLY_LIFE",
       "emotional_tone": "nostalgia",
       "shot_type": "landscape",
       "color_temperature": "warm",
       "overlay_text": "1856, Smiljan, Croatia",
+      "movement_type": "map_zoom",
+      "effects": ["light_leak", "dust_particles"],
+      "map_label": "Smiljan, Croatia | 1856",
+      "text_animation": "slide_up",
       "prompt": "Wide establishing shot of the tiny village of Smiljan, Croatia in 1856, rolling green hills, a small stone church with a modest bell tower, scattered farmhouses with terracotta roofs, a dramatic thunderstorm approaching from the horizon with purple-black clouds and visible lightning bolts in the distance, warm golden light still touching the village while the storm rolls in, rural Eastern European countryside. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading with rich amber tones, film grain texture"
     },
     {
@@ -292,39 +338,52 @@ RULES (FOLLOW ALL — NO EXCEPTIONS)
 ============================================================
 
 TIMING RULES:
-- Maximum duration per image: 12 seconds
-- Target total images: 90-110 for a 12-minute video (adjust proportionally for other durations)
-- Average duration should be ~7 seconds (total_duration / image_count)
+- ABSOLUTE MAXIMUM duration per image: 7 seconds (NEVER exceed this)
+- Target duration per image: 4-5 seconds (sweet spot for viewer engagement)
+- Target total images: 150-170 for a 12-minute video (adjust proportionally for other durations)
+- Average duration should be ~4.5 seconds (total_duration / image_count)
 - Images must be CONTINUOUS — no gaps between end_time of one image and start_time of the next
 - First image starts at 0.0, last image ends at exact total_duration from timestamps
 - Total duration of all images must equal the total narration duration exactly
-- Vary durations naturally (4-12 seconds) — faster cuts for intense moments, longer holds for emotional beats
+- Vary durations naturally (3-7 seconds) — faster cuts for intense moments, slightly longer for emotional beats
+- Something must CHANGE every 3-5 seconds to keep viewers engaged (new image, new movement, new overlay)
 - PACING BY SECTION (for 12-minute video):
-  - Cold Open (0:00-0:30): FAST cuts, 4-6 seconds per image (tension, urgency)
-  - Early Life (0:30-2:00): MEDIUM pace, 6-8 seconds per image (nostalgia, warmth)
-  - The Spark (2:00-3:30): MEDIUM-FAST, 5-7 seconds (building energy)
-  - The Rise (3:30-5:30): MEDIUM, 6-8 seconds (steady momentum)
-  - The Conflict (5:30-7:30): FAST cuts, 4-6 seconds (chaos, tension, urgency)
-  - The Climax (7:30-9:00): SLOW, 8-10 seconds (let the peak breathe)
-  - The Fall / Final Chapter (9:00-10:30): SLOW to FAST, 5-8 seconds (accelerating collapse)
-  - Legacy (10:30-11:30): SLOW, 8-10 seconds (reflection, finality)
-  - CTA (11:30-12:00): MEDIUM, 6-8 seconds (closing)
+  - Cold Open (0:00-0:30): FAST cuts, 3-4 seconds per image (tension, urgency, hook the viewer)
+  - Early Life (0:30-2:00): MEDIUM pace, 4-5 seconds per image (nostalgia, warmth)
+  - The Spark (2:00-3:30): MEDIUM-FAST, 4-5 seconds (building energy)
+  - The Rise (3:30-5:30): MEDIUM, 4-6 seconds (steady momentum)
+  - The Conflict (5:30-7:30): FAST cuts, 3-5 seconds (chaos, tension, urgency)
+  - The Climax (7:30-9:00): MEDIUM-SLOW, 5-7 seconds (let the peak breathe)
+  - The Fall / Final Chapter (9:00-10:30): MEDIUM, 4-6 seconds (accelerating collapse)
+  - Legacy (10:30-11:30): MEDIUM, 5-6 seconds (reflection, finality)
+  - CTA (11:30-12:00): MEDIUM, 4-5 seconds (closing)
 
 IMAGE COUNT PER SECTION (target for 12-minute video):
-- Cold Open (30s): 5-6 images
-- Early Life (90s): 12-14 images
-- The Spark (90s): 13-15 images
-- The Rise (120s): 16-18 images
-- The Conflict (120s): 20-24 images (MOST images — fast cuts drive tension)
-- The Climax (90s): 9-11 images (fewer images, longer holds)
-- The Fall (90s): 12-15 images
-- Legacy (60s): 6-8 images
-- CTA (30s): 3-4 images
-- TOTAL: 96-115 images (aim for 90-110)
+- Cold Open (30s): 8-10 images (FAST, dense, movie-trailer feel)
+- Early Life (90s): 18-22 images
+- The Spark (90s): 18-22 images
+- The Rise (120s): 24-30 images
+- The Conflict (120s): 30-36 images (MOST images — fast cuts drive tension)
+- The Climax (90s): 14-18 images
+- The Fall (90s): 18-22 images
+- Legacy (60s): 10-12 images
+- CTA (30s): 6-8 images
+- TOTAL: 146-180 images (aim for 150-170)
+
+AUDIENCE ENGAGEMENT & RETENTION TECHNIQUES:
+1. Visual Rhythm — "3-Second Rule": Something must change every 3-5 seconds (new image, overlay, or movement shift)
+2. Pattern Interrupt — Break viewer autopilot every 15-20 seconds (scale shift, flash_cut, spotlight, map_zoom)
+3. Hook Sequence — First 30 seconds should feel like a movie trailer (8-10 fast-cut images, dramatic movements)
+4. Visual Contrast Cuts — Alternate warm/cool, close-up/wide shots to maintain visual energy
+5. Emotional Peaks — Build → Hit → Release rhythm throughout the video
+6. Map & Timeline Breaks — Use geography/timeline images as information markers every 60-90 seconds
+7. Text Overlay Engagement — 20-25% of images should have overlay_text, alternate animation styles, use every 20-30 seconds
+8. Transition Variety — NEVER use the same transition type 3 times in a row
+9. End-of-Video Retention — LEGACY and CTA sections should stay visually energetic, close with a subscribe hook
 
 IMAGE COUNT FORMULA:
-- Calculate: total_duration_seconds / 7 = approximate image count
-- For 12-minute video (~720s): aim for 90-110 images
+- Calculate: total_duration_seconds / 4.5 = approximate image count
+- For 12-minute video (~720s): aim for 150-170 images
 - For shorter videos (under 480s): aim for 55-70 images
 - For longer videos (over 900s): aim for 120-150 images
 

@@ -100,7 +100,7 @@ class MovementStyles:
         image_path: Path,
         duration: float,
         movement_type: str,
-        zoom_intensity: float = 1.15,
+        zoom_intensity: float = 1.06,
         color_grader: 'ColorGrading' = None,
         color_grade: str = None,
         enable_vignette: bool = False
@@ -168,6 +168,9 @@ class MovementStyles:
             zoom, pan_x, pan_y = self._calculate_movement(
                 movement_type, eased, zoom_intensity, progress
             )
+
+            # Safety cap: never zoom so much that less than 91% of image is visible
+            zoom = min(zoom, 1.10)
 
             crop_width = self.width / zoom
             crop_height = self.height / zoom
@@ -344,21 +347,21 @@ class MovementStyles:
 
         elif movement_type == 'breathing':
             # Gentle, slow breathing zoom — one smooth cycle.
-            zoom = 1.0 + 0.04 * np.sin(raw_progress * np.pi)
+            zoom = 1.0 + 0.02 * np.sin(raw_progress * np.pi)
             return zoom, 0, 0
 
         elif movement_type == 'dramatic_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * self._dramatic_ease(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7 * self._dramatic_ease(eased)
             return zoom, 0, 0
 
         elif movement_type == 'gentle_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.06 * np.sin(raw_progress * np.pi)
-            pan_y = 0.03 * np.cos(raw_progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
+            pan_x = 0.04 * np.sin(raw_progress * np.pi)
+            pan_y = 0.02 * np.cos(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'focus_center':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
             return zoom, 0, 0
 
         elif movement_type == 'minimal':
@@ -374,44 +377,44 @@ class MovementStyles:
             # Simulates 2.5D depth: slow zoom with pronounced layered pan.
             # The foreground (pan) moves faster than the background (zoom)
             # creating a visible depth separation effect.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
             phase = raw_progress * np.pi
-            pan_x = 0.10 * np.sin(phase)
-            pan_y = 0.05 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.06 * np.sin(phase)
+            pan_y = 0.03 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
             # Cinematic slow push into the subject with acceleration.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.5 * self._ease_in_quad(eased)
-            pan_y = -0.03 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.8 * self._ease_in_quad(eased)
+            pan_y = -0.02 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'push_out':
             # Reverse push — pulling away from the subject.
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * self._ease_in_quad(eased) * 1.2
-            pan_y = 0.03 * eased
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * self._ease_in_quad(eased) * 0.8
+            pan_y = 0.02 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'orbit':
             # Camera arcs around the subject in an elliptical path.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
             angle = eased * np.pi * 0.8
-            pan_x = 0.12 * np.sin(angle)
-            pan_y = 0.04 * (1 - np.cos(angle))
+            pan_x = 0.07 * np.sin(angle)
+            pan_y = 0.03 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
             # Fast horizontal pan with ease-in / ease-out and motion blur.
             whip = self._ease_in_out_quint(eased)
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.20 * whip
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
+            pan_x = 0.12 * whip
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
             # Vertigo-style zoom with slight downward drift — smooth, not jittery.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.8 * eased
-            pan_y = -0.03 * eased
-            pan_x = 0.01 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7 * eased
+            pan_y = -0.01 * eased
+            pan_x = 0.005 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
@@ -424,20 +427,20 @@ class MovementStyles:
         elif movement_type == 'crane_up':
             # Vertical crane shot moving upward, slight zoom out.
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.3)
-            pan_y = -0.15 * self._ease_in_out_quart(eased)
+            pan_y = -0.08 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             # Vertical crane shot moving downward, slight zoom in.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_y = 0.15 * self._ease_in_out_quart(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.5
+            pan_y = 0.08 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
             # Zoom in with a slow spiral pan — smooth arc, not jittery.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6 * eased
             angle = eased * np.pi * 1.2
-            radius = 0.05 * (1.0 - eased)
+            radius = 0.03 * (1.0 - eased)
             pan_x = radius * np.cos(angle)
             pan_y = radius * np.sin(angle)
             return zoom, pan_x, pan_y
@@ -451,8 +454,8 @@ class MovementStyles:
 
         elif movement_type == 'dutch_tilt':
             # Slow zoom with smooth diagonal drift — no oscillation.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
-            tilt = 0.05 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
+            tilt = 0.03 * eased
             pan_x = tilt
             pan_y = tilt * 0.5
             return zoom, pan_x, pan_y
@@ -465,50 +468,50 @@ class MovementStyles:
 
         elif movement_type == 'bounce_zoom':
             # Zoom in with a slight overshoot and settle for emphasis.
-            overshoot = 1.0 + 0.15 * np.sin(eased * np.pi * 3) * (1.0 - eased)
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * overshoot
+            overshoot = 1.0 + 0.06 * np.sin(eased * np.pi * 3) * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7 * overshoot
             return zoom, 0, 0
 
         elif movement_type == 'float_up':
             # Gentle upward drift with slow zoom — dreamy, reflective feel.
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = -0.10 * self._ease_in_out_sine(eased)
-            pan_x = 0.025 * np.sin(raw_progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.5
+            pan_y = -0.06 * self._ease_in_out_sine(eased)
+            pan_x = 0.015 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             # Pan from right to left to reveal the scene.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * (1.0 - self._ease_in_out_quart(eased))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
+            pan_x = 0.08 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             # Pan from left to right to reveal the scene.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * (1.0 - self._ease_in_out_quart(eased))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
+            pan_x = -0.08 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
             # Smooth geographic zoom into a map location.
             # Starts wide, slowly accelerates zoom into focal point.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.6 * self._ease_in_quad(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6 * self._ease_in_quad(eased)
             # Slight drift toward center-bottom where locations often sit
-            pan_y = 0.03 * eased
+            pan_y = 0.02 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'map_pan':
             # Smooth geographic pan across a map (left to right).
             # Simulates tracing a travel route across the map.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.18 * self._ease_in_out_quart(eased)
-            pan_y = 0.03 * np.sin(eased * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
+            pan_x = 0.10 * self._ease_in_out_quart(eased)
+            pan_y = 0.02 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
             # Progressive left-to-right reveal for timeline images.
             # Slow pan right with slight zoom to reveal dates/events.
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = -0.18 * (1.0 - self._ease_in_out_quart(eased))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
+            pan_x = -0.10 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         else:
