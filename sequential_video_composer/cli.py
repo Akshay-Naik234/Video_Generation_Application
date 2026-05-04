@@ -174,6 +174,19 @@ Color Grades:
     )
 
     parser.add_argument(
+        '--text-overlays',
+        action='store_true',
+        default=True,
+        help='Enable text overlay rendering from duration config (default: enabled)'
+    )
+
+    parser.add_argument(
+        '--no-text-overlays',
+        action='store_true',
+        help='Disable text overlay rendering'
+    )
+
+    parser.add_argument(
         '--documentary-effects',
         action='store_true',
         default=True,
@@ -222,12 +235,14 @@ Color Grades:
             duration_config_path = None
 
         enable_vignette = args.vignette and not args.no_vignette
+        enable_text_overlays = args.text_overlays and not args.no_text_overlays
         enable_documentary_effects = args.documentary_effects and not args.no_documentary_effects
 
         print(f"Creating video from images in: {images_path}")
         print(f"  Transition style: {args.transition}")
         print(f"  Movement style: {args.movement}")
         print(f"  Color grade: {args.color_grade}")
+        print(f"  Text overlays: {enable_text_overlays}")
         print(f"  Documentary effects: {enable_documentary_effects}")
         if duration_config_path:
             print(f"  Duration config: {duration_config_path}")
@@ -247,6 +262,7 @@ Color Grades:
             color_grade=args.color_grade,
             enable_vignette=enable_vignette,
             enable_film_grain=args.film_grain,
+            enable_text_overlays=enable_text_overlays,
             duration_config_path=duration_config_path,
             enable_documentary_effects=enable_documentary_effects,
         )

@@ -383,6 +383,7 @@ class SequentialVideoOrchestrator:
         effect_clips = []
 
         # 1. Per-image effects from JSON config (highest priority)
+        max_effects_per_image = 3
         per_image_handled = set()
         if self.image_effects:
             print(f"\nApplying per-image effects from JSON config...")
@@ -393,7 +394,7 @@ class SequentialVideoOrchestrator:
                     dur = data.get('duration', 0) or 0
                     if dur <= 0:
                         continue
-                    effect_names = self.image_effects[img_num]
+                    effect_names = self.image_effects[img_num][:max_effects_per_image]
                     img_fx = self.effects.get_effects_by_names(
                         effect_names, dur, self.effects_intensity
                     )
@@ -402,6 +403,7 @@ class SequentialVideoOrchestrator:
                         effect_clips.append(fx)
                     per_image_handled.add(img_num)
                     print(f"  Image {img_num}: {effect_names} ({dur:.1f}s)")
+            print(f"  Total per-image effect clips: {len(effect_clips)}")
 
         # 2. Section-based effects for images WITHOUT per-image effects
         if self.image_sections:
@@ -756,13 +758,16 @@ class SequentialVideoOrchestrator:
 
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Use a unique temp audio file to avoid conflicts with parallel exports
+        temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
+
         try:
             video.write_videofile(
                 str(self.output_path),
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                temp_audiofile=temp_audio,
                 remove_temp=True,
                 threads=2,
                 preset='medium',
