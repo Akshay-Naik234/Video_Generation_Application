@@ -38,7 +38,7 @@ class SequentialVideoOrchestrator:
         fps: int = 30,
         image_duration: float = 4.0,
         crossfade_duration: float = 1.5,
-        zoom_intensity: float = 1.03,
+        zoom_intensity: float = 1.08,
         effects_intensity: float = 0.4,
         audio_path: Optional[Union[str, Path]] = None,
         transition_style: str = "random",
@@ -617,6 +617,45 @@ class SequentialVideoOrchestrator:
 
             clip = VideoClip(make_frame, duration=duration).set_fps(15)
             mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = clip.set_mask(mask_clip)
+
+        elif animation == 'glow_underline':
+            # Text appears with a glowing golden underline that sweeps left-to-right
+            glow_h = max(4, int(h * 0.025))
+
+            def make_frame(t, _rgb=rgb_frame):
+                result = _rgb.copy()
+                sweep_dur = min(duration * 0.5, 1.5)
+                progress = min(t / sweep_dur, 1.0) if sweep_dur > 0 else 1.0
+                col = int(w * progress)
+                if col <= 0:
+                    return result
+                # Find bottom of text content
+                text_rows = np.where(_rgb.max(axis=-1).max(axis=1) > 0)[0]
+                if len(text_rows) == 0:
+                    bot = int(h * 0.85)
+                else:
+                    bot = min(int(text_rows[-1]) + 4, h - glow_h - 2)
+                # Draw golden glow line
+                for dy in range(glow_h):
+                    y = bot + dy
+                    if 0 <= y < h:
+                        fade = 1.0 - abs(dy - glow_h / 2) / (glow_h / 2)
+                        result[y, :col, 0] = min(255, int(result[y, :col, 0].mean() + 200 * fade))
+                        result[y, :col, 1] = min(255, int(result[y, :col, 1].mean() + 160 * fade))
+                        result[y, :col, 2] = min(255, int(result[y, :col, 2].mean() + 40 * fade))
+                return result
+
+            def make_mask(t, _alpha=alpha_mask):
+                fade_in = min(t / 0.3, 1.0)
+                fade_out_start = duration * 0.85
+                fade = 1.0
+                if t > fade_out_start:
+                    fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
+                return _alpha * fade_in * fade
+
+            clip = VideoClip(make_frame, duration=duration).set_fps(20)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(20)
             clip = clip.set_mask(mask_clip)
 
         else:

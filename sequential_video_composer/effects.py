@@ -31,15 +31,15 @@ class DocumentaryEffects:
 
     # Effects suitable for each documentary section
     SECTION_EFFECTS = {
-        'COLD_OPEN': ['film_grain', 'vignette_pulse', 'camera_shake', 'chromatic_aberration'],
-        'EARLY_LIFE': ['light_leak', 'dust_particles', 'film_grain', 'warm_wash'],
-        'THE_SPARK': ['light_leak', 'film_grain', 'dust_particles', 'lens_flare'],
-        'THE_RISE': ['lens_flare', 'light_leak', 'film_grain', 'dust_particles'],
-        'THE_CONFLICT': ['camera_shake', 'chromatic_aberration', 'film_scratches', 'film_grain'],
-        'THE_CLIMAX': ['flash_strobe', 'film_burn_overlay', 'vignette_pulse', 'film_grain'],
-        'THE_FALL': ['film_grain', 'dust_particles', 'film_scratches', 'vignette_pulse'],
-        'LEGACY': ['light_leak', 'dust_particles', 'warm_wash', 'film_grain'],
-        'CTA': ['film_grain', 'dust_particles', 'vignette_pulse'],
+        'COLD_OPEN': ['zoom_burst', 'cinematic_bars', 'film_grain', 'chromatic_aberration'],
+        'EARLY_LIFE': ['bokeh_orbs', 'light_leak', 'film_grain', 'warm_wash'],
+        'THE_SPARK': ['light_leak', 'edge_bloom', 'film_grain', 'bokeh_orbs'],
+        'THE_RISE': ['lens_flare', 'edge_bloom', 'film_grain', 'bokeh_orbs'],
+        'THE_CONFLICT': ['color_pulse_red', 'chromatic_aberration', 'film_scratches', 'film_grain'],
+        'THE_CLIMAX': ['zoom_burst', 'cinematic_bars', 'film_burn_overlay', 'film_grain'],
+        'THE_FALL': ['film_grain', 'dust_particles', 'vignette_pulse', 'color_pulse_cool'],
+        'LEGACY': ['bokeh_orbs', 'light_leak', 'warm_wash', 'edge_bloom'],
+        'CTA': ['bokeh_orbs', 'edge_bloom', 'film_grain'],
     }
 
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
@@ -165,6 +165,64 @@ class DocumentaryEffects:
         clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
+    def create_bokeh_orbs(
+        self, duration: float, intensity: float = 0.3, orb_count: int = 18
+    ) -> VideoClip:
+        """Floating bokeh light orbs that drift upward with soft glow.
+
+        Creates beautiful out-of-focus light circles that slowly rise and
+        drift, adding a magical/cinematic atmosphere. Each orb has its own
+        size, speed, and phase for organic variation.
+        """
+        w, h = self.width, self.height
+        rng = np.random.RandomState(99)
+
+        orbs = []
+        for _ in range(orb_count):
+            orbs.append({
+                'x': rng.uniform(0, w),
+                'y': rng.uniform(0, h),
+                'radius': rng.uniform(12, 45) * self.scale,
+                'speed_y': rng.uniform(-30, -8) * self.scale,
+                'speed_x': rng.uniform(-8, 8) * self.scale,
+                'drift_freq': rng.uniform(0.2, 0.8),
+                'drift_amp': rng.uniform(15, 40) * self.scale,
+                'brightness': rng.uniform(0.3, 1.0),
+                'phase': rng.uniform(0, 2 * np.pi),
+            })
+
+        def make_frame(t):
+            frame = np.zeros((h, w, 3), dtype=np.float32)
+            for o in orbs:
+                cx = (o['x'] + o['speed_x'] * t +
+                      o['drift_amp'] * np.sin(t * o['drift_freq'] + o['phase'])) % w
+                cy = (o['y'] + o['speed_y'] * t) % h
+                r = o['radius']
+                br = o['brightness'] * intensity
+
+                x1 = max(0, int(cx - r * 2))
+                x2 = min(w, int(cx + r * 2) + 1)
+                y1 = max(0, int(cy - r * 2))
+                y2 = min(h, int(cy + r * 2) + 1)
+                if x2 <= x1 or y2 <= y1:
+                    continue
+
+                yy, xx = np.ogrid[y1:y2, x1:x2]
+                dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2)
+                # Soft ring shape (brighter at edge of circle, dim center)
+                ring = np.exp(-((dist - r * 0.7) ** 2) / (r * 0.4) ** 2)
+                # Inner glow
+                core = np.exp(-dist ** 2 / (r * 0.5) ** 2) * 0.6
+                glow = (ring + core) * br
+                frame[y1:y2, x1:x2, 0] += glow * 240
+                frame[y1:y2, x1:x2, 1] += glow * 220
+                frame[y1:y2, x1:x2, 2] += glow * 180
+            return np.clip(frame, 0, 255).astype(np.uint8)
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(12)
+        clip = clip.set_opacity(min(intensity * 0.8, 0.45))
+        return clip
+
     def create_camera_shake(
         self, duration: float, intensity: float = 0.5
     ) -> VideoClip:
@@ -196,30 +254,43 @@ class DocumentaryEffects:
         return clip
 
     def create_cinematic_bars(
-        self, duration: float, bar_height_ratio: float = 0.12
+        self, duration: float, bar_height_ratio: float = 0.10
     ) -> VideoClip:
-        """Cinematic letterbox bars (top and bottom black bars).
+        """Animated cinematic letterbox bars that slide in and out.
 
-        Adds widescreen cinematic framing to the video. Bars fade in
-        smoothly at the start.
+        Bars slide in over the first 1.2 seconds and slide out over
+        the last 1.2 seconds, creating a dramatic framing effect that
+        makes key moments feel like a movie.
         """
         w, h = self.width, self.height
         bar_h = int(h * bar_height_ratio)
+        slide_in_dur = min(1.2, duration * 0.2)
+        slide_out_dur = min(1.2, duration * 0.2)
 
         def make_frame(t):
-            frame = np.zeros((h, w, 3), dtype=np.uint8)
-            frame[:bar_h, :] = 0
-            frame[h - bar_h:, :] = 0
-            return frame
+            return np.zeros((h, w, 3), dtype=np.uint8)
 
         def make_mask(t):
+            # Animate bar height
+            if t < slide_in_dur:
+                progress = t / slide_in_dur
+                progress = progress * progress * (3 - 2 * progress)  # smoothstep
+                current_bar = int(bar_h * progress)
+            elif t > duration - slide_out_dur:
+                progress = (duration - t) / slide_out_dur
+                progress = progress * progress * (3 - 2 * progress)
+                current_bar = int(bar_h * progress)
+            else:
+                current_bar = bar_h
+
             mask = np.zeros((h, w), dtype=np.float64)
-            mask[:bar_h, :] = 1.0
-            mask[h - bar_h:, :] = 1.0
+            if current_bar > 0:
+                mask[:current_bar, :] = 1.0
+                mask[h - current_bar:, :] = 1.0
             return mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(1)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(1)
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
         clip = clip.set_mask(mask)
         return clip
 
@@ -553,6 +624,122 @@ class DocumentaryEffects:
         clip = clip.set_mask(mask_clip)
         return clip
 
+    def create_zoom_burst(
+        self, duration: float, intensity: float = 0.6
+    ) -> VideoClip:
+        """Dramatic radial zoom burst for shocking revelations.
+
+        Creates radial light streaks emanating from center that flash
+        briefly, giving a punchy zoom-in impact feel at the start of
+        the clip. The burst lasts ~0.4s then fades completely.
+        """
+        w, h = self.width, self.height
+        cx, cy = w // 2, h // 2
+        burst_dur = min(0.4, duration * 0.3)
+
+        Y, X = np.ogrid[:h, :w]
+        dist = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float32)
+        max_dist = np.sqrt(cx ** 2 + cy ** 2)
+        angle = np.arctan2(Y - cy, X - cx).astype(np.float32)
+
+        def make_frame(t):
+            if t > burst_dur:
+                return np.zeros((h, w, 3), dtype=np.uint8)
+            progress = t / burst_dur
+            fade = 1.0 - progress
+            radial = np.abs(np.sin(angle * 8 + progress * np.pi * 4))
+            radial *= np.clip(dist / max_dist, 0.3, 1.0)
+            frame = np.zeros((h, w, 3), dtype=np.float32)
+            val = radial * fade * intensity
+            frame[:, :, 0] = val * 255
+            frame[:, :, 1] = val * 230
+            frame[:, :, 2] = val * 180
+            return np.clip(frame, 0, 255).astype(np.uint8)
+
+        def make_mask(t):
+            if t > burst_dur:
+                return np.zeros((h, w), dtype=np.float64)
+            fade = 1.0 - (t / burst_dur)
+            return np.full((h, w), fade * intensity * 0.5, dtype=np.float64)
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(30)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(30)
+        clip = clip.set_mask(mask)
+        return clip
+
+    def create_color_pulse(
+        self, duration: float, color: str = 'warm', intensity: float = 0.3
+    ) -> VideoClip:
+        """Brief color flash that pulses at the start for emotional emphasis.
+
+        Colors: 'warm' (golden), 'cool' (blue), 'red' (danger/conflict),
+        'green' (hope/nature). The pulse peaks at 0.3s then fades.
+        """
+        w, h = self.width, self.height
+        color_map = {
+            'warm': (255, 200, 100),
+            'cool': (100, 160, 255),
+            'red': (255, 80, 60),
+            'green': (80, 220, 120),
+        }
+        r, g, b = color_map.get(color, (255, 200, 100))
+        pulse_dur = min(0.6, duration * 0.3)
+
+        static_frame = np.zeros((h, w, 3), dtype=np.uint8)
+        static_frame[:, :, 0] = r
+        static_frame[:, :, 1] = g
+        static_frame[:, :, 2] = b
+
+        def make_mask(t):
+            if t > pulse_dur:
+                return np.zeros((h, w), dtype=np.float64)
+            progress = t / pulse_dur
+            # Quick peak then fade
+            pulse = np.sin(progress * np.pi) * intensity * 0.25
+            return np.full((h, w), pulse, dtype=np.float64)
+
+        def make_frame(t):
+            return static_frame
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = clip.set_mask(mask)
+        return clip
+
+    def create_edge_bloom(
+        self, duration: float, intensity: float = 0.2
+    ) -> VideoClip:
+        """Subtle bright-area bloom that gives a dreamy cinematic glow.
+
+        Simulates lens bloom by adding a soft bright haze around the
+        brightest parts of the frame. Uses a pre-computed radial gradient.
+        """
+        w, h = self.width, self.height
+        cx, cy = w // 2, h // 2
+        Y, X = np.ogrid[:h, :w]
+        dist = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float32)
+        max_dist = np.sqrt(cx ** 2 + cy ** 2)
+        # Center-weighted bloom mask
+        bloom = np.exp(-dist ** 2 / (max_dist * 0.6) ** 2)
+
+        static_frame = np.zeros((h, w, 3), dtype=np.float32)
+        static_frame[:, :, 0] = bloom * 255 * intensity
+        static_frame[:, :, 1] = bloom * 240 * intensity
+        static_frame[:, :, 2] = bloom * 200 * intensity
+        static_frame = np.clip(static_frame, 0, 255).astype(np.uint8)
+
+        def make_frame(t):
+            return static_frame
+
+        def make_mask(t):
+            pulse = 0.8 + 0.2 * np.sin(t * 0.4 * 2 * np.pi)
+            return bloom * intensity * pulse * 0.3
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(8)
+        clip = clip.set_mask(mask)
+        return clip
+
     def get_section_effects(
         self,
         section: str,
@@ -592,6 +779,12 @@ class DocumentaryEffects:
             'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
             'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.4),
             'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.6),
+            'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, effects_intensity * 0.5),
+            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.7),
+            'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', effects_intensity * 0.5),
+            'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.5),
+            'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.5),
+            'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
         }
 
         clips = []

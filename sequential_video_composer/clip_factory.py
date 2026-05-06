@@ -47,13 +47,20 @@ class ClipFactory:
             print(f"  End time: {end_time}s")
             print(f"  Movement style: {movement}")
 
+            # Section-aware color grading: use section-specific grade when available
+            section = self.orchestrator.image_sections.get(num, '')
+            if section:
+                grade = self.orchestrator.color_grading.grade_for_section(section)
+            else:
+                grade = self.orchestrator.color_grade
+
             clip = self.orchestrator.movements.create_animated_clip(
                 image_path=image_path,
                 duration=image_duration,
                 movement_type=movement,
                 zoom_intensity=self.orchestrator.zoom_intensity,
                 color_grader=self.orchestrator.color_grading,
-                color_grade=self.orchestrator.color_grade,
+                color_grade=grade,
                 enable_vignette=self.orchestrator.enable_vignette
             )
 

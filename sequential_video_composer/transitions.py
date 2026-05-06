@@ -53,13 +53,15 @@ class TransitionEffects:
         'luma_fade',
         'fade_through_warm',
         'ink_splash',
+        'parallax_slide',
+        'zoom_dissolve',
     ]
 
     # Transitions grouped by documentary section
     SECTION_TRANSITIONS = {
-        'COLD_OPEN': ['flash_cut', 'glitch', 'whip_pan', 'fade_through_black', 'zoom_blur'],
-        'EARLY_LIFE': ['crossfade', 'light_leak', 'morph_dissolve', 'fade_through_warm', 'luma_fade'],
-        'THE_SPARK': ['zoom_blur', 'push_left', 'light_leak', 'crossfade', 'whip_pan'],
+        'COLD_OPEN': ['flash_cut', 'zoom_dissolve', 'whip_pan', 'fade_through_black', 'zoom_blur'],
+        'EARLY_LIFE': ['crossfade', 'light_leak', 'zoom_dissolve', 'fade_through_warm', 'luma_fade'],
+        'THE_SPARK': ['zoom_blur', 'parallax_slide', 'light_leak', 'crossfade', 'whip_pan'],
         'THE_RISE': ['push_left', 'push_right', 'zoom_blur', 'whip_pan', 'light_leak'],
         'THE_CONFLICT': ['glitch', 'flash_cut', 'whip_pan', 'fade_through_black', 'zoom_blur'],
         'THE_CLIMAX': ['film_burn', 'flash_cut', 'zoom_blur', 'fade_through_black', 'morph_dissolve'],
@@ -106,6 +108,8 @@ class TransitionEffects:
             'push_right': lambda c1, c2, d: self._push(c1, c2, d, 'right'),
             'luma_fade': self._luma_fade,
             'ink_splash': self._ink_splash,
+            'parallax_slide': self._parallax_slide,
+            'zoom_dissolve': self._zoom_dissolve,
         }.get(transition_type, self._crossfade)
 
         return handler(clip1, clip2, duration)
@@ -471,3 +475,63 @@ class TransitionEffects:
         ink = ink.set_start(overlap_start)
 
         return CompositeVideoClip([clip1_part, ink, clip2_part])
+
+    def _parallax_slide(
+        self, clip1: ImageClip, clip2: ImageClip, duration: float
+    ) -> CompositeVideoClip:
+        """Parallax slide: clip1 slides away slowly while clip2 slides in faster.
+
+        Creates a depth illusion where the outgoing clip feels like a
+        background layer and the incoming clip feels like the foreground.
+        """
+        overlap_start = clip1.duration - duration
+
+        def pos1(t):
+            p = min(max((t - overlap_start) / duration, 0), 1)
+            p = p * p * (3 - 2 * p)
+            return (-self.width * 0.4 * p, 0)
+
+        def pos2(t):
+            p = min(max((t - overlap_start) / duration, 0), 1)
+            p = p * p * (3 - 2 * p)
+            return (self.width * (1.0 - p), 0)
+
+        c1 = clip1.fadeout(duration * 0.6).set_position(pos1)
+        c2 = clip2.set_start(overlap_start).set_position(pos2)
+        return CompositeVideoClip([c1, c2], size=self.resolution)
+
+    def _zoom_dissolve(
+        self, clip1: ImageClip, clip2: ImageClip, duration: float
+    ) -> CompositeVideoClip:
+        """Zoom dissolve: clip1 zooms in and fades while clip2 fades up.
+
+        Creates a smooth, cinematic transition where the outgoing image
+        grows larger (as if camera pushes in) while dissolving into
+        the next image. Very professional look.
+        """
+        overlap_start = clip1.duration - duration
+        w, h = self.resolution
+
+        def zoom_frame(get_frame):
+            def _zf(t):
+                p = min(max((t - overlap_start) / duration, 0), 1)
+                scale = 1.0 + 0.15 * (p * p)
+                frame = get_frame(t)
+                fh, fw = frame.shape[:2]
+                cw = int(fw / scale)
+                ch = int(fh / scale)
+                x1 = (fw - cw) // 2
+                y1 = (fh - ch) // 2
+                cropped = frame[y1:y1 + ch, x1:x1 + cw]
+                try:
+                    import cv2
+                    return cv2.resize(cropped, (fw, fh), interpolation=cv2.INTER_LINEAR)
+                except ImportError:
+                    pil = PILImage.fromarray(cropped)
+                    return np.array(pil.resize((fw, fh), PILImage.BILINEAR))
+            return _zf
+
+        c1_zoomed = clip1.fl(lambda gf, t: zoom_frame(gf)(t))
+        c1_zoomed = c1_zoomed.fadeout(duration)
+        c2 = clip2.set_start(overlap_start).fadein(duration)
+        return CompositeVideoClip([c1_zoomed, c2])
