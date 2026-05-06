@@ -55,6 +55,7 @@ class TransitionEffects:
         'ink_splash',
         'parallax_slide',
         'zoom_dissolve',
+        'color_sweep',
     ]
 
     # Transitions grouped by documentary section
@@ -62,9 +63,9 @@ class TransitionEffects:
         'COLD_OPEN': ['flash_cut', 'zoom_dissolve', 'whip_pan', 'fade_through_black', 'zoom_blur'],
         'EARLY_LIFE': ['crossfade', 'light_leak', 'zoom_dissolve', 'fade_through_warm', 'luma_fade'],
         'THE_SPARK': ['zoom_blur', 'parallax_slide', 'light_leak', 'crossfade', 'whip_pan'],
-        'THE_RISE': ['push_left', 'push_right', 'zoom_blur', 'whip_pan', 'light_leak'],
+        'THE_RISE': ['push_left', 'push_right', 'zoom_dissolve', 'whip_pan', 'color_sweep'],
         'THE_CONFLICT': ['glitch', 'flash_cut', 'whip_pan', 'fade_through_black', 'zoom_blur'],
-        'THE_CLIMAX': ['film_burn', 'flash_cut', 'zoom_blur', 'fade_through_black', 'morph_dissolve'],
+        'THE_CLIMAX': ['film_burn', 'flash_cut', 'zoom_dissolve', 'fade_through_black', 'color_sweep'],
         'THE_FALL': ['fade_through_black', 'blur_through', 'luma_fade', 'crossfade', 'morph_dissolve'],
         'LEGACY': ['light_leak', 'crossfade', 'fade_through_warm', 'morph_dissolve', 'luma_fade'],
         'CTA': ['crossfade', 'fade_through_black', 'morph_dissolve', 'light_leak', 'luma_fade'],
@@ -110,6 +111,7 @@ class TransitionEffects:
             'ink_splash': self._ink_splash,
             'parallax_slide': self._parallax_slide,
             'zoom_dissolve': self._zoom_dissolve,
+            'color_sweep': self._color_sweep,
         }.get(transition_type, self._crossfade)
 
         return handler(clip1, clip2, duration)
@@ -535,3 +537,56 @@ class TransitionEffects:
         c1_zoomed = c1_zoomed.fadeout(duration)
         c2 = clip2.set_start(overlap_start).fadein(duration)
         return CompositeVideoClip([c1_zoomed, c2])
+
+    def _color_sweep(
+        self, clip1: ImageClip, clip2: ImageClip, duration: float
+    ) -> CompositeVideoClip:
+        """Colorful gradient wipe that sweeps across the frame.
+
+        A vibrant gradient band moves left-to-right, with clip1 on one
+        side and clip2 on the other. Feels modern and energetic.
+        """
+        overlap_start = clip1.duration - duration
+        w, h = self.resolution
+        band_width = max(int(w * 0.15), 60)
+
+        def sweep_mask(t):
+            p = min(max((t - overlap_start) / duration, 0), 1)
+            p = p * p * (3 - 2 * p)  # smoothstep
+            center = int((w + band_width * 2) * p - band_width)
+            X = np.arange(w, dtype=np.float32)
+            mask_val = np.clip((X - center + band_width) / max(band_width, 1), 0, 1)
+            mask = np.broadcast_to(mask_val[np.newaxis, :], (h, w)).copy()
+            return mask
+
+        def color_band(t):
+            p = min(max((t - overlap_start) / duration, 0), 1)
+            center = int((w + band_width * 2) * p - band_width)
+            X = np.arange(w, dtype=np.float32)
+            dist = np.abs(X - center) / max(band_width, 1)
+            band = np.clip(1.0 - dist, 0, 1) ** 2
+            frame = np.zeros((h, w, 3), dtype=np.float32)
+            hue_shift = p * 2 * np.pi
+            frame[:, :, 0] = band * (128 + 127 * np.sin(hue_shift))
+            frame[:, :, 1] = band * (128 + 127 * np.sin(hue_shift + 2.09))
+            frame[:, :, 2] = band * (128 + 127 * np.sin(hue_shift + 4.19))
+            return np.clip(frame, 0, 255).astype(np.uint8)
+
+        def band_mask(t):
+            p = min(max((t - overlap_start) / duration, 0), 1)
+            center = int((w + band_width * 2) * p - band_width)
+            X = np.arange(w, dtype=np.float32)
+            dist = np.abs(X - center) / max(band_width, 1)
+            val = np.clip(1.0 - dist, 0, 1) ** 2 * 0.6
+            return np.broadcast_to(val[np.newaxis, :], (h, w)).copy()
+
+        clip1_part = clip1.fadeout(duration * 0.3)
+        clip2_part = clip2.set_start(overlap_start).fadein(duration * 0.3)
+        clip2_mask_clip = VideoClip(sweep_mask, duration=duration, ismask=True).set_fps(30)
+        clip2_part = clip2_part.set_mask(clip2_mask_clip)
+
+        band_clip = VideoClip(color_band, duration=duration).set_fps(30)
+        band_mask_clip = VideoClip(band_mask, duration=duration, ismask=True).set_fps(30)
+        band_clip = band_clip.set_mask(band_mask_clip).set_start(overlap_start)
+
+        return CompositeVideoClip([clip1_part, clip2_part, band_clip])

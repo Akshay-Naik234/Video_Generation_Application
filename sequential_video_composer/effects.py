@@ -31,15 +31,15 @@ class DocumentaryEffects:
 
     # Effects suitable for each documentary section
     SECTION_EFFECTS = {
-        'COLD_OPEN': ['zoom_burst', 'cinematic_bars', 'film_grain', 'chromatic_aberration'],
-        'EARLY_LIFE': ['bokeh_orbs', 'light_leak', 'film_grain', 'warm_wash'],
-        'THE_SPARK': ['light_leak', 'edge_bloom', 'film_grain', 'bokeh_orbs'],
-        'THE_RISE': ['lens_flare', 'edge_bloom', 'film_grain', 'bokeh_orbs'],
-        'THE_CONFLICT': ['color_pulse_red', 'chromatic_aberration', 'film_scratches', 'film_grain'],
-        'THE_CLIMAX': ['zoom_burst', 'cinematic_bars', 'film_burn_overlay', 'film_grain'],
-        'THE_FALL': ['film_grain', 'dust_particles', 'vignette_pulse', 'color_pulse_cool'],
-        'LEGACY': ['bokeh_orbs', 'light_leak', 'warm_wash', 'edge_bloom'],
-        'CTA': ['bokeh_orbs', 'edge_bloom', 'film_grain'],
+        'COLD_OPEN': ['zoom_burst', 'cinematic_bars', 'god_rays', 'shimmer_sparkles'],
+        'EARLY_LIFE': ['bokeh_orbs', 'film_strip', 'fog_overlay', 'warm_wash'],
+        'THE_SPARK': ['god_rays', 'shimmer_sparkles', 'edge_bloom', 'bokeh_orbs'],
+        'THE_RISE': ['lens_flare', 'god_rays', 'shimmer_sparkles', 'edge_bloom'],
+        'THE_CONFLICT': ['fog_overlay', 'color_pulse_red', 'chromatic_aberration', 'film_grain'],
+        'THE_CLIMAX': ['zoom_burst', 'god_rays', 'cinematic_bars', 'shimmer_sparkles'],
+        'THE_FALL': ['fog_overlay', 'film_strip', 'vignette_pulse', 'color_pulse_cool'],
+        'LEGACY': ['god_rays', 'bokeh_orbs', 'shimmer_sparkles', 'edge_bloom'],
+        'CTA': ['shimmer_sparkles', 'bokeh_orbs', 'edge_bloom'],
     }
 
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
@@ -624,6 +624,203 @@ class DocumentaryEffects:
         clip = clip.set_mask(mask_clip)
         return clip
 
+    def create_god_rays(
+        self, duration: float, intensity: float = 0.35
+    ) -> VideoClip:
+        """Volumetric light beams streaming from upper area.
+
+        Creates animated diagonal light shafts (god rays) that slowly
+        rotate and pulse — giving a divine, magical, or epic atmosphere.
+        Used in triumph moments, revelations, and legacy sections.
+        """
+        w, h = self.width, self.height
+        Y, X = np.ogrid[:h, :w]
+        cx, cy = int(w * 0.5), int(h * 0.1)
+        angle_map = np.arctan2(Y - cy, X - cx).astype(np.float32)
+
+        def make_frame(t):
+            rot = t * 0.08
+            rays = np.sin((angle_map + rot) * 12) ** 2
+            rays *= np.clip(1.0 - (Y - cy).astype(np.float32) / h, 0.1, 1.0)
+            pulse = 0.7 + 0.3 * np.sin(t * 0.5 * 2 * np.pi)
+            val = rays * pulse * intensity
+            frame = np.zeros((h, w, 3), dtype=np.float32)
+            frame[:, :, 0] = val * 255
+            frame[:, :, 1] = val * 240
+            frame[:, :, 2] = val * 180
+            return np.clip(frame, 0, 255).astype(np.uint8)
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = clip.set_opacity(min(intensity * 0.8, 0.4))
+        return clip
+
+    def create_fog_overlay(
+        self, duration: float, intensity: float = 0.25
+    ) -> VideoClip:
+        """Slow-drifting fog/smoke overlay for atmospheric depth.
+
+        Creates horizontal bands of semi-transparent fog that slowly
+        drift across the frame. Adds cinematic depth and mystery.
+        """
+        w, h = self.width, self.height
+        rng = np.random.RandomState(77)
+        bands = []
+        for _ in range(6):
+            bands.append({
+                'y': rng.uniform(0.2, 0.9),
+                'thickness': rng.uniform(0.08, 0.2),
+                'speed': rng.uniform(-20, 20) * (w / 1920),
+                'brightness': rng.uniform(0.4, 1.0),
+                'phase': rng.uniform(0, 2 * np.pi),
+            })
+
+        Y_norm = np.linspace(0, 1, h, dtype=np.float32)[:, np.newaxis]
+        X_coords = np.arange(w, dtype=np.float32)[np.newaxis, :]
+
+        def make_frame(t):
+            frame = np.zeros((h, w), dtype=np.float32)
+            for b in bands:
+                y_center = b['y'] + 0.02 * np.sin(t * 0.3 + b['phase'])
+                band_mask = np.exp(-((Y_norm - y_center) ** 2) / (b['thickness'] ** 2))
+                x_offset = b['speed'] * t
+                x_wave = np.sin((X_coords + x_offset) * 0.01 + b['phase']) * 0.5 + 0.5
+                frame += (band_mask * x_wave * b['brightness']).astype(np.float32)
+            frame = np.clip(frame * intensity, 0, 1)
+            rgb = np.stack([frame * 220, frame * 220, frame * 230], axis=-1)
+            return np.clip(rgb, 0, 255).astype(np.uint8)
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(10)
+        clip = clip.set_opacity(min(intensity * 0.7, 0.3))
+        return clip
+
+    def create_shimmer_sparkles(
+        self, duration: float, intensity: float = 0.4, count: int = 40
+    ) -> VideoClip:
+        """Magical floating sparkles with starburst glow.
+
+        Creates tiny bright points that appear, flash a cross-shaped
+        starburst, then fade — like magical fairy dust or diamond sparkles.
+        Much more eye-catching than basic dust particles.
+        """
+        w, h = self.width, self.height
+        rng = np.random.RandomState(55)
+
+        sparkles = []
+        for _ in range(count):
+            sparkles.append({
+                'x': rng.uniform(0, w),
+                'y': rng.uniform(0, h),
+                'life_start': rng.uniform(0, duration * 0.8),
+                'life_dur': rng.uniform(0.3, 1.2),
+                'size': rng.uniform(2, 6) * (h / 1080),
+                'brightness': rng.uniform(0.5, 1.0),
+                'drift_x': rng.uniform(-10, 10) * (w / 1920),
+                'drift_y': rng.uniform(-15, -3) * (h / 1080),
+            })
+
+        def make_frame(t):
+            frame = np.zeros((h, w, 3), dtype=np.float32)
+            for s in sparkles:
+                age = t - s['life_start']
+                if age < 0 or age > s['life_dur']:
+                    # Repeat sparkle
+                    cycle = s['life_dur'] + 0.5
+                    age = (t - s['life_start']) % cycle
+                    if age > s['life_dur']:
+                        continue
+                life_frac = age / s['life_dur']
+                # Flash curve: quick peak then fade
+                flash = np.sin(life_frac * np.pi) ** 0.5
+                br = s['brightness'] * flash * intensity
+
+                cx = int(s['x'] + s['drift_x'] * age) % w
+                cy = int(s['y'] + s['drift_y'] * age) % h
+                sz = max(1, int(s['size'] * (0.5 + flash)))
+
+                # Cross starburst
+                y1, y2 = max(0, cy - sz * 3), min(h, cy + sz * 3 + 1)
+                x1, x2 = max(0, cx - 1), min(w, cx + 2)
+                if y2 > y1 and x2 > x1:
+                    frame[y1:y2, x1:x2, 0] += br * 255
+                    frame[y1:y2, x1:x2, 1] += br * 245
+                    frame[y1:y2, x1:x2, 2] += br * 200
+                x1h, x2h = max(0, cx - sz * 3), min(w, cx + sz * 3 + 1)
+                y1h, y2h = max(0, cy - 1), min(h, cy + 2)
+                if x2h > x1h and y2h > y1h:
+                    frame[y1h:y2h, x1h:x2h, 0] += br * 255
+                    frame[y1h:y2h, x1h:x2h, 1] += br * 245
+                    frame[y1h:y2h, x1h:x2h, 2] += br * 200
+                # Core glow
+                core_sz = max(1, sz)
+                cy1, cy2 = max(0, cy - core_sz), min(h, cy + core_sz + 1)
+                cx1, cx2 = max(0, cx - core_sz), min(w, cx + core_sz + 1)
+                if cy2 > cy1 and cx2 > cx1:
+                    frame[cy1:cy2, cx1:cx2] += br * 255
+            return np.clip(frame, 0, 255).astype(np.uint8)
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(20)
+        clip = clip.set_opacity(min(intensity * 0.6, 0.4))
+        return clip
+
+    def create_film_strip(
+        self, duration: float, intensity: float = 0.5
+    ) -> VideoClip:
+        """Film strip/reel border effect for nostalgic sections.
+
+        Adds film perforation holes (sprocket holes) on both sides of the
+        frame, giving it the look of a physical film strip. Subtle vertical
+        jitter simulates a film projector.
+        """
+        w, h = self.width, self.height
+        strip_w = max(int(w * 0.04), 20)
+        hole_h = max(int(h * 0.03), 16)
+        hole_w = max(int(strip_w * 0.5), 10)
+        hole_spacing = max(int(h * 0.06), 40)
+        hole_x_left = (strip_w - hole_w) // 2
+        hole_x_right = w - strip_w + (strip_w - hole_w) // 2
+
+        static_frame = np.zeros((h, w, 3), dtype=np.uint8)
+        static_mask = np.zeros((h, w), dtype=np.float64)
+
+        # Left strip
+        static_frame[:, :strip_w] = 20
+        static_mask[:, :strip_w] = 0.9
+        # Right strip
+        static_frame[:, w - strip_w:] = 20
+        static_mask[:, w - strip_w:] = 0.9
+        # Sprocket holes
+        for y_start in range(hole_spacing // 2, h, hole_spacing):
+            y_end = min(y_start + hole_h, h)
+            # Left holes
+            static_mask[y_start:y_end, hole_x_left:hole_x_left + hole_w] = 0
+            static_frame[y_start:y_end, hole_x_left:hole_x_left + hole_w] = 0
+            # Right holes
+            static_mask[y_start:y_end, hole_x_right:hole_x_right + hole_w] = 0
+            static_frame[y_start:y_end, hole_x_right:hole_x_right + hole_w] = 0
+
+        opacity = min(intensity * 0.6, 0.5)
+        static_mask *= opacity
+
+        def make_frame(t):
+            return static_frame
+
+        def make_mask(t):
+            # Subtle vertical jitter to simulate projector
+            jitter = int(2 * np.sin(t * 18))
+            if jitter == 0:
+                return static_mask
+            result = np.zeros_like(static_mask)
+            if jitter > 0:
+                result[jitter:] = static_mask[:-jitter]
+            else:
+                result[:jitter] = static_mask[-jitter:]
+            return result
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = clip.set_mask(mask)
+        return clip
+
     def create_zoom_burst(
         self, duration: float, intensity: float = 0.6
     ) -> VideoClip:
@@ -785,6 +982,10 @@ class DocumentaryEffects:
             'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.5),
             'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.5),
             'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
+            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.5),
+            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.4),
+            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5),
+            'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.6),
         }
 
         clips = []
