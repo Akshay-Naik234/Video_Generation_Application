@@ -5,7 +5,7 @@
   "fps": 30,
   "image_duration": 4.0,
   "crossfade": 1.2,
-  "zoom": 1.15,
+  "zoom": 1.25,
   "effects_intensity": 0.7,
   "transition_style": "random",
   "movement_style": "random",

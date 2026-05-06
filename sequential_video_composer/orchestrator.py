@@ -31,7 +31,7 @@ class SequentialVideoOrchestrator:
         fps: int = 30,
         image_duration: float = 4.0,
         crossfade_duration: float = 1.2,
-        zoom_intensity: float = 1.08,
+        zoom_intensity: float = 1.20,
         effects_intensity: float = 0.7,
         audio_path: Optional[Union[str, Path]] = None,
         transition_style: str = "random",
@@ -156,12 +156,24 @@ class SequentialVideoOrchestrator:
 
         return numbered_images
 
+    # Dynamic movements favored in random selection (excludes static/minimal
+    # so every clip has noticeable motion that keeps viewers engaged).
+    _DYNAMIC_MOVEMENTS = [
+        'zoom_in', 'zoom_out', 'pan_left', 'pan_right',
+        'pan_up', 'pan_down', 'diagonal_tl_br', 'diagonal_tr_bl',
+        'breathing', 'dramatic_zoom', 'gentle_drift', 'focus_center',
+    ]
+
     def _get_movement_for_image(self, index: int, total: int) -> str:
         """Get movement style for an image based on its position."""
         if self.movement_style == "random":
-            return random.choice(MovementStyles.MOVEMENT_TYPES)
+            return random.choice(self._DYNAMIC_MOVEMENTS)
         elif self.movement_style == "sequential":
-            movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
+            movements = [
+                'zoom_in', 'pan_left', 'diagonal_tl_br',
+                'zoom_out', 'pan_right', 'diagonal_tr_bl',
+                'gentle_drift', 'breathing',
+            ]
             return movements[index % len(movements)]
         elif self.movement_style == "dramatic_sequence":
             if index == 0:
@@ -169,13 +181,13 @@ class SequentialVideoOrchestrator:
             elif index == total - 1:
                 return 'zoom_out'
             elif index < total // 3:
-                return random.choice(['zoom_in', 'pan_right', 'gentle_drift'])
+                return random.choice(['zoom_in', 'pan_right', 'diagonal_tl_br'])
             elif index < 2 * total // 3:
-                return random.choice(['pan_left', 'pan_right', 'breathing'])
+                return random.choice(['pan_left', 'pan_right', 'breathing', 'diagonal_tr_bl'])
             else:
-                return random.choice(['zoom_out', 'focus_center', 'gentle_drift'])
+                return random.choice(['zoom_out', 'focus_center', 'gentle_drift', 'dramatic_zoom'])
         elif self.movement_style == "documentary":
-            subtle_movements = ['zoom_in', 'gentle_drift', 'zoom_out', 'focus_center', 'breathing', 'minimal']
+            subtle_movements = ['zoom_in', 'gentle_drift', 'zoom_out', 'focus_center', 'breathing', 'pan_left']
             return subtle_movements[index % len(subtle_movements)]
         else:
             return self.movement_style if self.movement_style in MovementStyles.MOVEMENT_TYPES else 'zoom_in'

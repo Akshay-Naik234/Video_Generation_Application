@@ -166,57 +166,60 @@ class MovementStyles:
 
         elif movement_type == 'pan_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.04 * progress
+            pan_x = -0.12 * progress
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.04 * progress
+            pan_x = 0.12 * progress
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = -0.04 * progress
+            pan_y = -0.12 * progress
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = 0.04 * progress
+            pan_y = 0.12 * progress
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
-            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.7
-            pan_x = 0.02 * progress
-            pan_y = 0.02 * progress
+            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.8
+            pan_x = 0.08 * progress
+            pan_y = 0.08 * progress
             return zoom, pan_x, pan_y
 
         elif movement_type == 'diagonal_tr_bl':
-            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.7
-            pan_x = -0.02 * progress
-            pan_y = 0.02 * progress
+            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.8
+            pan_x = -0.08 * progress
+            pan_y = 0.08 * progress
             return zoom, pan_x, pan_y
 
         elif movement_type == 'breathing':
-            zoom = 1.0 + 0.04 * np.sin(progress * np.pi * 2)
-            return zoom, 0, 0
+            zoom = 1.0 + 0.10 * np.sin(progress * np.pi * 2)
+            pan_x = 0.03 * np.sin(progress * np.pi)
+            return zoom, pan_x, 0
 
         elif movement_type == 'dramatic_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * self._dramatic_ease(progress)
-            return zoom, 0, 0
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.6 * self._dramatic_ease(progress)
+            pan_y = -0.03 * self._dramatic_ease(progress)
+            return zoom, 0, pan_y
 
         elif movement_type == 'gentle_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.02 * np.sin(progress * np.pi)
-            pan_y = 0.01 * np.cos(progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
+            pan_x = 0.08 * np.sin(progress * np.pi)
+            pan_y = 0.04 * np.cos(progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'focus_center':
-            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.8
+            zoom = 1.0 + (zoom_intensity - 1.0) * progress
             return zoom, 0, 0
 
         elif movement_type == 'minimal':
-            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.5
-            return zoom, 0, 0
+            zoom = 1.0 + (zoom_intensity - 1.0) * progress * 0.7
+            pan_x = 0.02 * progress
+            return zoom, pan_x, 0
 
         elif movement_type == 'static':
             return 1.0, 0, 0

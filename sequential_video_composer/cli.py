@@ -104,8 +104,8 @@ Color Grades:
     parser.add_argument(
         '--zoom', '-z',
         type=float,
-        default=1.15,
-        help='Ken Burns zoom intensity (default: 1.15)'
+        default=1.25,
+        help='Ken Burns zoom intensity (default: 1.25)'
     )
 
     parser.add_argument(
