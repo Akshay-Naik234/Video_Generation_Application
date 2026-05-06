@@ -344,7 +344,7 @@ class DocumentaryEffects:
         return clip
 
     def create_vignette_pulse(
-        self, duration: float, intensity: float = 0.4
+        self, duration: float, intensity: float = 0.2
     ) -> VideoClip:
         """Breathing vignette that slowly pulses darker/lighter.
 
@@ -362,7 +362,7 @@ class DocumentaryEffects:
         base_vignette = np.clip(dist / max_dist, 0, 1)
 
         def make_frame(t):
-            pulse = 0.15 + 0.05 * np.sin(t * 0.5 * 2 * np.pi)
+            pulse = 0.08 + 0.03 * np.sin(t * 0.5 * 2 * np.pi)
             vig = (base_vignette * pulse * intensity * 255).astype(np.uint8)
             frame = np.zeros((h, w, 3), dtype=np.uint8)
             frame[:, :, 0] = vig
@@ -371,7 +371,7 @@ class DocumentaryEffects:
             return frame
 
         def make_mask(t):
-            pulse = 0.15 + 0.05 * np.sin(t * 0.5 * 2 * np.pi)
+            pulse = 0.08 + 0.03 * np.sin(t * 0.5 * 2 * np.pi)
             return base_vignette * pulse * intensity
 
         clip = VideoClip(make_frame, duration=duration).set_fps(8)
@@ -492,14 +492,14 @@ class DocumentaryEffects:
             dist = np.sqrt((X - cx - offset_x) ** 2 + (Y - cy - offset_y) ** 2)
             shadow = np.clip((dist - radius) / (radius * 0.8), 0, 1)
             frame = np.zeros((h, w, 3), dtype=np.uint8)
-            shadow_val = (shadow * 60 * intensity).astype(np.uint8)
+            shadow_val = (shadow * 30 * intensity).astype(np.uint8)
             frame[:, :, 0] = shadow_val
             frame[:, :, 1] = shadow_val
             frame[:, :, 2] = shadow_val
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        clip = clip.set_opacity(min(intensity * 0.35, 0.25))
+        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = clip.set_opacity(min(intensity * 0.2, 0.15))
         return clip
 
     def create_photo_frame(

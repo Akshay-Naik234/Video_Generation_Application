@@ -38,8 +38,8 @@ class SequentialVideoOrchestrator:
         fps: int = 30,
         image_duration: float = 4.0,
         crossfade_duration: float = 1.5,
-        zoom_intensity: float = 1.06,
-        effects_intensity: float = 0.7,
+        zoom_intensity: float = 1.03,
+        effects_intensity: float = 0.4,
         audio_path: Optional[Union[str, Path]] = None,
         transition_style: str = "random",
         movement_style: str = "random",
@@ -636,11 +636,35 @@ class SequentialVideoOrchestrator:
 
         return clip
 
+    @staticmethod
+    def _load_font(size: int, bold: bool = False):
+        """Load a TrueType font with robust cross-platform fallbacks."""
+        from PIL import ImageFont
+        paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf" if bold else "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+            "/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf" if bold else "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/TTF/DejaVuSans.ttf",
+            "/System/Library/Fonts/Helvetica.ttc",
+            "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+        ]
+        for path in paths:
+            try:
+                return ImageFont.truetype(path, size)
+            except (OSError, IOError):
+                continue
+        try:
+            return ImageFont.load_default(size=size)
+        except TypeError:
+            return ImageFont.load_default()
+
     def _create_map_label_clip(self, map_label: str, duration: float):
         """Create a map label overlay with location pin + text.
 
         map_label format: "Location Name | Year"
         Renders: (1) glowing location pin marker, (2) location text, (3) year text
+        positioned in the lower-third area for readability.
         """
         try:
             from PIL import Image, ImageDraw, ImageFont
@@ -649,56 +673,42 @@ class SequentialVideoOrchestrator:
             return None
 
         w, h = self.resolution
-        # Parse label: "Location Name | Year"
         parts = map_label.split('|')
         location = parts[0].strip() if len(parts) > 0 else ''
         year = parts[1].strip() if len(parts) > 1 else ''
 
-        # Create RGBA overlay
         img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
 
-        # Try to load a nice font, fallback to default
-        font_size_loc = int(h * 0.07)
-        font_size_year = int(h * 0.085)
-        try:
-            font_loc = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size_loc)
-            font_year = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size_year)
-        except (OSError, IOError):
-            font_loc = ImageFont.load_default()
-            font_year = ImageFont.load_default()
+        font_size_loc = int(h * 0.038)
+        font_size_year = int(h * 0.048)
+        font_loc = self._load_font(font_size_loc, bold=False)
+        font_year = self._load_font(font_size_year, bold=True)
 
-        # Pin position: lower-third area so it stays readable during map_zoom
         pin_x = int(w * 0.5)
-        pin_y = int(h * 0.50)
+        pin_y = int(h * 0.58)
 
-        # Draw glowing pin marker (circle + stem)
-        pin_glow_r = int(h * 0.055)
-        pin_r = int(h * 0.035)
-        # Outer glow
+        pin_glow_r = int(h * 0.028)
+        pin_r = int(h * 0.018)
         for offset in range(pin_glow_r, pin_r, -1):
-            alpha = int(80 * (1 - (offset - pin_r) / (pin_glow_r - pin_r)))
+            alpha = int(90 * (1 - (offset - pin_r) / (pin_glow_r - pin_r)))
             draw.ellipse(
                 [pin_x - offset, pin_y - offset, pin_x + offset, pin_y + offset],
                 fill=(255, 180, 50, alpha)
             )
-        # Pin dot
         draw.ellipse(
             [pin_x - pin_r, pin_y - pin_r, pin_x + pin_r, pin_y + pin_r],
             fill=(255, 80, 30, 240)
         )
-        # Pin stem
-        stem_len = int(h * 0.04)
+        stem_len = int(h * 0.022)
         draw.line(
             [(pin_x, pin_y + pin_r), (pin_x, pin_y + pin_r + stem_len)],
             fill=(255, 80, 30, 200), width=max(2, int(pin_r * 0.4))
         )
 
-        # Draw location text below pin with background panel
-        text_y = pin_y + pin_r + stem_len + int(h * 0.02)
-        pad = int(h * 0.015)
+        text_y = pin_y + pin_r + stem_len + int(h * 0.015)
+        pad = int(h * 0.012)
 
-        # Measure all text first to draw background panel
         loc_bbox = draw.textbbox((0, 0), location, font=font_loc) if location else (0, 0, 0, 0)
         year_bbox = draw.textbbox((0, 0), year, font=font_year) if year else (0, 0, 0, 0)
         loc_w = loc_bbox[2] - loc_bbox[0]
@@ -706,36 +716,34 @@ class SequentialVideoOrchestrator:
         loc_h = loc_bbox[3] - loc_bbox[1]
         year_h = year_bbox[3] - year_bbox[1]
         max_text_w = max(loc_w, year_w)
-        total_text_h = (loc_h + int(h * 0.02) + year_h) if year else loc_h
+        total_text_h = (loc_h + int(h * 0.012) + year_h) if year else loc_h
 
-        # Semi-transparent dark background panel
         if location or year:
             panel_x1 = pin_x - max_text_w // 2 - pad * 2
             panel_y1 = text_y - pad
             panel_x2 = pin_x + max_text_w // 2 + pad * 2
             panel_y2 = text_y + total_text_h + pad * 2
+            panel_x1 = max(0, panel_x1)
+            panel_x2 = min(w, panel_x2)
             draw.rounded_rectangle(
                 [panel_x1, panel_y1, panel_x2, panel_y2],
-                radius=int(h * 0.01),
-                fill=(0, 0, 0, 160)
+                radius=int(h * 0.008),
+                fill=(0, 0, 0, 180)
             )
 
         if location:
-            text_x = pin_x - loc_w // 2
-            draw.text((text_x, text_y), location, fill=(255, 255, 255, 240), font=font_loc)
-            text_y += loc_h + int(h * 0.02)
+            text_x = max(pad, pin_x - loc_w // 2)
+            draw.text((text_x, text_y), location, fill=(255, 255, 255, 245), font=font_loc)
+            text_y += loc_h + int(h * 0.012)
 
-        # Draw year text
         if year:
-            text_x = pin_x - year_w // 2
+            text_x = max(pad, pin_x - year_w // 2)
             draw.text((text_x, text_y), year, fill=(255, 200, 80, 250), font=font_year)
 
-        # Convert to numpy
         overlay_rgba = np.array(img)
         rgb_frame = overlay_rgba[:, :, :3]
         alpha_mask = overlay_rgba[:, :, 3].astype(np.float64) / 255.0
 
-        # Animate: pin fades in, then text fades in
         def make_frame(t, _rgb=rgb_frame):
             return _rgb
 
@@ -769,8 +777,8 @@ class SequentialVideoOrchestrator:
                 audio_codec='aac',
                 temp_audiofile=temp_audio,
                 remove_temp=True,
-                threads=2,
-                preset='medium',
+                threads=4,
+                preset='fast',
                 ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
             )
             print(f"Video exported successfully: {self.output_path}")

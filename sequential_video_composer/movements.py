@@ -100,7 +100,7 @@ class MovementStyles:
         image_path: Path,
         duration: float,
         movement_type: str,
-        zoom_intensity: float = 1.06,
+        zoom_intensity: float = 1.03,
         color_grader: 'ColorGrading' = None,
         color_grade: str = None,
         enable_vignette: bool = False
@@ -115,9 +115,9 @@ class MovementStyles:
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.35)
-        scaled_width = int(self.width * max_zoom * 1.6)
-        scaled_height = int(self.height * max_zoom * 1.6)
+        max_zoom = max(zoom_intensity, 1.15)
+        scaled_width = int(self.width * max_zoom * 1.25)
+        scaled_height = int(self.height * max_zoom * 1.25)
 
         orig_width, orig_height = base_img.size
         orig_aspect = orig_width / orig_height
@@ -160,6 +160,16 @@ class MovementStyles:
 
         out_w, out_h = self.resolution
 
+        # Pre-convert to numpy for fast per-frame crop+resize
+        base_np = np.array(scaled_img)
+        blurred_np = np.array(blurred_img) if blurred_img is not None else None
+
+        try:
+            import cv2
+            _has_cv2 = True
+        except ImportError:
+            _has_cv2 = False
+
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
             progress = max(0.0, min(1.0, progress))
@@ -169,42 +179,39 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            # Safety cap: never zoom so much that less than 91% of image is visible
-            zoom = min(zoom, 1.10)
+            # Safety cap: never zoom so much that less than 95% of image is visible
+            zoom = min(zoom, 1.05)
 
-            crop_width = self.width / zoom
-            crop_height = self.height / zoom
+            crop_w = self.width / zoom
+            crop_h = self.height / zoom
 
-            offset_x = pan_x * crop_width * 0.5
-            offset_y = pan_y * crop_height * 0.5
+            offset_x = pan_x * crop_w * 0.5
+            offset_y = pan_y * crop_h * 0.5
 
-            left = center_x - crop_width / 2.0 + offset_x
-            top = center_y - crop_height / 2.0 + offset_y
+            left = center_x - crop_w / 2.0 + offset_x
+            top = center_y - crop_h / 2.0 + offset_y
 
-            left = max(0.0, min(left, scaled_width - crop_width))
-            top = max(0.0, min(top, scaled_height - crop_height))
+            left = max(0.0, min(left, scaled_width - crop_w))
+            top = max(0.0, min(top, scaled_height - crop_h))
 
-            sx = crop_width / out_w
-            sy = crop_height / out_h
+            l_i, t_i = int(left), int(top)
+            r_i = min(l_i + int(crop_w), scaled_width)
+            b_i = min(t_i + int(crop_h), scaled_height)
 
-            src_img = scaled_img
-
-            # Tilt-shift: blend sharp center with blurred edges
-            if movement_type == 'tilt_shift' and blurred_img is not None:
-                src_img = self._apply_tilt_shift_blend(
-                    scaled_img, blurred_img, progress
+            src = base_np
+            if movement_type == 'tilt_shift' and blurred_np is not None:
+                src = self._apply_tilt_shift_blend_np(
+                    base_np, blurred_np, progress
                 )
 
-            final = src_img.transform(
-                (out_w, out_h),
-                PILImage.AFFINE,
-                (sx, 0.0, left, 0.0, sy, top),
-                resample=PILImage.BICUBIC,
-            )
+            cropped = src[t_i:b_i, l_i:r_i]
 
-            frame = np.array(final)
+            if _has_cv2:
+                frame = cv2.resize(cropped, (out_w, out_h), interpolation=cv2.INTER_LINEAR)
+            else:
+                pil_crop = PILImage.fromarray(cropped)
+                frame = np.array(pil_crop.resize((out_w, out_h), PILImage.BILINEAR))
 
-            # Whip pan motion blur
             if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
 
@@ -235,21 +242,31 @@ class MovementStyles:
         self, sharp: PILImage.Image, blurred: PILImage.Image, progress: float
     ) -> PILImage.Image:
         """Blend sharp center band with blurred edges for miniature effect."""
-        w, h = sharp.size
         sharp_arr = np.array(sharp).astype(np.float32)
         blur_arr = np.array(blurred).astype(np.float32)
+        result = self._tilt_shift_blend_arrays(sharp_arr, blur_arr, sharp.size[1], progress)
+        return PILImage.fromarray(result.astype(np.uint8))
 
-        # The focus band slowly drifts with progress
+    def _apply_tilt_shift_blend_np(
+        self, sharp_np: np.ndarray, blurred_np: np.ndarray, progress: float
+    ) -> np.ndarray:
+        """Blend sharp center band with blurred edges (numpy arrays)."""
+        h = sharp_np.shape[0]
+        return self._tilt_shift_blend_arrays(
+            sharp_np.astype(np.float32), blurred_np.astype(np.float32), h, progress
+        ).astype(np.uint8)
+
+    @staticmethod
+    def _tilt_shift_blend_arrays(
+        sharp_arr: np.ndarray, blur_arr: np.ndarray, h: int, progress: float
+    ) -> np.ndarray:
         focus_center = 0.45 + 0.1 * progress
         band_width = 0.25
-
         y_coords = np.linspace(0, 1, h)[:, np.newaxis]
         dist = np.abs(y_coords - focus_center)
         mask = np.clip((dist - band_width * 0.5) / (band_width * 0.3 + 1e-6), 0, 1)
         mask = mask[:, :, np.newaxis]
-
-        result = sharp_arr * (1 - mask) + blur_arr * mask
-        return PILImage.fromarray(result.astype(np.uint8))
+        return sharp_arr * (1 - mask) + blur_arr * mask
 
     def _apply_motion_blur(self, frame: np.ndarray, progress: float) -> np.ndarray:
         """Apply horizontal motion blur during the fast middle of whip pan."""
@@ -315,34 +332,34 @@ class MovementStyles:
 
         elif movement_type == 'pan_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.12 * eased
+            pan_x = -0.06 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.12 * eased
+            pan_x = 0.06 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = -0.12 * eased
+            pan_y = -0.06 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = 0.12 * eased
+            pan_y = 0.06 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_x = 0.08 * eased
-            pan_y = 0.08 * eased
+            pan_x = 0.04 * eased
+            pan_y = 0.04 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'diagonal_tr_bl':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_x = -0.08 * eased
-            pan_y = 0.08 * eased
+            pan_x = -0.04 * eased
+            pan_y = 0.04 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'breathing':
@@ -356,8 +373,8 @@ class MovementStyles:
 
         elif movement_type == 'gentle_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.4
-            pan_x = 0.04 * np.sin(raw_progress * np.pi)
-            pan_y = 0.02 * np.cos(raw_progress * np.pi)
+            pan_x = 0.02 * np.sin(raw_progress * np.pi)
+            pan_y = 0.01 * np.cos(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'focus_center':
@@ -379,8 +396,8 @@ class MovementStyles:
             # creating a visible depth separation effect.
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
             phase = raw_progress * np.pi
-            pan_x = 0.06 * np.sin(phase)
-            pan_y = 0.03 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.03 * np.sin(phase)
+            pan_y = 0.015 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
@@ -399,15 +416,15 @@ class MovementStyles:
             # Camera arcs around the subject in an elliptical path.
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
             angle = eased * np.pi * 0.8
-            pan_x = 0.07 * np.sin(angle)
-            pan_y = 0.03 * (1 - np.cos(angle))
+            pan_x = 0.035 * np.sin(angle)
+            pan_y = 0.015 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
             # Fast horizontal pan with ease-in / ease-out and motion blur.
             whip = self._ease_in_out_quint(eased)
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
-            pan_x = 0.12 * whip
+            pan_x = 0.06 * whip
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
@@ -427,13 +444,13 @@ class MovementStyles:
         elif movement_type == 'crane_up':
             # Vertical crane shot moving upward, slight zoom out.
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.3)
-            pan_y = -0.08 * self._ease_in_out_quart(eased)
+            pan_y = -0.04 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             # Vertical crane shot moving downward, slight zoom in.
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.5
-            pan_y = 0.08 * self._ease_in_out_quart(eased)
+            pan_y = 0.04 * self._ease_in_out_quart(eased)
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
@@ -475,20 +492,20 @@ class MovementStyles:
         elif movement_type == 'float_up':
             # Gentle upward drift with slow zoom — dreamy, reflective feel.
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.5
-            pan_y = -0.06 * self._ease_in_out_sine(eased)
-            pan_x = 0.015 * np.sin(raw_progress * np.pi)
+            pan_y = -0.03 * self._ease_in_out_sine(eased)
+            pan_x = 0.008 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             # Pan from right to left to reveal the scene.
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
-            pan_x = 0.08 * (1.0 - self._ease_in_out_quart(eased))
+            pan_x = 0.04 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             # Pan from left to right to reveal the scene.
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
-            pan_x = -0.08 * (1.0 - self._ease_in_out_quart(eased))
+            pan_x = -0.04 * (1.0 - self._ease_in_out_quart(eased))
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
@@ -503,8 +520,8 @@ class MovementStyles:
             # Smooth geographic pan across a map (left to right).
             # Simulates tracing a travel route across the map.
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.3
-            pan_x = 0.10 * self._ease_in_out_quart(eased)
-            pan_y = 0.02 * np.sin(eased * np.pi)
+            pan_x = 0.05 * self._ease_in_out_quart(eased)
+            pan_y = 0.01 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
