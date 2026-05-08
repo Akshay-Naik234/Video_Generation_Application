@@ -580,8 +580,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return result * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'highlight':
@@ -611,8 +611,8 @@ class SequentialVideoOrchestrator:
                 fade_in = min(t / 0.3, 1.0)
                 return _alpha * fade * fade_in
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'slide_up':
@@ -636,8 +636,8 @@ class SequentialVideoOrchestrator:
                     result *= fade
                 return result
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'glow_underline':
@@ -687,8 +687,8 @@ class SequentialVideoOrchestrator:
             def make_mask(_t, _alpha=alpha_mask):
                 return _alpha
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(1)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(1)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
             fade_in = min(0.5, duration * 0.15)
             fade_out = min(0.4, duration * 0.12)

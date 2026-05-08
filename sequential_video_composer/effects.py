@@ -303,8 +303,8 @@ class DocumentaryEffects:
                 mask[h - current_bar:, :] = 1.0
             return mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask)
         return clip
 
@@ -351,7 +351,7 @@ class DocumentaryEffects:
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
         clip = clip.set_opacity(min(intensity * 1.5, 0.8))
         return clip
 
@@ -633,8 +633,8 @@ class DocumentaryEffects:
         def make_mask(t):
             return static_mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask_clip)
         return clip
 

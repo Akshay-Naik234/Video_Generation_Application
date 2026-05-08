@@ -200,7 +200,7 @@ class MovementStyles:
             'crane_up': self._ease_in_out_quart,
             'crane_down': self._ease_in_out_quart,
             'rack_focus': self._ease_out_expo,
-            'bounce_zoom': self._ease_out_back,
+            'bounce_zoom': self._ease_in_out_cubic,
             'dolly_zoom': self._ease_in_out_sine,
             'spiral_zoom': self._ease_in_out_quart,
             'orbit': self._ease_in_out_sine,
@@ -336,7 +336,11 @@ class MovementStyles:
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
-        """Apply handheld camera micro-shake by shifting pixels."""
+        """Apply handheld camera micro-shake by shifting pixels.
+
+        Uses np.pad with 'edge' mode to replicate border pixels instead of
+        filling with black, which prevents flickering black edges.
+        """
         amplitude = 4.0 * (self.width / 1920)
         freq1, freq2 = 3.7, 5.3
         dx = int(amplitude * np.sin(t * freq1 * 2 * np.pi))
@@ -346,19 +350,16 @@ class MovementStyles:
             return frame
 
         h, w = frame.shape[:2]
-        result = np.zeros_like(frame)
+        abs_dx, abs_dy = abs(dx), abs(dy)
 
-        src_x1 = max(0, dx)
-        src_y1 = max(0, dy)
-        src_x2 = min(w, w + dx)
-        src_y2 = min(h, h + dy)
-        dst_x1 = max(0, -dx)
-        dst_y1 = max(0, -dy)
-        dst_x2 = dst_x1 + (src_x2 - src_x1)
-        dst_y2 = dst_y1 + (src_y2 - src_y1)
-
-        result[dst_y1:dst_y2, dst_x1:dst_x2] = frame[src_y1:src_y2, src_x1:src_x2]
-        return result
+        padded = np.pad(
+            frame,
+            ((abs_dy, abs_dy), (abs_dx, abs_dx), (0, 0)),
+            mode='edge'
+        )
+        crop_y = abs_dy - dy
+        crop_x = abs_dx - dx
+        return padded[crop_y:crop_y + h, crop_x:crop_x + w]
 
     # ---- Movement calculations ----
 
@@ -420,7 +421,7 @@ class MovementStyles:
             return zoom, 0, pan_y
 
         elif movement_type == 'dramatic_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * self._dramatic_ease(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
             return zoom, 0, 0
 
         elif movement_type == 'gentle_drift':
@@ -450,12 +451,12 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * self._ease_in_quad(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * eased
             pan_y = -0.08 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'push_out':
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * self._ease_in_quad(eased)
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * eased
             pan_y = 0.08 * eased
             return zoom, 0, pan_y
 
@@ -467,9 +468,8 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
-            whip = self._ease_in_out_quint(eased)
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.22 * whip
+            pan_x = 0.22 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
@@ -486,12 +486,12 @@ class MovementStyles:
 
         elif movement_type == 'crane_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.2)
-            pan_y = -0.18 * self._ease_in_out_quart(eased)
+            pan_y = -0.18 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = 0.18 * self._ease_in_out_quart(eased)
+            pan_y = 0.18 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
@@ -516,7 +516,7 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'rack_focus':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * self._ease_out_expo(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
             return zoom, 0, 0
 
         elif movement_type == 'bounce_zoom':
@@ -526,34 +526,34 @@ class MovementStyles:
 
         elif movement_type == 'float_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = -0.14 * self._ease_in_out_sine(eased)
+            pan_y = -0.14 * eased
             pan_x = 0.04 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.18 * (1.0 - self._ease_in_out_quart(eased))
+            pan_x = 0.18 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.18 * (1.0 - self._ease_in_out_quart(eased))
+            pan_x = -0.18 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * self._ease_in_quad(eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
             pan_y = 0.06 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'map_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.20 * self._ease_in_out_quart(eased)
+            pan_x = 0.20 * eased
             pan_y = 0.05 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.22 * (1.0 - self._ease_in_out_quart(eased))
+            pan_x = -0.22 * (1.0 - eased)
             return zoom, pan_x, 0
 
         else:
