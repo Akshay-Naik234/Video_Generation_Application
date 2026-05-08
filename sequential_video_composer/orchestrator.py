@@ -308,39 +308,49 @@ class SequentialVideoOrchestrator:
 
     def create_video(self) -> None:
         """Main method to create the sequential video with professional effects."""
-        print("Starting Sequential Video Orchestrator (Documentary Enhanced)...")
-        print(f"Images root: {self.images_root}")
-        print(f"Output path: {self.output_path}")
-        print(f"Resolution: {self.resolution}")
-        print(f"Image duration: {self.image_duration}s")
-        print(f"Transition style: {self.transition_style}")
-        print(f"Movement style: {self.movement_style}")
-        print(f"Color grade: {self.color_grade}")
-        print(f"Documentary effects: {self.enable_documentary_effects}")
+        import time as _time
+        t0 = _time.monotonic()
+
+        print("="*60)
+        print("Sequential Video Orchestrator (Documentary Enhanced)")
+        print("="*60)
+        print(f"  Images root     : {self.images_root}")
+        print(f"  Output path     : {self.output_path}")
+        print(f"  Resolution      : {self.resolution}")
+        print(f"  FPS             : {self.fps}")
+        print(f"  Image duration  : {self.image_duration}s")
+        print(f"  Transition style: {self.transition_style}")
+        print(f"  Movement style  : {self.movement_style}")
+        print(f"  Color grade     : {self.color_grade}")
+        print(f"  Effects enabled : {self.enable_documentary_effects}")
         if self.total_video_duration:
-            print(f"Target video duration: {self.total_video_duration}s")
+            print(f"  Target duration : {self.total_video_duration}s")
+        print("="*60)
 
         numbered_images = self.discover_numbered_images()
+        print(f"\n[1/5] Creating animated clips...")
         clips_data = self.create_image_clips(numbered_images)
 
         if not clips_data:
             raise ValueError("No valid image clips were created")
 
+        print(f"\n[2/5] Building timeline...")
         main_video = self.create_timeline_video(clips_data)
 
         if main_video is None:
             raise ValueError("Failed to create timeline video")
 
-        print(f"Main video duration: {main_video.duration}s")
+        print(f"  Main video duration: {main_video.duration}s")
 
         overlays = [main_video]
 
         # Documentary effects (section-aware overlays)
+        print(f"\n[3/5] Applying effects...")
         if self.enable_documentary_effects:
             doc_overlays = self._create_documentary_effect_overlays(clips_data)
             overlays.extend(doc_overlays)
+            print(f"  Applied {len(doc_overlays)} documentary effect overlays")
         else:
-            # Legacy particle/grain overlays
             if self.effects_intensity > 0.3:
                 particles = self.clip_factory.create_particle_overlay(
                     main_video.duration,
@@ -356,22 +366,33 @@ class SequentialVideoOrchestrator:
                 overlays.append(grain)
 
         # Text overlays from duration config
+        print(f"\n[4/5] Adding text overlays...")
         if self.enable_text_overlays and self.overlay_texts:
             text_clips = self._create_text_overlay_clips(clips_data)
             overlays.extend(text_clips)
+            print(f"  Added {len(text_clips)} text overlay clips")
+        else:
+            print("  No text overlays configured")
 
         if len(overlays) > 1:
             main_video = CompositeVideoClip(overlays)
 
         if self.audio_path and self.audio_path.exists():
-            print(f"Adding audio from: {self.audio_path}")
+            print(f"  Adding audio from: {self.audio_path}")
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
             main_video = main_video.set_audio(audio_clip)
 
+        print(f"\n[5/5] Exporting video...")
         self._export_video(main_video)
-        print(f"Video created successfully: {self.output_path}")
+
+        elapsed = _time.monotonic() - t0
+        print(f"\n{'='*60}")
+        print(f"Video created successfully in {elapsed:.1f}s")
+        print(f"  Output: {self.output_path}")
+        print(f"  Size  : {self.output_path.stat().st_size / (1024*1024):.1f} MB")
+        print(f"{'='*60}")
 
     def _create_documentary_effect_overlays(self, clips_data: List[Dict]) -> List:
         """Create documentary effect overlays.
@@ -794,19 +815,22 @@ class SequentialVideoOrchestrator:
                 fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
             return _alpha * fade_in * fade
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(12)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(12)
+        clip = VideoClip(make_frame, duration=duration).set_fps(20)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(20)
         clip = clip.set_mask(mask_clip)
         return clip
 
     def _export_video(self, video: CompositeVideoClip) -> None:
-        """Export the final video with professional settings."""
-        print("Exporting video...")
+        """Export the final video with professional settings.
 
+        Uses baseline H.264 profile and progressive-download flag so the
+        file plays correctly in VS Code, web browsers, and QuickTime.
+        Multi-threaded encoding with optimized settings for quality/speed.
+        """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Use a unique temp audio file to avoid conflicts with parallel exports
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
+        thread_count = min(os.cpu_count() or 4, 8)
 
         try:
             video.write_videofile(
@@ -816,17 +840,24 @@ class SequentialVideoOrchestrator:
                 audio_codec='aac',
                 temp_audiofile=temp_audio,
                 remove_temp=True,
-                threads=4,
-                preset='fast',
-                ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
+                threads=thread_count,
+                preset='medium',
+                ffmpeg_params=[
+                    '-crf', '20',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'baseline',
+                    '-level', '3.1',
+                    '-movflags', '+faststart',
+                ]
             )
-            print(f"Video exported successfully: {self.output_path}")
         except Exception as e:
-            print(f"Export error: {e}")
+            print(f"Export error with optimized settings: {e}")
             print("Retrying with basic settings...")
             video.write_videofile(
                 str(self.output_path),
                 fps=self.fps,
                 codec='libx264',
-                audio_codec='aac'
+                audio_codec='aac',
+                threads=thread_count,
+                ffmpeg_params=['-pix_fmt', 'yuv420p', '-movflags', '+faststart']
             )

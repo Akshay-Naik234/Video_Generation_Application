@@ -42,6 +42,20 @@ class DocumentaryEffects:
         'CTA': ['shimmer_sparkles', 'bokeh_orbs', 'edge_bloom'],
     }
 
+    # Section-aware intensity multipliers so dramatic sections get stronger
+    # effects and calm sections stay subtle.
+    SECTION_INTENSITY_MULTIPLIERS = {
+        'COLD_OPEN': 1.3,
+        'EARLY_LIFE': 0.8,
+        'THE_SPARK': 1.0,
+        'THE_RISE': 1.15,
+        'THE_CONFLICT': 1.25,
+        'THE_CLIMAX': 1.4,
+        'THE_FALL': 0.9,
+        'LEGACY': 0.75,
+        'CTA': 0.7,
+    }
+
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
         self.width, self.height = resolution
         self.scale = self.height / 1080.0
@@ -161,7 +175,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2] = bright
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
         clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
@@ -219,7 +233,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2, 2] += glow * 180
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(12)
+        clip = VideoClip(make_frame, duration=duration).set_fps(20)
         clip = clip.set_opacity(min(intensity * 0.8, 0.45))
         return clip
 
@@ -249,7 +263,7 @@ class DocumentaryEffects:
                 frame[y_start:y_end, :, 2] = brightness
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
         clip = clip.set_opacity(min(intensity * 0.4, 0.25))
         return clip
 
@@ -367,7 +381,7 @@ class DocumentaryEffects:
 
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
         clip = clip.set_opacity(min(intensity * 0.7, 0.35))
         return clip
 
@@ -410,7 +424,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2] = val
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(12)
+        clip = VideoClip(make_frame, duration=duration).set_fps(20)
         clip = clip.set_opacity(min(intensity * 0.8, 0.5))
         return clip
 
@@ -445,8 +459,8 @@ class DocumentaryEffects:
             pulse = 0.08 + 0.03 * np.sin(t * 0.5 * 2 * np.pi)
             return base_vignette * pulse * intensity
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(18)
         clip = clip.set_mask(mask)
         return clip
 
@@ -501,7 +515,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = int(10 * pulse * intensity)
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
         clip = clip.set_opacity(min(intensity * 1.0, 0.4))
         return clip
 
@@ -536,7 +550,7 @@ class DocumentaryEffects:
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
         clip = clip.set_opacity(min(intensity * 0.8, 0.4))
         return clip
 
@@ -569,7 +583,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = shadow_val
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
         clip = clip.set_opacity(min(intensity * 0.2, 0.15))
         return clip
 
@@ -619,8 +633,8 @@ class DocumentaryEffects:
         def make_mask(t):
             return static_mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(4)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(4)
+        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
         clip = clip.set_mask(mask_clip)
         return clip
 
@@ -650,7 +664,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = val * 180
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(20)
         clip = clip.set_opacity(min(intensity * 0.8, 0.4))
         return clip
 
@@ -689,7 +703,7 @@ class DocumentaryEffects:
             rgb = np.stack([frame * 220, frame * 220, frame * 230], axis=-1)
             return np.clip(rgb, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(10)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
         clip = clip.set_opacity(min(intensity * 0.7, 0.3))
         return clip
 
@@ -816,8 +830,8 @@ class DocumentaryEffects:
                 result[:jitter] = static_mask[-jitter:]
             return result
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask)
         return clip
 
@@ -898,8 +912,8 @@ class DocumentaryEffects:
         def make_frame(t):
             return static_frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(15)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask)
         return clip
 
@@ -932,8 +946,8 @@ class DocumentaryEffects:
             pulse = 0.8 + 0.2 * np.sin(t * 0.4 * 2 * np.pi)
             return bloom * intensity * pulse * 0.3
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(8)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(8)
+        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(18)
         clip = clip.set_mask(mask)
         return clip
 
@@ -947,12 +961,16 @@ class DocumentaryEffects:
         """Get appropriate effect clips for a documentary section.
 
         Returns a list of VideoClip overlays suited to the given section's
-        emotional tone and visual style.
+        emotional tone and visual style.  Intensity is automatically scaled
+        by section so dramatic moments feel stronger.
         """
         effect_names = self.SECTION_EFFECTS.get(section, ['film_grain', 'dust_particles'])
         effect_names = effect_names[:max_effects]
 
-        return self.get_effects_by_names(effect_names, duration, effects_intensity)
+        mult = self.SECTION_INTENSITY_MULTIPLIERS.get(section, 1.0)
+        scaled_intensity = effects_intensity * mult
+
+        return self.get_effects_by_names(effect_names, duration, scaled_intensity)
 
     def get_effects_by_names(
         self,
