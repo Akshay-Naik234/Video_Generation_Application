@@ -214,40 +214,6 @@ class TextOverlayEngine:
         # Main text on top
         draw.text((x, y), text, font=font, fill=fill)
 
-    def _create_gradient_bar(
-        self,
-        width: int,
-        height: int,
-        color: Tuple[int, int, int] = (0, 0, 0),
-        alpha_start: int = 220,
-        alpha_end: int = 0,
-        direction: str = 'right',
-    ) -> PILImage.Image:
-        """Create a gradient bar that fades from opaque to transparent.
-
-        Used as background for lower thirds and info cards to give a
-        modern, cinematic look instead of flat semi-transparent rectangles.
-        """
-        bar = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
-        for i in range(width if direction in ('right', 'left') else height):
-            if direction == 'right':
-                alpha = int(alpha_start + (alpha_end - alpha_start) * (i / max(1, width - 1)))
-                for y in range(height):
-                    bar.putpixel((i, y), (*color, alpha))
-            elif direction == 'left':
-                alpha = int(alpha_end + (alpha_start - alpha_end) * (i / max(1, width - 1)))
-                for y in range(height):
-                    bar.putpixel((i, y), (*color, alpha))
-            elif direction == 'down':
-                alpha = int(alpha_start + (alpha_end - alpha_start) * (i / max(1, height - 1)))
-                for x in range(width):
-                    bar.putpixel((x, i), (*color, alpha))
-            elif direction == 'up':
-                alpha = int(alpha_end + (alpha_start - alpha_end) * (i / max(1, height - 1)))
-                for x in range(width):
-                    bar.putpixel((x, i), (*color, alpha))
-        return bar
-
     def _create_gradient_bar_fast(
         self,
         width: int,

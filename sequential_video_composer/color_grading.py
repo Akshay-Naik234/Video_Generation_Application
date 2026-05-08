@@ -1,4 +1,9 @@
-"""Professional color grading effects for video clips."""
+"""Professional color grading effects for video clips.
+
+Includes section-aware grading that automatically applies the right colour
+tone for each documentary section — warm golden for nostalgia, cool
+desaturated for conflict, rich dramatic for climax, etc.
+"""
 
 import numpy as np
 
@@ -16,8 +21,28 @@ class ColorGrading:
         'high_contrast',
         'soft',
         'dramatic',
-        'natural'
+        'natural',
+        'teal_orange',
+        'noir',
+        'golden_hour',
     ]
+
+    # Maps each documentary section to its ideal colour grade.
+    SECTION_GRADES = {
+        'COLD_OPEN': 'dramatic',
+        'EARLY_LIFE': 'warm',
+        'THE_SPARK': 'golden_hour',
+        'THE_RISE': 'cinematic',
+        'THE_CONFLICT': 'teal_orange',
+        'THE_CLIMAX': 'high_contrast',
+        'THE_FALL': 'cool',
+        'LEGACY': 'warm',
+        'CTA': 'modern',
+    }
+
+    def grade_for_section(self, section: str) -> str:
+        """Return the recommended grade name for a documentary section."""
+        return self.SECTION_GRADES.get(section, 'cinematic')
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
         """Apply color grading to an image."""
@@ -41,6 +66,12 @@ class ColorGrading:
             return self._dramatic_grade(image)
         elif grade_type == 'natural':
             return self._natural_grade(image)
+        elif grade_type == 'teal_orange':
+            return self._teal_orange_grade(image)
+        elif grade_type == 'noir':
+            return self._noir_grade(image)
+        elif grade_type == 'golden_hour':
+            return self._golden_hour_grade(image)
         else:
             return image
 
@@ -118,4 +149,39 @@ class ColorGrading:
         """Natural, balanced look."""
         img = image.astype(np.float64)
         img = (img - 128) * 1.05 + 128
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _teal_orange_grade(self, image: np.ndarray) -> np.ndarray:
+        """Hollywood teal-and-orange split-tone used in thrillers/conflict."""
+        img = image.astype(np.float64)
+        luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
+        shadow_mask = np.clip(1.0 - luminance / 128.0, 0, 1)[..., np.newaxis]
+        highlight_mask = np.clip((luminance - 128.0) / 128.0, 0, 1)[..., np.newaxis]
+        # Shadows → teal (push blue/green, pull red)
+        img[:, :, 0] -= shadow_mask[:, :, 0] * 12
+        img[:, :, 1] += shadow_mask[:, :, 0] * 8
+        img[:, :, 2] += shadow_mask[:, :, 0] * 18
+        # Highlights → warm orange (push red, pull blue)
+        img[:, :, 0] += highlight_mask[:, :, 0] * 15
+        img[:, :, 1] += highlight_mask[:, :, 0] * 5
+        img[:, :, 2] -= highlight_mask[:, :, 0] * 10
+        img = (img - 128) * 1.12 + 128
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _noir_grade(self, image: np.ndarray) -> np.ndarray:
+        """High-contrast near-monochrome with subtle color hint."""
+        img = image.astype(np.float64)
+        gray = np.dot(img[..., :3], [0.299, 0.587, 0.114])[..., np.newaxis]
+        img = gray * 0.85 + img * 0.15
+        img = (img - 128) * 1.35 + 128
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _golden_hour_grade(self, image: np.ndarray) -> np.ndarray:
+        """Warm golden-hour glow for nostalgic/inspirational moments."""
+        img = image.astype(np.float64)
+        img[:, :, 0] *= 1.12
+        img[:, :, 1] *= 1.06
+        img[:, :, 2] *= 0.88
+        img = (img - 128) * 1.08 + 128
+        img += 8
         return np.clip(img, 0, 255).astype(np.uint8)

@@ -41,11 +41,18 @@ class ClipFactory:
             start_time = timing.get('start_time')
             end_time = timing.get('end_time')
             
-            movement = self.orchestrator._get_movement_for_image(i, total)
+            movement = self.orchestrator._get_movement_for_image(i, total, image_num=num)
             print(f"  Duration: {image_duration}s")
             print(f"  Start time: {start_time}s")
             print(f"  End time: {end_time}s")
             print(f"  Movement style: {movement}")
+
+            # Section-aware color grading: use section-specific grade when available
+            section = self.orchestrator.image_sections.get(num, '')
+            if section:
+                grade = self.orchestrator.color_grading.grade_for_section(section)
+            else:
+                grade = self.orchestrator.color_grade
 
             clip = self.orchestrator.movements.create_animated_clip(
                 image_path=image_path,
@@ -53,11 +60,11 @@ class ClipFactory:
                 movement_type=movement,
                 zoom_intensity=self.orchestrator.zoom_intensity,
                 color_grader=self.orchestrator.color_grading,
-                color_grade=self.orchestrator.color_grade,
+                color_grade=grade,
                 enable_vignette=self.orchestrator.enable_vignette
             )
 
-            transition = self.orchestrator._get_transition_for_image(i, total)
+            transition = self.orchestrator._get_transition_for_image(i, total, image_num=num)
             clips_data.append({
                 'clip': clip,
                 'transition': transition,
