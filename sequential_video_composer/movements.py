@@ -321,7 +321,7 @@ class MovementStyles:
         if blur_strength < 0.05:
             return frame
 
-        kernel_size = int(blur_strength * 30 * (self.width / 1920))
+        kernel_size = int(blur_strength * 12 * (self.width / 1920))
         if kernel_size < 2:
             return frame
 
@@ -341,7 +341,7 @@ class MovementStyles:
         Uses np.pad with 'edge' mode to replicate border pixels instead of
         filling with black, which prevents flickering black edges.
         """
-        amplitude = 4.0 * (self.width / 1920)
+        amplitude = 2.0 * (self.width / 1920)
         freq1, freq2 = 3.7, 5.3
         dx = int(amplitude * np.sin(t * freq1 * 2 * np.pi))
         dy = int(amplitude * np.cos(t * freq2 * 2 * np.pi))

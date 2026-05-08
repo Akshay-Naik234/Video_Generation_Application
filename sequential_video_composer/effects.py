@@ -639,7 +639,7 @@ class DocumentaryEffects:
         return clip
 
     def create_god_rays(
-        self, duration: float, intensity: float = 0.35
+        self, duration: float, intensity: float = 0.15
     ) -> VideoClip:
         """Volumetric light beams streaming from upper area.
 
@@ -665,7 +665,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(20)
-        clip = clip.set_opacity(min(intensity * 0.8, 0.4))
+        clip = clip.set_opacity(min(intensity * 0.5, 0.2))
         return clip
 
     def create_fog_overlay(
@@ -836,7 +836,7 @@ class DocumentaryEffects:
         return clip
 
     def create_zoom_burst(
-        self, duration: float, intensity: float = 0.6
+        self, duration: float, intensity: float = 0.25
     ) -> VideoClip:
         """Dramatic radial zoom burst for shocking revelations.
 
@@ -871,7 +871,7 @@ class DocumentaryEffects:
             if t > burst_dur:
                 return np.zeros((h, w), dtype=np.float64)
             fade = 1.0 - (t / burst_dur)
-            return np.full((h, w), fade * intensity * 0.5, dtype=np.float64)
+            return np.full((h, w), fade * intensity * 0.2, dtype=np.float64)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(30)
         mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(30)
@@ -995,12 +995,12 @@ class DocumentaryEffects:
             'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.4),
             'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.6),
             'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, effects_intensity * 0.5),
-            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.7),
+            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.3),
             'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', effects_intensity * 0.5),
             'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.5),
             'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.5),
             'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
-            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.5),
+            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.25),
             'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.4),
             'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5),
             'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.6),

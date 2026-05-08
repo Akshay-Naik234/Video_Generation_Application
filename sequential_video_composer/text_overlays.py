@@ -167,14 +167,16 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 160),
-        shadow_offset: int = 3,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 220),
+        shadow_offset: int = 5,
     ) -> None:
-        """Draw text with a drop shadow for depth and readability."""
+        """Draw text with a strong drop shadow for depth and readability."""
         x, y = position
-        offset = max(1, int(shadow_offset * self.scale))
-        # Shadow
+        offset = max(2, int(shadow_offset * self.scale))
+        # Shadow (drawn twice for stronger effect)
         draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
+        draw.text((x + offset - 1, y + offset - 1), text, font=font,
+                  fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
         # Main text
         draw.text((x, y), text, font=font, fill=fill)
 
@@ -185,11 +187,11 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        outline_color: Tuple[int, int, int, int] = (0, 0, 0, 200),
-        outline_width: int = 2,
+        outline_color: Tuple[int, int, int, int] = (0, 0, 0, 240),
+        outline_width: int = 4,
         shadow: bool = True,
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 120),
-        shadow_offset: int = 4,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 220),
+        shadow_offset: int = 6,
     ) -> None:
         """Draw text with outline stroke and optional drop shadow.
 
@@ -199,10 +201,12 @@ class TextOverlayEngine:
         x, y = position
         ow = max(1, int(outline_width * self.scale))
 
-        # Drop shadow (offset and slightly blurred feel)
+        # Drop shadow (strong, drawn twice for visibility on dark backgrounds)
         if shadow:
-            so = max(1, int(shadow_offset * self.scale))
+            so = max(2, int(shadow_offset * self.scale))
             draw.text((x + so, y + so), text, font=font, fill=shadow_color)
+            draw.text((x + so - 1, y + so - 1), text, font=font,
+                      fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
 
         # Outline: draw text in 8 directions around the center point
         for dx in range(-ow, ow + 1):
@@ -301,7 +305,7 @@ class TextOverlayEngine:
         # Gradient background (fades right)
         gradient = self._create_gradient_bar_fast(
             gradient_w, bar_h,
-            color=(12, 12, 18), alpha_start=210, alpha_end=0, direction='right'
+            color=(12, 12, 18), alpha_start=245, alpha_end=30, direction='right'
         )
         overlay.paste(gradient, (bar_x, bar_y), gradient)
 
@@ -320,8 +324,8 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (text_x, text_y), name, name_font,
             fill=(*text_color, 255),
-            outline_color=(0, 0, 0, 220), outline_width=2,
-            shadow=True, shadow_color=(0, 0, 0, 140), shadow_offset=3
+            outline_color=(0, 0, 0, 240), outline_width=4,
+            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=6
         )
 
         # Title text with shadow (lighter, no outline)
@@ -329,8 +333,8 @@ class TextOverlayEngine:
             title_y = text_y + name_h + int(10 * self.scale)
             self._draw_text_with_shadow(
                 draw, (text_x, title_y), title, title_font,
-                fill=(*accent_color, 230),
-                shadow_color=(0, 0, 0, 120), shadow_offset=2
+                fill=(*accent_color, 250),
+                shadow_color=(0, 0, 0, 220), shadow_offset=4
             )
 
         return np.array(overlay)
@@ -421,18 +425,18 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (year_x, year_y), year, year_font,
             fill=(*accent_color, 255),
-            outline_color=(0, 0, 0, 230), outline_width=2,
-            shadow=True, shadow_color=(0, 0, 0, 160), shadow_offset=4
+            outline_color=(0, 0, 0, 240), outline_width=4,
+            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=6
         )
 
-        # Label below year (centered, white, dimmer)
+        # Label below year (centered, white, stronger)
         if label:
             label_x = card_x + (card_w - label_w) // 2
             label_y = year_y + year_h + int(8 * self.scale)
             self._draw_text_with_shadow(
                 draw, (label_x, label_y), label, label_font,
-                fill=(*text_color, 200),
-                shadow_color=(0, 0, 0, 120), shadow_offset=2
+                fill=(*text_color, 240),
+                shadow_color=(0, 0, 0, 220), shadow_offset=4
             )
 
         return np.array(overlay)
@@ -484,10 +488,10 @@ class TextOverlayEngine:
         card_x = margin_x
         card_y = self.height - margin_y - card_h
 
-        # Gradient background
+        # Gradient background (more opaque for readability)
         gradient = self._create_gradient_bar_fast(
             gradient_w, card_h,
-            color=(10, 10, 16), alpha_start=200, alpha_end=0, direction='right'
+            color=(10, 10, 16), alpha_start=240, alpha_end=30, direction='right'
         )
         overlay.paste(gradient, (card_x, card_y), gradient)
 
@@ -516,8 +520,8 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (text_x, text_y), location, loc_font,
             fill=(*text_color, 255),
-            outline_color=(0, 0, 0, 200), outline_width=2,
-            shadow=True, shadow_color=(0, 0, 0, 130), shadow_offset=3
+            outline_color=(0, 0, 0, 240), outline_width=4,
+            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=5
         )
 
         # Sub-text
@@ -525,8 +529,8 @@ class TextOverlayEngine:
             sub_y = text_y + loc_h + int(6 * self.scale)
             self._draw_text_with_shadow(
                 draw, (text_x, sub_y), sub_text, sub_font,
-                fill=(*text_color, 170),
-                shadow_color=(0, 0, 0, 100), shadow_offset=2
+                fill=(*text_color, 230),
+                shadow_color=(0, 0, 0, 220), shadow_offset=4
             )
 
         return np.array(overlay)
@@ -591,12 +595,13 @@ class TextOverlayEngine:
         bottom_border = PILImage.new('RGBA', (card_w, max(1, int(2 * self.scale))), (*accent_color, 140))
         overlay.paste(bottom_border, (card_x, card_y + card_h - max(1, int(2 * self.scale))), bottom_border)
 
-        # Text with shadow
-        self._draw_text_with_shadow(
+        # Text with outline for max readability
+        self._draw_text_with_outline(
             draw, (card_x + pad_x, card_y + pad_y),
             display_text, font,
-            fill=(*text_color, 250),
-            shadow_color=(0, 0, 0, 140), shadow_offset=2
+            fill=(*text_color, 255),
+            outline_color=(0, 0, 0, 240), outline_width=3,
+            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=4
         )
 
         return np.array(overlay)
@@ -669,7 +674,7 @@ class TextOverlayEngine:
         )
         # Override with uniform semi-transparent black
         bg_arr = np.array(bg)
-        bg_arr[:, :, 3] = 170
+        bg_arr[:, :, 3] = 210
         bg = PILImage.fromarray(bg_arr, 'RGBA')
         overlay.paste(bg, (0, bg_y), bg)
 
@@ -694,9 +699,9 @@ class TextOverlayEngine:
             x = (self.width - line_w) // 2
             self._draw_text_with_outline(
                 draw, (x, y), line, quote_font,
-                fill=(255, 255, 255, 245),
-                outline_color=(0, 0, 0, 180), outline_width=2,
-                shadow=True, shadow_color=(0, 0, 0, 100), shadow_offset=3
+                fill=(255, 255, 255, 255),
+                outline_color=(0, 0, 0, 240), outline_width=4,
+                shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=5
             )
             y += line_heights[i] + line_spacing
 

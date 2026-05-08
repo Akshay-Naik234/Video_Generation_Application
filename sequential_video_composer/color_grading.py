@@ -44,8 +44,24 @@ class ColorGrading:
         """Return the recommended grade name for a documentary section."""
         return self.SECTION_GRADES.get(section, 'cinematic')
 
+    def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
+        """Ensure no frame is excessively dark by lifting shadows.
+
+        If more than 50% of pixels are below brightness 40, the frame is
+        considered underexposed and gets an automatic brightness boost.
+        Minimum pixel value is clamped to 15 so nothing is pure black.
+        """
+        img = image.astype(np.float64)
+        luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
+        dark_ratio = np.mean(luminance < 40)
+        if dark_ratio > 0.5:
+            boost = 25 + 20 * (dark_ratio - 0.5)
+            img = img + boost
+        img = np.clip(img, 15, 255)
+        return img.astype(np.uint8)
+
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
-        """Apply color grading to an image."""
+        """Apply color grading to an image then enforce minimum brightness."""
         if grade_type == 'cinematic':
             return self._cinematic_grade(image)
         elif grade_type == 'documentary':
@@ -73,15 +89,15 @@ class ColorGrading:
         elif grade_type == 'golden_hour':
             return self._golden_hour_grade(image)
         else:
-            return image
+            return self._enforce_min_brightness(image)
 
     def _cinematic_grade(self, image: np.ndarray) -> np.ndarray:
-        """Cinematic color grading with enhanced shadows and highlights."""
+        """Cinematic color grading with lifted shadows and gentle contrast."""
         img = image.astype(np.float64)
-        shadows = np.where(img < 128, img + 10, img)
-        highlights = np.where(shadows > 180, shadows * 0.95, shadows)
-        result = (highlights - 128) * 1.15 + 128
-        return np.clip(result, 0, 255).astype(np.uint8)
+        img = np.where(img < 40, img * 0.7 + 15, img)
+        highlights = np.where(img > 180, img * 0.96, img)
+        result = (highlights - 128) * 1.10 + 128
+        return self._enforce_min_brightness(np.clip(result, 0, 255).astype(np.uint8))
 
     def _documentary_grade(self, image: np.ndarray) -> np.ndarray:
         """Documentary style with natural contrast."""
@@ -89,7 +105,7 @@ class ColorGrading:
         img = (img - 128) * 1.08 + 128
         img[:, :, 0] *= 1.02
         img[:, :, 2] *= 0.98
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _vintage_grade(self, image: np.ndarray) -> np.ndarray:
         """Vintage/retro color grading."""
@@ -98,15 +114,15 @@ class ColorGrading:
         img[:, :, 1] *= 1.05
         img[:, :, 2] *= 0.9
         img = (img - 128) * 0.9 + 128
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _modern_grade(self, image: np.ndarray) -> np.ndarray:
-        """Modern high-contrast look."""
+        """Modern look with gentler contrast."""
         img = image.astype(np.float64)
-        img = (img - 128) * 1.25 + 128
+        img = (img - 128) * 1.15 + 128
         gray = np.dot(img, [0.299, 0.587, 0.114])
         img = img * 0.85 + gray[..., np.newaxis] * 0.15
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _warm_grade(self, image: np.ndarray) -> np.ndarray:
         """Warm, golden tones."""
@@ -114,7 +130,7 @@ class ColorGrading:
         img[:, :, 0] *= 1.08
         img[:, :, 1] *= 1.03
         img[:, :, 2] *= 0.92
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _cool_grade(self, image: np.ndarray) -> np.ndarray:
         """Cool, blue tones."""
@@ -122,59 +138,57 @@ class ColorGrading:
         img[:, :, 0] *= 0.95
         img[:, :, 1] *= 1.0
         img[:, :, 2] *= 1.1
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _high_contrast_grade(self, image: np.ndarray) -> np.ndarray:
-        """High contrast dramatic look."""
+        """High contrast dramatic look — shadows lifted, not crushed."""
         img = image.astype(np.float64)
-        img = (img - 128) * 1.4 + 128
-        img = np.where(img < 40, img * 0.5, img)
+        img = (img - 128) * 1.25 + 128
+        img = np.where(img < 40, img * 0.7 + 15, img)
         img = np.where(img > 215, 215 + (img - 215) * 0.3, img)
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _soft_grade(self, image: np.ndarray) -> np.ndarray:
         """Soft, dreamy look."""
         img = image.astype(np.float64)
         img = (img - 128) * 0.85 + 128 + 15
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _dramatic_grade(self, image: np.ndarray) -> np.ndarray:
-        """Dramatic, intense look."""
+        """Dramatic, intense look — contrast reduced to prevent black crush."""
         img = image.astype(np.float64)
-        img = (img - 128) * 1.3 + 128
+        img = (img - 128) * 1.15 + 128
         img[:, :, 0] *= 1.05
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _natural_grade(self, image: np.ndarray) -> np.ndarray:
         """Natural, balanced look."""
         img = image.astype(np.float64)
         img = (img - 128) * 1.05 + 128
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _teal_orange_grade(self, image: np.ndarray) -> np.ndarray:
-        """Hollywood teal-and-orange split-tone used in thrillers/conflict."""
+        """Hollywood teal-and-orange split-tone — gentler to preserve shadows."""
         img = image.astype(np.float64)
         luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
         shadow_mask = np.clip(1.0 - luminance / 128.0, 0, 1)[..., np.newaxis]
         highlight_mask = np.clip((luminance - 128.0) / 128.0, 0, 1)[..., np.newaxis]
-        # Shadows → teal (push blue/green, pull red)
-        img[:, :, 0] -= shadow_mask[:, :, 0] * 12
-        img[:, :, 1] += shadow_mask[:, :, 0] * 8
-        img[:, :, 2] += shadow_mask[:, :, 0] * 18
-        # Highlights → warm orange (push red, pull blue)
-        img[:, :, 0] += highlight_mask[:, :, 0] * 15
-        img[:, :, 1] += highlight_mask[:, :, 0] * 5
-        img[:, :, 2] -= highlight_mask[:, :, 0] * 10
-        img = (img - 128) * 1.12 + 128
-        return np.clip(img, 0, 255).astype(np.uint8)
+        img[:, :, 0] -= shadow_mask[:, :, 0] * 8
+        img[:, :, 1] += shadow_mask[:, :, 0] * 6
+        img[:, :, 2] += shadow_mask[:, :, 0] * 12
+        img[:, :, 0] += highlight_mask[:, :, 0] * 12
+        img[:, :, 1] += highlight_mask[:, :, 0] * 4
+        img[:, :, 2] -= highlight_mask[:, :, 0] * 8
+        img = (img - 128) * 1.08 + 128
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _noir_grade(self, image: np.ndarray) -> np.ndarray:
-        """High-contrast near-monochrome with subtle color hint."""
+        """Near-monochrome with subtle color hint — shadows preserved."""
         img = image.astype(np.float64)
         gray = np.dot(img[..., :3], [0.299, 0.587, 0.114])[..., np.newaxis]
         img = gray * 0.85 + img * 0.15
-        img = (img - 128) * 1.35 + 128
-        return np.clip(img, 0, 255).astype(np.uint8)
+        img = (img - 128) * 1.20 + 128
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _golden_hour_grade(self, image: np.ndarray) -> np.ndarray:
         """Warm golden-hour glow for nostalgic/inspirational moments."""
@@ -184,4 +198,4 @@ class ColorGrading:
         img[:, :, 2] *= 0.88
         img = (img - 128) * 1.08 + 128
         img += 8
-        return np.clip(img, 0, 255).astype(np.uint8)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
