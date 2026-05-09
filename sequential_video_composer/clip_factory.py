@@ -1,6 +1,7 @@
 """Clip factory for creating and composing video clips."""
 
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List, Tuple, Dict, TYPE_CHECKING
 
@@ -38,8 +39,7 @@ class ClipFactory:
 
             try:
                 img = PILImage.open(image_path)
-                img.verify()
-                img = PILImage.open(image_path)
+                img.load()
                 logger.debug("  Loaded image: %s, mode: %s", img.size, img.mode)
             except Exception as e:
                 logger.error("Failed to load image %s: %s", image_path, e)

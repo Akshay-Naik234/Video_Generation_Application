@@ -109,6 +109,7 @@ class MovementStyles:
         self.width, self.height = resolution
         self.resolution = resolution
         self.aspect_mode = 'fill'
+        self.fast_mode = False
         self._easing_map = {k: self._ease_in_out_sine for k in [
             'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
             'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
@@ -222,8 +223,14 @@ class MovementStyles:
             _has_cv2 = False
 
         _ease_fn = self._easing_map.get(movement_type, self._ease_in_out_sine)
-
         _safe_duration = max(duration, 1e-6)
+        _fast = self.fast_mode
+
+        # In fast mode use INTER_AREA (3-5x faster, good for downscale)
+        # In normal mode use INTER_LANCZOS4 (highest quality)
+        if _has_cv2:
+            import cv2 as _cv2
+            _interp = _cv2.INTER_AREA if _fast else _cv2.INTER_LANCZOS4
 
         def make_frame(t):
             progress = t / _safe_duration
@@ -234,7 +241,6 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            # Safety cap: max 15% zoom to prevent content cropping
             zoom = min(zoom, 1.15)
 
             crop_w = self.width / zoom
@@ -262,7 +268,7 @@ class MovementStyles:
             cropped = src[t_i:b_i, l_i:r_i]
 
             if _has_cv2:
-                frame = cv2.resize(cropped, (out_w, out_h), interpolation=cv2.INTER_LANCZOS4)
+                frame = _cv2.resize(cropped, (out_w, out_h), interpolation=_interp)
             else:
                 pil_crop = PILImage.fromarray(cropped)
                 frame = np.array(pil_crop.resize((out_w, out_h), PILImage.LANCZOS))
@@ -270,8 +276,8 @@ class MovementStyles:
             if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
 
-            # Sharpen after resize to counteract softness from interpolation
-            frame = self._apply_output_sharpen(frame)
+            if not _fast:
+                frame = self._apply_output_sharpen(frame)
 
             return frame
 

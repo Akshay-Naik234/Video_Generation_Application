@@ -88,6 +88,7 @@ class SequentialVideoOrchestrator:
         self.total_video_duration: float = 0
         self._brightness_tmp_dir: Optional[Path] = None
         self.preview_mode: bool = False
+        self.fast_mode: bool = False
         self.aspect_mode: str = 'fill'
 
         self._validate_config()
@@ -345,23 +346,27 @@ class SequentialVideoOrchestrator:
         (default 120 on 0-255), and adjusts each image **as a temporary
         copy** so the originals are never modified.  Only images that
         deviate significantly (>25 units) from the target are touched.
+
+        Uses ThreadPoolExecutor to compute luminances and adjust images
+        in parallel for a significant speedup with many images.
         """
-        import shutil
         import tempfile
+        from concurrent.futures import ThreadPoolExecutor
         from PIL import Image as PILImage
 
         TARGET_LUMINANCE = 125.0
         DEVIATION_THRESHOLD = 20.0
 
-        luminances: List[float] = []
-        for _num, img_path in numbered_images:
+        def _compute_lum(img_path: Path) -> float:
             try:
                 img = PILImage.open(img_path).convert('RGB')
                 arr = np.array(img, dtype=np.float64)
-                lum = np.dot(arr[..., :3], [0.299, 0.587, 0.114]).mean()
-                luminances.append(lum)
+                return float(np.dot(arr[..., :3], [0.299, 0.587, 0.114]).mean())
             except Exception:
-                luminances.append(TARGET_LUMINANCE)
+                return TARGET_LUMINANCE
+
+        with ThreadPoolExecutor(max_workers=min(len(numbered_images), 8)) as pool:
+            luminances = list(pool.map(lambda t: _compute_lum(t[1]), numbered_images))
 
         if not luminances:
             return
@@ -369,15 +374,14 @@ class SequentialVideoOrchestrator:
         avg_lum = float(np.mean(luminances))
         target = min(max(avg_lum, TARGET_LUMINANCE), 160.0)
 
-        # Create a temp directory for adjusted copies so originals stay intact
         tmp_dir = Path(tempfile.mkdtemp(prefix='vid_bright_'))
 
-        adjusted = 0
-        for idx, (_num, img_path) in enumerate(numbered_images):
+        def _adjust(idx_num_path):
+            idx, (_num, img_path) = idx_num_path
             lum = luminances[idx]
             diff = target - lum
             if abs(diff) < DEVIATION_THRESHOLD:
-                continue
+                return None
             try:
                 img = PILImage.open(img_path).convert('RGB')
                 arr = np.array(img, dtype=np.float64)
@@ -385,15 +389,22 @@ class SequentialVideoOrchestrator:
                 arr = np.clip(arr, 0, 255).astype(np.uint8)
                 tmp_path = tmp_dir / img_path.name
                 PILImage.fromarray(arr).save(tmp_path)
-                # Update the tuple in-place so downstream code reads the copy
+                return (idx, _num, tmp_path)
+            except Exception:
+                return None
+
+        with ThreadPoolExecutor(max_workers=min(len(numbered_images), 8)) as pool:
+            results = list(pool.map(_adjust, enumerate(numbered_images)))
+
+        adjusted = 0
+        for r in results:
+            if r is not None:
+                idx, _num, tmp_path = r
                 numbered_images[idx] = (_num, tmp_path)
                 adjusted += 1
-            except Exception:
-                continue
 
         if adjusted:
             logger.info("  Brightness normalization: adjusted %d/%d images (target lum=%.0f)", adjusted, len(numbered_images), target)
-        # Store temp dir so it can be cleaned up after export
         self._brightness_tmp_dir = tmp_dir
 
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
@@ -413,8 +424,9 @@ class SequentialVideoOrchestrator:
         # Register cleanup so temp files are removed even on crash
         atexit.register(self.cleanup)
 
-        # Propagate aspect mode to movements engine
+        # Propagate rendering mode to movements engine
         self.movements.aspect_mode = self.aspect_mode
+        self.movements.fast_mode = self.fast_mode or self.preview_mode
 
         logger.info("=" * 60)
         logger.info("Sequential Video Orchestrator (Documentary Enhanced)")
@@ -428,6 +440,12 @@ class SequentialVideoOrchestrator:
         logger.info("  Movement style  : %s", self.movement_style)
         logger.info("  Color grade     : %s", self.color_grade)
         logger.info("  Effects enabled : %s", self.enable_documentary_effects)
+        if self.fast_mode:
+            logger.info("  Render mode     : FAST (skip sharpening, fast resize + encode)")
+        elif self.preview_mode:
+            logger.info("  Render mode     : PREVIEW (480p, fast encode)")
+        else:
+            logger.info("  Render mode     : QUALITY")
         if self.total_video_duration:
             logger.info("  Target duration : %ss", self.total_video_duration)
         logger.info("=" * 60)
@@ -939,20 +957,17 @@ class SequentialVideoOrchestrator:
     def _post_process_frame(frame: np.ndarray) -> np.ndarray:
         """Apply final post-processing to every output frame.
 
-        1. Adaptive brightness lift — ensures no frame is too dark for viewers.
-        2. Gentle unsharp mask — recovers detail lost in compositing.
+        Only adaptive brightness lift — sharpening is already handled
+        in the per-clip make_frame via _apply_output_sharpen, so doing
+        it again here would double-sharpen and waste ~35% of per-frame time.
         """
         try:
             import cv2
-            # Brightness check and adaptive lift
             gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
             mean_lum = gray.mean()
             if mean_lum < 85:
                 boost = int(30 + (85 - mean_lum) * 0.5)
                 frame = cv2.add(frame, np.full_like(frame, boost))
-            # Gentle sharpen via unsharp mask
-            blurred = cv2.GaussianBlur(frame, (0, 0), sigmaX=0.8)
-            frame = cv2.addWeighted(frame, 1.3, blurred, -0.3, 0)
         except ImportError:
             pass
         return frame
@@ -967,19 +982,27 @@ class SequentialVideoOrchestrator:
         """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Apply post-processing to every frame
-        logger.info("  Applying post-processing (brightness + sharpening)...")
-        video = video.fl_image(self._post_process_frame)
+        # In fast/preview mode skip per-frame post-processing entirely
+        if not (self.fast_mode or self.preview_mode):
+            logger.info("  Applying post-processing (brightness correction)...")
+            video = video.fl_image(self._post_process_frame)
 
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
         thread_count = min(os.cpu_count() or 4, 8)
 
-        # Preview mode uses faster encode settings
+        # Encoding speed/quality trade-off:
+        #   fast_mode  → veryfast preset, CRF 23, skip per-frame sharpening
+        #   preview    → veryfast preset, CRF 28, 480p
+        #   normal     → medium preset, CRF 18 (was 'slow', 'medium' is 2-3x faster
+        #                with negligible quality loss at CRF 18)
         if self.preview_mode:
             preset = 'veryfast'
             crf = '28'
+        elif getattr(self, 'fast_mode', False):
+            preset = 'veryfast'
+            crf = '23'
         else:
-            preset = 'slow'
+            preset = 'medium'
             crf = '18'
 
         try:

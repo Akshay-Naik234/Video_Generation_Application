@@ -25,6 +25,7 @@ def create_sequential_video(
     enable_documentary_effects: bool = True,
     aspect_mode: str = "fill",
     preview_mode: bool = False,
+    fast_mode: bool = False,
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
 
@@ -50,6 +51,7 @@ def create_sequential_video(
             (light leaks, film grain, dust particles, camera shake, etc.)
         aspect_mode: How to fit images — 'fill' (crop), 'fit' (scale), 'letterbox' (black bars)
         preview_mode: If True, render at 480p with faster settings for quick preview
+        fast_mode: If True, skip per-frame sharpening, use faster resize + encode settings
     """
     from .orchestrator import SequentialVideoOrchestrator
 
@@ -78,6 +80,7 @@ def create_sequential_video(
     )
     orchestrator.aspect_mode = aspect_mode
     orchestrator.preview_mode = preview_mode
+    orchestrator.fast_mode = fast_mode
     orchestrator.create_video()
 
 

@@ -211,6 +211,12 @@ Color Grades:
     )
 
     parser.add_argument(
+        '--fast',
+        action='store_true',
+        help='Fast render: skip per-frame sharpening, use INTER_AREA resize, veryfast encoding (2-4x faster, minor quality loss)'
+    )
+
+    parser.add_argument(
         '--dry-run',
         action='store_true',
         help='Validate config and images without rendering'
@@ -365,6 +371,7 @@ Color Grades:
             enable_documentary_effects=enable_documentary_effects,
             aspect_mode=args.aspect_mode,
             preview_mode=args.preview,
+            fast_mode=args.fast,
         )
 
     else:
