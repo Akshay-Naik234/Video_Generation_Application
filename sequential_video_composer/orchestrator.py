@@ -302,10 +302,12 @@ class SequentialVideoOrchestrator:
         """Pre-process images to normalize brightness across the batch.
 
         Calculates the average luminance of all images, picks a target
-        (default 120 on 0-255), and adjusts each image file in-place so
-        brightness is consistent across the entire video.  Only images
-        that deviate significantly (>25 units) from the target are touched.
+        (default 120 on 0-255), and adjusts each image **as a temporary
+        copy** so the originals are never modified.  Only images that
+        deviate significantly (>25 units) from the target are touched.
         """
+        import shutil
+        import tempfile
         from PIL import Image as PILImage
 
         TARGET_LUMINANCE = 120.0
@@ -327,6 +329,9 @@ class SequentialVideoOrchestrator:
         avg_lum = float(np.mean(luminances))
         target = min(max(avg_lum, TARGET_LUMINANCE), 160.0)
 
+        # Create a temp directory for adjusted copies so originals stay intact
+        tmp_dir = Path(tempfile.mkdtemp(prefix='vid_bright_'))
+
         adjusted = 0
         for idx, (_num, img_path) in enumerate(numbered_images):
             lum = luminances[idx]
@@ -338,13 +343,18 @@ class SequentialVideoOrchestrator:
                 arr = np.array(img, dtype=np.float64)
                 arr = arr + diff * 0.6
                 arr = np.clip(arr, 0, 255).astype(np.uint8)
-                PILImage.fromarray(arr).save(img_path)
+                tmp_path = tmp_dir / img_path.name
+                PILImage.fromarray(arr).save(tmp_path)
+                # Update the tuple in-place so downstream code reads the copy
+                numbered_images[idx] = (_num, tmp_path)
                 adjusted += 1
             except Exception:
                 continue
 
         if adjusted:
             print(f"  Brightness normalization: adjusted {adjusted}/{len(numbered_images)} images (target lum={target:.0f})")
+        # Store temp dir so it can be cleaned up after export
+        self._brightness_tmp_dir = tmp_dir
 
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info."""
@@ -724,8 +734,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return _alpha * fade_in * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(20)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(20)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         else:
@@ -864,15 +874,15 @@ class SequentialVideoOrchestrator:
                 fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
             return _alpha * fade_in * fade
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(20)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(20)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask_clip)
         return clip
 
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.
 
-        Uses baseline H.264 profile and progressive-download flag so the
+        Uses H.264 High profile and progressive-download flag so the
         file plays correctly in VS Code, web browsers, and QuickTime.
         Multi-threaded encoding with optimized settings for quality/speed.
         """
@@ -895,8 +905,8 @@ class SequentialVideoOrchestrator:
                 ffmpeg_params=[
                     '-crf', '18',
                     '-pix_fmt', 'yuv420p',
-                    '-profile:v', 'baseline',
-                    '-level', '3.1',
+                    '-profile:v', 'high',
+                    '-level', '4.1',
                     '-movflags', '+faststart',
                 ]
             )
