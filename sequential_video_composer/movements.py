@@ -115,7 +115,8 @@ class MovementStyles:
             'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
             'dolly_zoom', 'spiral_zoom', 'orbit', 'float_up',
             'reveal_left', 'reveal_right', 'map_zoom', 'map_pan',
-            'timeline_reveal',
+            'timeline_reveal', 'truck_left', 'truck_right',
+            'tracking_shot', 'cinematic_reveal', 'shoulder_drift',
         ]}
 
     def _fit_image(
@@ -600,6 +601,44 @@ class MovementStyles:
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
             pan_x = -0.22 * (1.0 - eased)
             return zoom, pan_x, 0
+
+        # ---- Cinematic camera movements (v5.0) ----
+
+        elif movement_type == 'truck_left':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = -0.22 * eased
+            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'truck_right':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.22 * eased
+            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'static_motion':
+            zoom = 1.0 + 0.02 * np.sin(raw_progress * np.pi * 2)
+            pan_x = 0.01 * np.sin(raw_progress * np.pi * 1.7)
+            pan_y = 0.01 * np.cos(raw_progress * np.pi * 1.3)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'shoulder_drift':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            pan_x = 0.12 * np.sin(raw_progress * np.pi * 0.8) + 0.06
+            pan_y = 0.04 * np.sin(raw_progress * np.pi * 1.2)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'tracking_shot':
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
+            pan_x = 0.16 * eased
+            pan_y = -0.04 * eased
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'cinematic_reveal':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * (1.0 - eased)
+            pan_y = -0.10 * (1.0 - eased)
+            pan_x = 0.06 * (1.0 - eased)
+            return zoom, pan_x, pan_y
 
         else:
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7

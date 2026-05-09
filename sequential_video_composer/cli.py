@@ -57,7 +57,8 @@ Movement Styles:
   diagonal_tl_br, diagonal_tr_bl, breathing, dramatic_zoom, gentle_drift, focus_center,
   parallax_depth, push_in, push_out, orbit, whip_pan, dolly_zoom, handheld_drift,
   crane_up, crane_down, spiral_zoom, tilt_shift, dutch_tilt, rack_focus, bounce_zoom,
-  float_up, reveal_left, reveal_right, map_zoom, map_pan, timeline_reveal
+  float_up, reveal_left, reveal_right, map_zoom, map_pan, timeline_reveal,
+  truck_left, truck_right, static_motion, shoulder_drift, tracking_shot, cinematic_reveal
 
 Color Grades:
   cinematic, documentary, vintage, modern, warm, cool, high_contrast, soft, dramatic,
