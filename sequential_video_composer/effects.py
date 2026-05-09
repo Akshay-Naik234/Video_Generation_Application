@@ -137,7 +137,8 @@ class DocumentaryEffects:
         return clip
 
     def create_dust_particles(
-        self, duration: float, intensity: float = 0.2, particle_count: int = 30
+        self, duration: float, intensity: float = 0.2, particle_count: int = 30,
+        background_brightness: float = 120.0
     ) -> VideoClip:
         """Floating dust particles drifting across the frame.
 
@@ -146,6 +147,8 @@ class DocumentaryEffects:
         """
         w, h = self.width, self.height
         rng = np.random.RandomState(42)
+        brightness_scale = 2.0 if background_brightness < 80 else 1.0
+        size_scale = 1.5 if background_brightness < 80 else 1.0
 
         # Pre-generate particle properties
         particles = []
@@ -155,7 +158,7 @@ class DocumentaryEffects:
                 'y_start': rng.uniform(0, h),
                 'speed_x': rng.uniform(-15, 15) * self.scale,
                 'speed_y': rng.uniform(-25, -5) * self.scale,
-                'size': rng.uniform(1, 4) * self.scale,
+                'size': rng.uniform(1, 4) * self.scale * size_scale,
                 'brightness': rng.uniform(0.4, 1.0),
                 'drift_freq': rng.uniform(0.3, 1.5),
                 'drift_amp': rng.uniform(5, 20) * self.scale,
@@ -169,7 +172,7 @@ class DocumentaryEffects:
                 y = (p['y_start'] + p['speed_y'] * t) % h
                 ix, iy = int(x), int(y)
                 size = max(1, int(p['size']))
-                bright = int(p['brightness'] * 255 * intensity)
+                bright = int(p['brightness'] * 255 * intensity * brightness_scale)
                 x1, y1 = max(0, ix - size), max(0, iy - size)
                 x2, y2 = min(w, ix + size + 1), min(h, iy + size + 1)
                 frame[y1:y2, x1:x2] = bright
@@ -429,7 +432,8 @@ class DocumentaryEffects:
         return clip
 
     def create_vignette_pulse(
-        self, duration: float, intensity: float = 0.2
+        self, duration: float, intensity: float = 0.2,
+        background_brightness: float = 120.0
     ) -> VideoClip:
         """Breathing vignette that slowly pulses darker/lighter.
 
@@ -438,6 +442,10 @@ class DocumentaryEffects:
         avoid darkening the image excessively.
         """
         w, h = self.width, self.height
+        if background_brightness < 80:
+            intensity *= 0.3
+        elif background_brightness < 120:
+            intensity *= 0.6
 
         # Pre-compute vignette mask
         y, x = np.ogrid[:h, :w]
@@ -708,7 +716,8 @@ class DocumentaryEffects:
         return clip
 
     def create_shimmer_sparkles(
-        self, duration: float, intensity: float = 0.4, count: int = 40
+        self, duration: float, intensity: float = 0.4, count: int = 40,
+        background_brightness: float = 120.0
     ) -> VideoClip:
         """Magical floating sparkles with starburst glow.
 
@@ -718,6 +727,8 @@ class DocumentaryEffects:
         """
         w, h = self.width, self.height
         rng = np.random.RandomState(55)
+        brightness_scale = 1.8 if background_brightness < 80 else 1.0
+        size_scale = 1.35 if background_brightness < 80 else 1.0
 
         sparkles = []
         for _ in range(count):
@@ -726,7 +737,7 @@ class DocumentaryEffects:
                 'y': rng.uniform(0, h),
                 'life_start': rng.uniform(0, duration * 0.8),
                 'life_dur': rng.uniform(0.3, 1.2),
-                'size': rng.uniform(2, 6) * (h / 1080),
+                'size': rng.uniform(2, 6) * (h / 1080) * size_scale,
                 'brightness': rng.uniform(0.5, 1.0),
                 'drift_x': rng.uniform(-10, 10) * (w / 1920),
                 'drift_y': rng.uniform(-15, -3) * (h / 1080),
@@ -745,7 +756,7 @@ class DocumentaryEffects:
                 life_frac = age / s['life_dur']
                 # Flash curve: quick peak then fade
                 flash = np.sin(life_frac * np.pi) ** 0.5
-                br = s['brightness'] * flash * intensity
+                br = s['brightness'] * flash * intensity * brightness_scale
 
                 cx = int(s['x'] + s['drift_x'] * age) % w
                 cy = int(s['y'] + s['drift_y'] * age) % h
@@ -976,19 +987,20 @@ class DocumentaryEffects:
         self,
         effect_names: list,
         duration: float,
-        effects_intensity: float = 0.7
+        effects_intensity: float = 0.7,
+        background_brightness: float = 120.0
     ) -> list:
         """Create effect clips from a list of effect names."""
         creators = {
             'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
             'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
-            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.5, particle_count=50),
+            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.5, particle_count=50, background_brightness=background_brightness),
             'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.35),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
             'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.5),
             'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.3),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.3, background_brightness=background_brightness),
             'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
             'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.2),
             'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
@@ -1002,7 +1014,7 @@ class DocumentaryEffects:
             'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
             'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.25),
             'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.4),
-            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5),
+            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5, background_brightness=background_brightness),
             'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.6),
         }
 

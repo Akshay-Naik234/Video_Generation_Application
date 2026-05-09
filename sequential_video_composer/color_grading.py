@@ -47,18 +47,56 @@ class ColorGrading:
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
         """Ensure no frame is excessively dark by lifting shadows.
 
-        If more than 50% of pixels are below brightness 40, the frame is
-        considered underexposed and gets an automatic brightness boost.
-        Minimum pixel value is clamped to 15 so nothing is pure black.
+        Frames with a large amount of content below luminance 60 are treated
+        as underexposed.  Shadows are lifted before a final floor clamp so
+        dark scenes stay readable without washing out highlights.
         """
         img = image.astype(np.float64)
         luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
-        dark_ratio = np.mean(luminance < 40)
-        if dark_ratio > 0.5:
-            boost = 25 + 20 * (dark_ratio - 0.5)
+        dark_ratio = np.mean(luminance < 60)
+        if dark_ratio > 0.3:
+            boost = 40 + 30 * dark_ratio
             img = img + boost
-        img = np.clip(img, 15, 255)
+            img = self._apply_clahe(np.clip(img, 0, 255).astype(np.uint8)).astype(np.float64)
+        img = np.clip(img, 30, 255)
         return img.astype(np.uint8)
+
+    @staticmethod
+    def measure_luminance(image: np.ndarray) -> float:
+        """Return average perceived luminance for an RGB image."""
+        img = image.astype(np.float64)
+        return float(np.mean(np.dot(img[..., :3], [0.299, 0.587, 0.114])))
+
+    def normalize_luminance(self, image: np.ndarray, target: float = 120.0) -> np.ndarray:
+        """Move an image toward a target luminance while preserving contrast."""
+        img = image.astype(np.float64)
+        current = self.measure_luminance(image)
+        if current <= 1:
+            return self._enforce_min_brightness(image)
+
+        delta = np.clip(target - current, -35, 55)
+        # Lift dark frames more than bright frames are reduced.
+        if delta > 0:
+            img += delta
+            img = np.where(img < 90, img + delta * 0.35, img)
+        else:
+            img += delta * 0.45
+
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
+
+    def _apply_clahe(self, image: np.ndarray) -> np.ndarray:
+        """Apply adaptive histogram equalization when OpenCV is available."""
+        try:
+            import cv2
+        except ImportError:
+            return image
+
+        lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
+        l_channel, a_channel, b_channel = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        l_channel = clahe.apply(l_channel)
+        merged = cv2.merge((l_channel, a_channel, b_channel))
+        return cv2.cvtColor(merged, cv2.COLOR_LAB2RGB)
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
         """Apply color grading to an image then enforce minimum brightness."""

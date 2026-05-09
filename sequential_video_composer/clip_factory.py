@@ -24,6 +24,9 @@ class ClipFactory:
         clips_data = []
         total = len(numbered_images)
         failed = 0
+        brightness_target = self._calculate_batch_brightness_target(numbered_images)
+        if brightness_target:
+            print(f"Batch brightness target luminance: {brightness_target:.1f}")
 
         for i, (num, image_path) in enumerate(tqdm(numbered_images, desc="Processing images")):
             print(f"Processing image {num}: {image_path.name}")
@@ -70,6 +73,7 @@ class ClipFactory:
                 color_grade=grade,
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
+                brightness_target=brightness_target,
             )
 
             transition = self.orchestrator._get_transition_for_image(i, total, image_num=num)
@@ -77,6 +81,7 @@ class ClipFactory:
                 'clip': clip,
                 'transition': transition,
                 'image_num': num,
+                'image_path': image_path,
                 'start_time': start_time,
                 'end_time': end_time,
                 'duration': image_duration
@@ -86,6 +91,35 @@ class ClipFactory:
             print(f"\nWARNING: {failed}/{total} images failed to load")
         print(f"Successfully created {len(clips_data)} clips from {total} images")
         return clips_data
+
+    def _calculate_batch_brightness_target(
+        self, numbered_images: List[Tuple[int, Path]]
+    ) -> float:
+        """Analyze all input images and choose a stable luminance target.
+
+        The target is intentionally conservative: it lifts dark batches toward
+        a readable documentary baseline without forcing every image to the
+        exact same flat exposure.
+        """
+        luminances = []
+        for _, image_path in numbered_images:
+            try:
+                with PILImage.open(image_path) as img:
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+                    img.thumbnail((320, 320), PILImage.LANCZOS)
+                    arr = np.array(img)
+                    luminances.append(self.orchestrator.color_grading.measure_luminance(arr))
+            except Exception:
+                continue
+
+        if not luminances:
+            return 120.0
+
+        median_luma = float(np.median(luminances))
+        # Keep the video consistently legible, but avoid over-brightening
+        # deliberately bright source batches.
+        return float(np.clip(max(118.0, median_luma), 118.0, 135.0))
 
     # Section-aware fade durations: dramatic sections get snappier cuts,
     # emotional sections get longer, more graceful fades.

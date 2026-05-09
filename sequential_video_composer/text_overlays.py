@@ -167,8 +167,8 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 220),
-        shadow_offset: int = 5,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 245),
+        shadow_offset: int = 8,
     ) -> None:
         """Draw text with a strong drop shadow for depth and readability."""
         x, y = position
@@ -187,11 +187,11 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        outline_color: Tuple[int, int, int, int] = (0, 0, 0, 240),
-        outline_width: int = 4,
+        outline_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        outline_width: int = 6,
         shadow: bool = True,
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 220),
-        shadow_offset: int = 6,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 245),
+        shadow_offset: int = 8,
     ) -> None:
         """Draw text with outline stroke and optional drop shadow.
 
@@ -223,7 +223,7 @@ class TextOverlayEngine:
         width: int,
         height: int,
         color: Tuple[int, int, int] = (0, 0, 0),
-        alpha_start: int = 220,
+        alpha_start: int = 245,
         alpha_end: int = 0,
         direction: str = 'right',
     ) -> PILImage.Image:
@@ -305,7 +305,7 @@ class TextOverlayEngine:
         # Gradient background (fades right)
         gradient = self._create_gradient_bar_fast(
             gradient_w, bar_h,
-            color=(12, 12, 18), alpha_start=245, alpha_end=30, direction='right'
+            color=(8, 8, 12), alpha_start=255, alpha_end=60, direction='right'
         )
         overlay.paste(gradient, (bar_x, bar_y), gradient)
 
@@ -324,8 +324,8 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (text_x, text_y), name, name_font,
             fill=(*text_color, 255),
-            outline_color=(0, 0, 0, 240), outline_width=4,
-            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=6
+            outline_color=(0, 0, 0, 255), outline_width=6,
+            shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
         )
 
         # Title text with shadow (lighter, no outline)
@@ -334,7 +334,7 @@ class TextOverlayEngine:
             self._draw_text_with_shadow(
                 draw, (text_x, title_y), title, title_font,
                 fill=(*accent_color, 250),
-                shadow_color=(0, 0, 0, 220), shadow_offset=4
+                shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
 
         return np.array(overlay)
@@ -411,7 +411,7 @@ class TextOverlayEngine:
         draw = ImageDraw.Draw(overlay)
 
         # Dark frosted background card
-        card_bg = PILImage.new('RGBA', (card_w, card_h), (8, 8, 14, 200))
+        card_bg = PILImage.new('RGBA', (card_w, card_h), (6, 6, 10, 245))
         overlay.paste(card_bg, (card_x, card_y), card_bg)
 
         # Accent line on top of card
@@ -425,8 +425,8 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (year_x, year_y), year, year_font,
             fill=(*accent_color, 255),
-            outline_color=(0, 0, 0, 240), outline_width=4,
-            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=6
+            outline_color=(0, 0, 0, 255), outline_width=6,
+            shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
         )
 
         # Label below year (centered, white, stronger)
@@ -436,7 +436,7 @@ class TextOverlayEngine:
             self._draw_text_with_shadow(
                 draw, (label_x, label_y), label, label_font,
                 fill=(*text_color, 240),
-                shadow_color=(0, 0, 0, 220), shadow_offset=4
+                shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
 
         return np.array(overlay)
@@ -491,7 +491,7 @@ class TextOverlayEngine:
         # Gradient background (more opaque for readability)
         gradient = self._create_gradient_bar_fast(
             gradient_w, card_h,
-            color=(10, 10, 16), alpha_start=240, alpha_end=30, direction='right'
+            color=(8, 8, 12), alpha_start=255, alpha_end=60, direction='right'
         )
         overlay.paste(gradient, (card_x, card_y), gradient)
 
@@ -520,8 +520,8 @@ class TextOverlayEngine:
         self._draw_text_with_outline(
             draw, (text_x, text_y), location, loc_font,
             fill=(*text_color, 255),
-            outline_color=(0, 0, 0, 240), outline_width=4,
-            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=5
+            outline_color=(0, 0, 0, 255), outline_width=6,
+            shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
         )
 
         # Sub-text
@@ -530,7 +530,7 @@ class TextOverlayEngine:
             self._draw_text_with_shadow(
                 draw, (text_x, sub_y), sub_text, sub_font,
                 fill=(*text_color, 230),
-                shadow_color=(0, 0, 0, 220), shadow_offset=4
+                shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
 
         return np.array(overlay)
@@ -583,7 +583,7 @@ class TextOverlayEngine:
             card_y = margin
 
         # Card background
-        card_bg = PILImage.new('RGBA', (card_w, card_h), (*bg_color, 200))
+        card_bg = PILImage.new('RGBA', (card_w, card_h), (*bg_color, 245))
         overlay.paste(card_bg, (card_x, card_y), card_bg)
 
         # Accent border on left
@@ -600,8 +600,8 @@ class TextOverlayEngine:
             draw, (card_x + pad_x, card_y + pad_y),
             display_text, font,
             fill=(*text_color, 255),
-            outline_color=(0, 0, 0, 240), outline_width=3,
-            shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=4
+            outline_color=(0, 0, 0, 255), outline_width=5,
+            shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
         )
 
         return np.array(overlay)
@@ -674,7 +674,7 @@ class TextOverlayEngine:
         )
         # Override with uniform semi-transparent black
         bg_arr = np.array(bg)
-        bg_arr[:, :, 3] = 210
+        bg_arr[:, :, 3] = 240
         bg = PILImage.fromarray(bg_arr, 'RGBA')
         overlay.paste(bg, (0, bg_y), bg)
 
@@ -698,10 +698,10 @@ class TextOverlayEngine:
             line_w = bbox[2] - bbox[0]
             x = (self.width - line_w) // 2
             self._draw_text_with_outline(
-                draw, (x, y), line, quote_font,
-                fill=(255, 255, 255, 255),
-                outline_color=(0, 0, 0, 240), outline_width=4,
-                shadow=True, shadow_color=(0, 0, 0, 220), shadow_offset=5
+            draw, (x, y), line, quote_font,
+            fill=(255, 255, 255, 255),
+                outline_color=(0, 0, 0, 255), outline_width=6,
+                shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
             y += line_heights[i] + line_spacing
 
@@ -723,7 +723,7 @@ class TextOverlayEngine:
             self._draw_text_with_shadow(
                 draw, (attr_x, attr_y), attr_text, attr_font,
                 fill=(*accent_color, 240),
-                shadow_color=(0, 0, 0, 100), shadow_offset=2
+                shadow_color=(0, 0, 0, 220), shadow_offset=6
             )
 
         return np.array(overlay)
@@ -794,7 +794,7 @@ class TextOverlayEngine:
         # Gradient background
         gradient = self._create_gradient_bar_fast(
             gradient_w, card_h,
-            color=(10, 10, 16), alpha_start=210, alpha_end=0, direction='right'
+            color=(8, 8, 12), alpha_start=250, alpha_end=55, direction='right'
         )
         paste_x = max(0, card_x)
         overlay.paste(gradient, (paste_x, max(0, card_y)), gradient)
@@ -810,8 +810,8 @@ class TextOverlayEngine:
             self._draw_text_with_outline(
                 draw, (text_x, text_y), text, font,
                 fill=(*text_color, 250),
-                outline_color=(0, 0, 0, 200), outline_width=2,
-                shadow=True, shadow_color=(0, 0, 0, 120), shadow_offset=3
+                outline_color=(0, 0, 0, 255), outline_width=5,
+                shadow=True, shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
 
         return np.array(overlay)
@@ -861,7 +861,7 @@ class TextOverlayEngine:
         card_y = self.height - margin - card_h
 
         # Background
-        card_bg = PILImage.new('RGBA', (card_w, card_h), (8, 8, 14, 200))
+        card_bg = PILImage.new('RGBA', (card_w, card_h), (6, 6, 10, 245))
         overlay.paste(card_bg, (card_x, card_y), card_bg)
 
         # Accent border top
@@ -875,7 +875,7 @@ class TextOverlayEngine:
         self._draw_text_with_shadow(
             draw, (date_x, date_y), date_text, date_font,
             fill=(*accent_color, 255),
-            shadow_color=(0, 0, 0, 140), shadow_offset=2
+            shadow_color=(0, 0, 0, 245), shadow_offset=8
         )
 
         if location_text:
@@ -895,7 +895,7 @@ class TextOverlayEngine:
             self._draw_text_with_shadow(
                 draw, (loc_x, loc_y), location_text, loc_font,
                 fill=(240, 240, 240, 220),
-                shadow_color=(0, 0, 0, 100), shadow_offset=2
+                shadow_color=(0, 0, 0, 245), shadow_offset=8
             )
 
         return np.array(overlay)

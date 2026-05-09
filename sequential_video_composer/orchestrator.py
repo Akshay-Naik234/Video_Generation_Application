@@ -416,8 +416,10 @@ class SequentialVideoOrchestrator:
                     if dur <= 0:
                         continue
                     effect_names = self.image_effects[img_num][:max_effects_per_image]
+                    bg_brightness = self._measure_source_brightness(data.get('image_path'))
                     img_fx = self.effects.get_effects_by_names(
-                        effect_names, dur, self.effects_intensity
+                        effect_names, dur, self.effects_intensity,
+                        background_brightness=bg_brightness
                     )
                     for fx in img_fx:
                         fx = fx.set_start(start)
@@ -473,6 +475,20 @@ class SequentialVideoOrchestrator:
                 ])
 
         return effect_clips
+
+    def _measure_source_brightness(self, image_path) -> float:
+        """Measure source brightness for adaptive effect intensity."""
+        if not image_path:
+            return 120.0
+        try:
+            from PIL import Image as PILImage
+            with PILImage.open(image_path) as img:
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                img.thumbnail((320, 320), PILImage.LANCZOS)
+                return self.color_grading.measure_luminance(np.array(img))
+        except Exception:
+            return 120.0
 
     def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
         """Create MoviePy clips for all overlay text entries with animation support."""

@@ -94,16 +94,19 @@ class MovementStyles:
     # Section-aware zoom intensity multipliers: dramatic sections get stronger
     # zoom, emotional/calm sections get gentler movement.
     SECTION_ZOOM_MULTIPLIERS = {
-        'COLD_OPEN': 1.4,
+        'COLD_OPEN': 1.15,
         'EARLY_LIFE': 0.9,
-        'THE_SPARK': 1.15,
-        'THE_RISE': 1.25,
-        'THE_CONFLICT': 1.35,
-        'THE_CLIMAX': 1.5,
+        'THE_SPARK': 1.05,
+        'THE_RISE': 1.08,
+        'THE_CONFLICT': 1.10,
+        'THE_CLIMAX': 1.12,
         'THE_FALL': 1.0,
         'LEGACY': 0.85,
         'CTA': 0.8,
     }
+
+    MAX_SAFE_ZOOM = 1.12
+    MAX_SAFE_PAN = 0.85
 
     def __init__(self, resolution: Tuple[int, int]):
         self.width, self.height = resolution
@@ -119,6 +122,7 @@ class MovementStyles:
         color_grade: str = None,
         enable_vignette: bool = False,
         section: str = '',
+        brightness_target: float = None,
     ):
         """Create an animated clip with the specified movement style and effects.
 
@@ -129,43 +133,30 @@ class MovementStyles:
         Accepts an optional *section* name so section-aware zoom multipliers
         can be applied automatically.
         """
-        # Apply section-aware zoom boost
+        # Apply section-aware zoom boost, then cap the result so motion never
+        # sacrifices faces, text, or document edges for extra drama.
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
+        zoom_intensity = min(zoom_intensity, self.MAX_SAFE_ZOOM)
         base_img = PILImage.open(image_path)
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.35)
-        scaled_width = int(self.width * max_zoom * 1.5)
-        scaled_height = int(self.height * max_zoom * 1.5)
-
-        orig_width, orig_height = base_img.size
-        orig_aspect = orig_width / orig_height
-        target_aspect = scaled_width / scaled_height
-
-        if orig_aspect > target_aspect:
-            new_width = scaled_width
-            new_height = int(scaled_width / orig_aspect)
-        else:
-            new_height = scaled_height
-            new_width = int(scaled_height * orig_aspect)
-
-        resized_img = base_img.resize((new_width, new_height), PILImage.LANCZOS)
-
-        canvas = PILImage.new('RGB', (scaled_width, scaled_height), (0, 0, 0))
-        paste_x = (scaled_width - new_width) // 2
-        paste_y = (scaled_height - new_height) // 2
-        canvas.paste(resized_img, (paste_x, paste_y))
-
-        base_img = canvas
+        base_img = self._smart_resize_to_fit(base_img)
         base_array = np.array(base_img)
 
         if color_grader and color_grade:
             base_array = color_grader.apply_grade(base_array, color_grade)
+            if brightness_target is not None:
+                base_array = color_grader.normalize_luminance(base_array, brightness_target)
 
         if enable_vignette:
             base_array = self._apply_vignette(base_array)
+            if color_grader:
+                base_array = color_grader.normalize_luminance(
+                    base_array,
+                    brightness_target if brightness_target is not None else 118.0
+                )
 
         scaled_img = PILImage.fromarray(base_array)
 
@@ -176,8 +167,8 @@ class MovementStyles:
                 ImageFilter.GaussianBlur(radius=int(8 * (self.height / 1080)))
             )
 
-        center_x = scaled_width / 2.0
-        center_y = scaled_height / 2.0
+        center_x = self.width / 2.0
+        center_y = self.height / 2.0
 
         out_w, out_h = self.resolution
 
@@ -222,11 +213,10 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            # Safety cap: allows up to 30% zoom for visibly dynamic motion
-            zoom = min(zoom, 1.30)
+            zoom, pan_x, pan_y = self._apply_motion_safety(zoom, pan_x, pan_y)
 
-            crop_w = self.width / zoom
-            crop_h = self.height / zoom
+            crop_w = out_w / zoom
+            crop_h = out_h / zoom
 
             offset_x = pan_x * crop_w * 0.5
             offset_y = pan_y * crop_h * 0.5
@@ -234,12 +224,12 @@ class MovementStyles:
             left = center_x - crop_w / 2.0 + offset_x
             top = center_y - crop_h / 2.0 + offset_y
 
-            left = max(0.0, min(left, scaled_width - crop_w))
-            top = max(0.0, min(top, scaled_height - crop_h))
+            left = max(0.0, min(left, out_w - crop_w))
+            top = max(0.0, min(top, out_h - crop_h))
 
             l_i, t_i = int(left), int(top)
-            r_i = min(l_i + int(crop_w), scaled_width)
-            b_i = min(t_i + int(crop_h), scaled_height)
+            r_i = min(l_i + int(crop_w), out_w)
+            b_i = min(t_i + int(crop_h), out_h)
 
             src = base_np
             if movement_type == 'tilt_shift' and blurred_np is not None:
@@ -267,8 +257,58 @@ class MovementStyles:
 
     # ---- Visual effect helpers ----
 
+    def _smart_resize_to_fit(self, image: PILImage.Image) -> PILImage.Image:
+        """Resize to the output frame without cropping source content.
+
+        A blurred cover layer fills the 16:9 frame and the original image is
+        fit inside a small safe margin. This preserves full faces, documents,
+        and on-image text even when the source aspect ratio differs.
+        """
+        target_w, target_h = self.resolution
+        src_w, src_h = image.size
+        src_aspect = src_w / src_h
+        target_aspect = target_w / target_h
+
+        cover_scale = max(target_w / src_w, target_h / src_h)
+        cover_size = (max(1, int(src_w * cover_scale)), max(1, int(src_h * cover_scale)))
+        cover = image.resize(cover_size, PILImage.LANCZOS)
+        cover_x = (cover_size[0] - target_w) // 2
+        cover_y = (cover_size[1] - target_h) // 2
+        cover = cover.crop((cover_x, cover_y, cover_x + target_w, cover_y + target_h))
+        cover = cover.filter(ImageFilter.GaussianBlur(radius=max(12, int(target_h * 0.025))))
+        cover_arr = np.array(cover).astype(np.float32)
+        cover_arr = np.clip(cover_arr * 0.55 + 18, 0, 255).astype(np.uint8)
+        canvas = PILImage.fromarray(cover_arr)
+
+        safe_margin = 0.03 if abs(src_aspect - target_aspect) <= 0.1 else 0.06
+        fit_w = int(target_w * (1.0 - safe_margin * 2))
+        fit_h = int(target_h * (1.0 - safe_margin * 2))
+        fit_scale = min(fit_w / src_w, fit_h / src_h)
+        fg_size = (max(1, int(src_w * fit_scale)), max(1, int(src_h * fit_scale)))
+        foreground = image.resize(fg_size, PILImage.LANCZOS)
+        paste_x = (target_w - fg_size[0]) // 2
+        paste_y = (target_h - fg_size[1]) // 2
+        canvas.paste(foreground, (paste_x, paste_y))
+        return canvas
+
+    def _apply_motion_safety(
+        self, zoom: float, pan_x: float, pan_y: float
+    ) -> Tuple[float, float, float]:
+        """Constrain zoom and pan to keep image content in the safe zone."""
+        pan_x = float(np.clip(pan_x, -self.MAX_SAFE_PAN, self.MAX_SAFE_PAN))
+        pan_y = float(np.clip(pan_y, -self.MAX_SAFE_PAN, self.MAX_SAFE_PAN))
+        zoom = min(float(zoom), self.MAX_SAFE_ZOOM)
+
+        edge_distance = min(
+            1.0 - abs(pan_x) / max(self.MAX_SAFE_PAN, 1e-6),
+            1.0 - abs(pan_y) / max(self.MAX_SAFE_PAN, 1e-6),
+        )
+        if edge_distance < 0.2:
+            zoom = 1.0 + (zoom - 1.0) * 0.5
+        return max(1.0, zoom), pan_x, pan_y
+
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply a subtle vignette effect to the image."""
+        """Apply a subtle vignette effect, reduced for already-dark frames."""
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -276,8 +316,15 @@ class MovementStyles:
         center_x, center_y = cols / 2, rows / 2
         distance = np.sqrt((X - center_x) ** 2 + (Y - center_y) ** 2)
         max_distance = np.sqrt(center_x ** 2 + center_y ** 2)
-        vignette = 1 - (distance / max_distance) * 0.4
-        vignette = np.clip(vignette, 0.6, 1.0)
+        avg_brightness = float(np.mean(image[..., :3]))
+        if avg_brightness < 80:
+            intensity = 0.12
+        elif avg_brightness < 120:
+            intensity = 0.24
+        else:
+            intensity = 0.4
+        vignette = 1 - (distance / max_distance) * intensity
+        vignette = np.clip(vignette, 1.0 - intensity, 1.0)
         vignette = np.dstack([vignette] * 3)
         return (image * vignette).astype(np.uint8)
 
@@ -321,7 +368,7 @@ class MovementStyles:
         if blur_strength < 0.05:
             return frame
 
-        kernel_size = int(blur_strength * 12 * (self.width / 1920))
+        kernel_size = int(blur_strength * 6 * (self.width / 1920))
         if kernel_size < 2:
             return frame
 
