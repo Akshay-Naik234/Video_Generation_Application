@@ -167,19 +167,21 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 250),
-        shadow_offset: int = 8,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        shadow_offset: int = 10,
     ) -> None:
         """Draw text with a strong drop shadow for depth and readability."""
         x, y = position
-        offset = max(3, int(shadow_offset * self.scale))
-        # Shadow (drawn three times at different offsets for maximum visibility)
+        offset = max(4, int(shadow_offset * self.scale))
+        # Shadow (drawn four times at different offsets for maximum visibility)
         draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
+        draw.text((x + offset + 1, y + offset + 1), text, font=font, fill=shadow_color)
         draw.text((x + offset - 1, y + offset - 1), text, font=font,
                   fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-        draw.text((x + offset + 1, y + offset + 1), text, font=font,
+        draw.text((x + offset + 2, y + offset + 2), text, font=font,
                   fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
-        # Main text
+        # Main text (drawn twice for crispness)
+        draw.text((x, y), text, font=font, fill=fill)
         draw.text((x, y), text, font=font, fill=fill)
 
     def _draw_text_with_outline(
@@ -190,10 +192,10 @@ class TextOverlayEngine:
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
         outline_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-        outline_width: int = 6,
+        outline_width: int = 8,
         shadow: bool = True,
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 250),
-        shadow_offset: int = 8,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        shadow_offset: int = 10,
     ) -> None:
         """Draw text with outline stroke and optional drop shadow.
 
@@ -201,15 +203,16 @@ class TextOverlayEngine:
         around each character plus an optional soft shadow underneath.
         """
         x, y = position
-        ow = max(1, int(outline_width * self.scale))
+        ow = max(2, int(outline_width * self.scale))
 
-        # Drop shadow (strong, drawn three times for max visibility on dark backgrounds)
+        # Drop shadow (strong, drawn four times for max visibility on any background)
         if shadow:
-            so = max(3, int(shadow_offset * self.scale))
+            so = max(4, int(shadow_offset * self.scale))
             draw.text((x + so, y + so), text, font=font, fill=shadow_color)
+            draw.text((x + so + 1, y + so + 1), text, font=font, fill=shadow_color)
             draw.text((x + so - 1, y + so - 1), text, font=font,
                       fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-            draw.text((x + so + 1, y + so + 1), text, font=font,
+            draw.text((x + so + 2, y + so + 2), text, font=font,
                       fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
 
         # Outline: draw text in 8 directions around the center point
@@ -219,7 +222,8 @@ class TextOverlayEngine:
                     continue
                 draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
 
-        # Main text on top
+        # Main text on top (drawn twice for crispness)
+        draw.text((x, y), text, font=font, fill=fill)
         draw.text((x, y), text, font=font, fill=fill)
 
     def _create_gradient_bar_fast(

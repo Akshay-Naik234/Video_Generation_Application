@@ -257,8 +257,11 @@ class MovementStyles:
                 pil_crop = PILImage.fromarray(cropped)
                 frame = np.array(pil_crop.resize((out_w, out_h), PILImage.LANCZOS))
 
-            if movement_type in ('whip_pan', 'push_in', 'dramatic_zoom', 'dolly_zoom'):
+            if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
+
+            # Sharpen after resize to counteract softness from interpolation
+            frame = self._apply_output_sharpen(frame)
 
             return frame
 
@@ -320,17 +323,32 @@ class MovementStyles:
         mask = mask[:, :, np.newaxis]
         return sharp_arr * (1 - mask) + blur_arr * mask
 
-    def _apply_motion_blur(self, frame: np.ndarray, progress: float) -> np.ndarray:
-        """Apply directional motion blur during fast animation phases.
+    def _apply_output_sharpen(self, frame: np.ndarray) -> np.ndarray:
+        """Apply a gentle unsharp-mask to the final output frame.
 
-        Blur strength peaks in the middle 40% of the animation and scales
-        with resolution so the effect looks consistent at any output size.
+        Counteracts softness introduced by the crop→resize pipeline.
+        Uses a lightweight 3×3 kernel for speed.
         """
-        blur_strength = max(0, 1.0 - abs(progress - 0.5) * 4.0)
-        if blur_strength < 0.05:
+        try:
+            import cv2
+            blurred = cv2.GaussianBlur(frame, (0, 0), sigmaX=1.0)
+            return cv2.addWeighted(frame, 1.4, blurred, -0.4, 0)
+        except ImportError:
+            img = PILImage.fromarray(frame)
+            img = img.filter(ImageFilter.UnsharpMask(radius=1, percent=80, threshold=2))
+            return np.array(img)
+
+    def _apply_motion_blur(self, frame: np.ndarray, progress: float) -> np.ndarray:
+        """Apply subtle directional motion blur during the fastest phase.
+
+        Only activates in the narrow middle band of the animation and uses
+        a very small kernel so the frame stays sharp.
+        """
+        blur_strength = max(0, 1.0 - abs(progress - 0.5) * 5.0)
+        if blur_strength < 0.15:
             return frame
 
-        kernel_size = int(blur_strength * 3 * (self.width / 1920))
+        kernel_size = max(2, int(blur_strength * 2 * (self.width / 1920)))
         if kernel_size < 2:
             return frame
 
@@ -338,10 +356,12 @@ class MovementStyles:
             import cv2
             kernel = np.zeros((kernel_size, kernel_size))
             kernel[kernel_size // 2, :] = 1.0 / kernel_size
-            return cv2.filter2D(frame, -1, kernel)
+            blurred = cv2.filter2D(frame, -1, kernel)
+            # Blend: keep 60% sharp, 40% blurred for subtlety
+            return cv2.addWeighted(frame, 0.6, blurred, 0.4, 0)
         except ImportError:
             img = PILImage.fromarray(frame)
-            img = img.filter(ImageFilter.BoxBlur(kernel_size))
+            img = img.filter(ImageFilter.BoxBlur(max(1, kernel_size // 2)))
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:

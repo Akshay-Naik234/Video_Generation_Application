@@ -310,8 +310,8 @@ class SequentialVideoOrchestrator:
         import tempfile
         from PIL import Image as PILImage
 
-        TARGET_LUMINANCE = 120.0
-        DEVIATION_THRESHOLD = 25.0
+        TARGET_LUMINANCE = 125.0
+        DEVIATION_THRESHOLD = 20.0
 
         luminances: List[float] = []
         for _num, img_path in numbered_images:
@@ -879,14 +879,41 @@ class SequentialVideoOrchestrator:
         clip = clip.set_mask(mask_clip)
         return clip
 
+    @staticmethod
+    def _post_process_frame(frame: np.ndarray) -> np.ndarray:
+        """Apply final post-processing to every output frame.
+
+        1. Adaptive brightness lift — ensures no frame is too dark for viewers.
+        2. Gentle unsharp mask — recovers detail lost in compositing.
+        """
+        try:
+            import cv2
+            # Brightness check and adaptive lift
+            gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            mean_lum = gray.mean()
+            if mean_lum < 85:
+                boost = int(30 + (85 - mean_lum) * 0.5)
+                frame = cv2.add(frame, np.full_like(frame, boost))
+            # Gentle sharpen via unsharp mask
+            blurred = cv2.GaussianBlur(frame, (0, 0), sigmaX=0.8)
+            frame = cv2.addWeighted(frame, 1.3, blurred, -0.3, 0)
+        except ImportError:
+            pass
+        return frame
+
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.
 
-        Uses H.264 High profile and progressive-download flag so the
-        file plays correctly in VS Code, web browsers, and QuickTime.
+        Applies per-frame post-processing (brightness + sharpening) then
+        encodes with H.264 High profile and progressive-download flag so
+        the file plays correctly in VS Code, web browsers, and QuickTime.
         Multi-threaded encoding with optimized settings for quality/speed.
         """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Apply post-processing to every frame
+        print("  Applying post-processing (brightness + sharpening)...")
+        video = video.fl_image(self._post_process_frame)
 
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
         thread_count = min(os.cpu_count() or 4, 8)
@@ -897,7 +924,6 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
-                bitrate='8000k',
                 temp_audiofile=temp_audio,
                 remove_temp=True,
                 threads=thread_count,

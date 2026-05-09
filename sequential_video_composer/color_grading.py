@@ -47,31 +47,40 @@ class ColorGrading:
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
         """Ensure no frame is excessively dark by lifting shadows.
 
-        Uses a two-pass approach:
-        1. If >30% of pixels are below luminance 60, apply a strong global
+        Uses a multi-pass approach:
+        1. If >20% of pixels are below luminance 60, apply a strong global
            brightness boost proportional to how dark the frame is.
         2. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) on
            dark frames for local contrast recovery.
-        3. Clamp minimum pixel value to 30 so nothing is crushed to black.
+        3. Lift the gamma curve on moderately dark frames for a natural
+           brightness increase without washing out highlights.
+        4. Clamp minimum pixel value to 35 so nothing is crushed to black.
         """
         img = image.astype(np.float64)
         luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
         dark_ratio = np.mean(luminance < 60)
+        mean_lum = np.mean(luminance)
 
-        if dark_ratio > 0.3:
-            boost = 40 + 30 * dark_ratio
+        # Global brightness boost for dark frames
+        if dark_ratio > 0.20:
+            boost = 50 + 40 * dark_ratio
             img = img + boost
 
-        img = np.clip(img, 30, 255)
+        # Gamma lift for moderately dark frames (mean lum < 90)
+        if mean_lum < 90 and dark_ratio <= 0.20:
+            gamma = 0.85  # <1 brightens
+            img = 255.0 * np.power(np.clip(img / 255.0, 0, 1), gamma)
+
+        img = np.clip(img, 35, 255)
         result = img.astype(np.uint8)
 
-        # CLAHE for local contrast on very dark frames
-        if dark_ratio > 0.5:
+        # CLAHE for local contrast on dark frames
+        if dark_ratio > 0.30:
             try:
                 import cv2
                 lab = cv2.cvtColor(result, cv2.COLOR_RGB2LAB)
                 l_channel = lab[:, :, 0]
-                clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+                clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
                 lab[:, :, 0] = clahe.apply(l_channel)
                 result = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
             except ImportError:
