@@ -50,6 +50,9 @@ class SequentialVideoOrchestrator:
         overlay_accent_color: Tuple[int, int, int] = (218, 165, 32),
         duration_config_path: Optional[Union[str, Path]] = None,
         enable_documentary_effects: bool = True,
+        sync_to_beats: bool = True,
+        enable_audio_ducking: bool = True,
+        export_preset: str = "social",
     ):
         self.images_root = Path(images_root)
         self.output_path = Path(output_path)
@@ -70,6 +73,9 @@ class SequentialVideoOrchestrator:
         self.overlay_accent_color = overlay_accent_color
         self.duration_config_path = Path(duration_config_path) if duration_config_path else None
         self.enable_documentary_effects = enable_documentary_effects
+        self.sync_to_beats = sync_to_beats
+        self.enable_audio_ducking = enable_audio_ducking
+        self.export_preset = export_preset
         self.image_durations: Dict[int, Dict] = {}
         self.overlay_texts: Dict[int, str] = {}
         self.image_sections: Dict[int, str] = {}
@@ -330,6 +336,8 @@ class SequentialVideoOrchestrator:
         numbered_images = self.discover_numbered_images()
         print(f"\n[1/5] Creating animated clips...")
         clips_data = self.create_image_clips(numbered_images)
+        if self.sync_to_beats and self.audio_path and self.audio_path.exists():
+            self._sync_clip_starts_to_beats(clips_data)
 
         if not clips_data:
             raise ValueError("No valid image clips were created")
@@ -382,6 +390,8 @@ class SequentialVideoOrchestrator:
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
+            if self.enable_audio_ducking and self.enable_text_overlays and self.overlay_texts:
+                audio_clip = self._duck_audio_for_overlays(audio_clip, clips_data)
             main_video = main_video.set_audio(audio_clip)
 
         print(f"\n[5/5] Exporting video...")
@@ -475,6 +485,80 @@ class SequentialVideoOrchestrator:
                 ])
 
         return effect_clips
+
+    def _sync_clip_starts_to_beats(self, clips_data: List[Dict]) -> None:
+        """Snap configured clip starts lightly toward nearby audio beats."""
+        beats = self._detect_audio_beats()
+        if not beats:
+            print("  Beat sync skipped: no beats detected or librosa unavailable")
+            return
+
+        adjusted = 0
+        for i, data in enumerate(clips_data):
+            start = data.get('start_time')
+            if i == 0 or start is None:
+                continue
+            nearest = min(beats, key=lambda beat: abs(beat - start))
+            if abs(nearest - start) <= 0.18:
+                shift = nearest - start
+                data['start_time'] = max(0.0, nearest)
+                data['end_time'] = (data.get('end_time') + shift) if data.get('end_time') is not None else None
+                adjusted += 1
+        if adjusted:
+            print(f"  Beat sync adjusted {adjusted} clip start times")
+
+    def _detect_audio_beats(self) -> List[float]:
+        """Detect beat times with librosa when available."""
+        try:
+            import librosa
+            y, sr = librosa.load(str(self.audio_path), sr=None, mono=True)
+            _, beat_frames = librosa.beat.beat_track(y=y, sr=sr, units='frames')
+            beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+            return [float(t) for t in beat_times]
+        except Exception as exc:
+            print(f"  Beat detection unavailable: {exc}")
+            return []
+
+    def _duck_audio_for_overlays(self, audio_clip: AudioFileClip, clips_data: List[Dict]):
+        """Lower audio gently while readable text overlays are on screen."""
+        duck_windows = []
+        for data in clips_data:
+            image_num = data.get('image_num')
+            if image_num not in self.overlay_texts:
+                continue
+            start = data.get('start_time') or 0.0
+            duration = data.get('duration') or 0.0
+            if duration > 0:
+                duck_windows.append((start, min(start + duration, audio_clip.duration)))
+        if not duck_windows:
+            return audio_clip
+
+        def volume_at(t):
+            for start, end in duck_windows:
+                if start <= t <= end:
+                    fade = min((t - start) / 0.35, (end - t) / 0.35, 1.0)
+                    return 1.0 - 0.22 * max(0.0, fade)
+            return 1.0
+
+        def apply_ducking(get_frame, t):
+            samples = get_frame(t)
+            times = np.asarray(t)
+            if times.ndim == 0:
+                return samples * volume_at(float(times))
+            factors = np.ones_like(times, dtype=float)
+            for start, end in duck_windows:
+                mask = (times >= start) & (times <= end)
+                if not np.any(mask):
+                    continue
+                fade_in = (times[mask] - start) / 0.35
+                fade_out = (end - times[mask]) / 0.35
+                fade = np.clip(np.minimum(np.minimum(fade_in, fade_out), 1.0), 0.0, 1.0)
+                factors[mask] = np.minimum(factors[mask], 1.0 - 0.22 * fade)
+            while factors.ndim < samples.ndim:
+                factors = factors[..., np.newaxis]
+            return samples * factors
+
+        return audio_clip.fl(apply_ducking)
 
     def _measure_source_brightness(self, image_path) -> float:
         """Measure source brightness for adaptive effect intensity."""
@@ -847,6 +931,7 @@ class SequentialVideoOrchestrator:
 
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
         thread_count = min(os.cpu_count() or 4, 8)
+        preset = self._get_export_settings()
 
         try:
             video.write_videofile(
@@ -854,18 +939,12 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
-                bitrate='8000k',
+                bitrate=preset['bitrate'],
                 temp_audiofile=temp_audio,
                 remove_temp=True,
                 threads=thread_count,
-                preset='slow',
-                ffmpeg_params=[
-                    '-crf', '18',
-                    '-pix_fmt', 'yuv420p',
-                    '-profile:v', 'baseline',
-                    '-level', '3.1',
-                    '-movflags', '+faststart',
-                ]
+                preset=preset['preset'],
+                ffmpeg_params=preset['ffmpeg_params']
             )
         except Exception as e:
             print(f"Export error with optimized settings: {e}")
@@ -878,3 +957,53 @@ class SequentialVideoOrchestrator:
                 threads=thread_count,
                 ffmpeg_params=['-pix_fmt', 'yuv420p', '-movflags', '+faststart']
             )
+
+    def _get_export_settings(self) -> Dict:
+        """Return encoder settings for quality, web/social, or compatibility."""
+        presets = {
+            'maximum': {
+                'bitrate': '20000k',
+                'preset': 'veryslow',
+                'ffmpeg_params': [
+                    '-crf', '15',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'high',
+                    '-level', '4.2',
+                    '-movflags', '+faststart',
+                ],
+            },
+            'youtube': {
+                'bitrate': '12000k',
+                'preset': 'slow',
+                'ffmpeg_params': [
+                    '-crf', '16',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'high',
+                    '-level', '4.2',
+                    '-movflags', '+faststart',
+                ],
+            },
+            'social': {
+                'bitrate': '10000k',
+                'preset': 'slow',
+                'ffmpeg_params': [
+                    '-crf', '16',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'high',
+                    '-level', '4.2',
+                    '-movflags', '+faststart',
+                ],
+            },
+            'compatibility': {
+                'bitrate': '8000k',
+                'preset': 'slow',
+                'ffmpeg_params': [
+                    '-crf', '18',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'baseline',
+                    '-level', '3.1',
+                    '-movflags', '+faststart',
+                ],
+            },
+        }
+        return presets.get(self.export_preset, presets['social'])

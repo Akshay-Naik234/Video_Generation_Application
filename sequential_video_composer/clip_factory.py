@@ -25,8 +25,10 @@ class ClipFactory:
         total = len(numbered_images)
         failed = 0
         brightness_target = self._calculate_batch_brightness_target(numbered_images)
+        color_reference = self._calculate_batch_color_reference(numbered_images)
         if brightness_target:
             print(f"Batch brightness target luminance: {brightness_target:.1f}")
+        previous_movement = None
 
         for i, (num, image_path) in enumerate(tqdm(numbered_images, desc="Processing images")):
             print(f"Processing image {num}: {image_path.name}")
@@ -46,19 +48,22 @@ class ClipFactory:
                 failed += 1
                 continue
 
+            section = self.orchestrator.image_sections.get(num, '')
             timing = self.orchestrator.get_timing_for_image(num)
             image_duration = timing.get('duration', self.orchestrator.image_duration)
             start_time = timing.get('start_time')
             end_time = timing.get('end_time')
+            if start_time is None and end_time is None and num not in self.orchestrator.image_durations:
+                image_duration = self._calculate_dynamic_duration(image_path, section, image_duration)
             
             movement = self.orchestrator._get_movement_for_image(i, total, image_num=num)
             print(f"  Duration: {image_duration}s")
             print(f"  Start time: {start_time}s")
             print(f"  End time: {end_time}s")
             print(f"  Movement style: {movement}")
+            motion_hint = self._calculate_motion_continuity(previous_movement, movement)
 
             # Section-aware color grading: use section-specific grade when available
-            section = self.orchestrator.image_sections.get(num, '')
             if section:
                 grade = self.orchestrator.color_grading.grade_for_section(section)
             else:
@@ -74,7 +79,11 @@ class ClipFactory:
                 enable_vignette=self.orchestrator.enable_vignette,
                 section=section,
                 brightness_target=brightness_target,
+                color_reference=color_reference,
+                motion_start_zoom=motion_hint['start_zoom'],
+                motion_pan_bias=motion_hint['pan_bias'],
             )
+            previous_movement = movement
 
             transition = self.orchestrator._get_transition_for_image(i, total, image_num=num)
             clips_data.append({
@@ -120,6 +129,79 @@ class ClipFactory:
         # Keep the video consistently legible, but avoid over-brightening
         # deliberately bright source batches.
         return float(np.clip(max(118.0, median_luma), 118.0, 135.0))
+
+    def _calculate_batch_color_reference(
+        self, numbered_images: List[Tuple[int, Path]]
+    ) -> np.ndarray:
+        """Calculate a stable RGB reference for gentle sequence color matching."""
+        means = []
+        for _, image_path in numbered_images:
+            try:
+                with PILImage.open(image_path) as img:
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+                    img.thumbnail((320, 320), PILImage.LANCZOS)
+                    means.append(self.orchestrator.color_grading.measure_channel_means(np.array(img)))
+            except Exception:
+                continue
+        if not means:
+            return None
+        return np.median(np.vstack(means), axis=0)
+
+    def _calculate_motion_continuity(self, previous: str, current: str) -> Dict:
+        """Seed the next clip so consecutive camera moves feel connected."""
+        hint = {'start_zoom': 0.0, 'pan_bias': (0.0, 0.0)}
+        if not previous:
+            return hint
+
+        zoom_in = {'zoom_in', 'dramatic_zoom', 'push_in', 'dolly_zoom', 'rack_focus', 'map_zoom'}
+        zoom_out = {'zoom_out', 'push_out'}
+        pan_biases = {
+            'pan_left': (-0.04, 0.0),
+            'pan_right': (0.04, 0.0),
+            'pan_up': (0.0, -0.035),
+            'pan_down': (0.0, 0.035),
+            'crane_up': (0.0, -0.035),
+            'crane_down': (0.0, 0.035),
+        }
+        if previous in zoom_in and current in zoom_in:
+            hint['start_zoom'] = 0.025
+        elif previous in zoom_out and current in zoom_out:
+            hint['start_zoom'] = 0.015
+        if previous in pan_biases and current in pan_biases:
+            hint['pan_bias'] = pan_biases[previous]
+        return hint
+
+    def _calculate_dynamic_duration(
+        self, image_path: Path, section: str, base_duration: float
+    ) -> float:
+        """Adjust default duration by image complexity and story energy."""
+        complexity = self._measure_image_complexity(image_path)
+        multiplier = 1.0
+        if complexity < 0.04:
+            multiplier *= 1.18
+        elif complexity > 0.12:
+            multiplier *= 0.90
+
+        if section in {'COLD_OPEN', 'THE_CONFLICT', 'THE_CLIMAX'}:
+            multiplier *= 0.88
+        elif section in {'EARLY_LIFE', 'LEGACY', 'CTA'}:
+            multiplier *= 1.10
+        return float(np.clip(base_duration * multiplier, base_duration * 0.75, base_duration * 1.35))
+
+    def _measure_image_complexity(self, image_path: Path) -> float:
+        """Estimate visual complexity with edge density."""
+        try:
+            import cv2
+            with PILImage.open(image_path) as img:
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                img.thumbnail((320, 320), PILImage.LANCZOS)
+                gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
+                edges = cv2.Canny(gray, 60, 140)
+                return float(np.mean(edges > 0))
+        except Exception:
+            return 0.08
 
     # Section-aware fade durations: dramatic sections get snappier cuts,
     # emotional sections get longer, more graceful fades.

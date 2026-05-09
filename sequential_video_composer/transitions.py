@@ -213,17 +213,21 @@ class TransitionEffects:
 
         def leak_frame(t):
             progress = t / duration if duration > 0 else 1
-            frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+            frame = np.zeros((self.height, self.width, 3), dtype=np.float32)
             # Warm light leak gradient sweeping left to right
             center = int(progress * self.width * 1.4 - self.width * 0.2)
             spread = int(self.width * 0.4)
             x_coords = np.arange(self.width)
             intensity = np.exp(-0.5 * ((x_coords - center) / max(spread, 1)) ** 2)
-            # Warm amber color
-            frame[:, :, 0] = (intensity * 255 * 0.95).astype(np.uint8)  # R
-            frame[:, :, 1] = (intensity * 200 * 0.7).astype(np.uint8)   # G
-            frame[:, :, 2] = (intensity * 120 * 0.3).astype(np.uint8)   # B
-            return frame
+            pulse = 0.75 + 0.25 * np.sin(progress * np.pi * 3)
+            pink_mix = np.sin(progress * np.pi) ** 2
+            r = 245 + 10 * pink_mix
+            g = 165 - 35 * pink_mix
+            b = 70 + 80 * pink_mix
+            frame[:, :, 0] = intensity * r * pulse
+            frame[:, :, 1] = intensity * g * pulse
+            frame[:, :, 2] = intensity * b * pulse
+            return np.clip(frame, 0, 255).astype(np.uint8)
 
         leak_clip = VideoClip(leak_frame, duration=duration).set_fps(30)
         leak_clip = leak_clip.set_start(overlap_start).set_opacity(0.6)
@@ -283,10 +287,16 @@ class TransitionEffects:
             band2 = np.sin(y_indices * 0.5 + t * 80) > 0.85
             frame[band2, :, 1] = int(180 * intensity)
             frame[band2, :, 2] = int(220 * intensity)
+            rng = np.random.RandomState(int(t * 1000) % 100000)
+            for _ in range(8):
+                y = rng.randint(0, self.height)
+                h = rng.randint(2, max(3, int(self.height * 0.015)))
+                val = rng.randint(40, 160)
+                frame[y:min(self.height, y + h), :, :] = val
             return frame
 
         glitch_clip = VideoClip(glitch_frame, duration=duration).set_fps(30)
-        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.25)
+        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.35)
 
         clip1_fade = clip1.fadeout(duration * 0.25)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.25)

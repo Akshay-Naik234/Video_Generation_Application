@@ -13,5 +13,8 @@
   "enable_vignette": true,
   "enable_film_grain": false,
   "enable_text_overlays": true,
+  "sync_to_beats": true,
+  "enable_audio_ducking": true,
+  "export_preset": "social",
   "audio": "../examples/audio/narration.mp3"
 }

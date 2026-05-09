@@ -199,6 +199,26 @@ Color Grades:
         help='Disable documentary effects'
     )
 
+    parser.add_argument(
+        '--no-beat-sync',
+        action='store_true',
+        help='Disable optional beat-aware timing adjustment'
+    )
+
+    parser.add_argument(
+        '--no-audio-ducking',
+        action='store_true',
+        help='Disable gentle audio ducking under text overlays'
+    )
+
+    parser.add_argument(
+        '--export-preset',
+        type=str,
+        default='social',
+        choices=['social', 'youtube', 'maximum', 'compatibility'],
+        help='Export quality preset (default: social)'
+    )
+
     args = parser.parse_args()
 
     if args.config:
@@ -237,6 +257,8 @@ Color Grades:
         enable_vignette = args.vignette and not args.no_vignette
         enable_text_overlays = args.text_overlays and not args.no_text_overlays
         enable_documentary_effects = args.documentary_effects and not args.no_documentary_effects
+        sync_to_beats = not args.no_beat_sync
+        enable_audio_ducking = not args.no_audio_ducking
 
         print(f"Creating video from images in: {images_path}")
         print(f"  Transition style: {args.transition}")
@@ -265,6 +287,9 @@ Color Grades:
             enable_text_overlays=enable_text_overlays,
             duration_config_path=duration_config_path,
             enable_documentary_effects=enable_documentary_effects,
+            sync_to_beats=sync_to_beats,
+            enable_audio_ducking=enable_audio_ducking,
+            export_preset=args.export_preset,
         )
 
     else:

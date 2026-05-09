@@ -84,6 +84,26 @@ class ColorGrading:
 
         return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
+    @staticmethod
+    def measure_channel_means(image: np.ndarray) -> np.ndarray:
+        """Return RGB channel means for sequence color matching."""
+        return image.astype(np.float64).reshape(-1, 3).mean(axis=0)
+
+    def match_color_to_reference(
+        self,
+        image: np.ndarray,
+        reference_means: np.ndarray,
+        strength: float = 0.25,
+    ) -> np.ndarray:
+        """Gently blend image color balance toward a sequence reference."""
+        if reference_means is None:
+            return image
+        img = image.astype(np.float64)
+        current = self.measure_channel_means(image)
+        delta = (reference_means - current) * np.clip(strength, 0.0, 1.0)
+        img += delta.reshape(1, 1, 3)
+        return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
+
     def _apply_clahe(self, image: np.ndarray) -> np.ndarray:
         """Apply adaptive histogram equalization when OpenCV is available."""
         try:

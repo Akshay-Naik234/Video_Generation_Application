@@ -23,6 +23,9 @@ def create_sequential_video(
     enable_text_overlays: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None,
     enable_documentary_effects: bool = True,
+    sync_to_beats: bool = True,
+    enable_audio_ducking: bool = True,
+    export_preset: str = "social",
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
 
@@ -67,6 +70,9 @@ def create_sequential_video(
         enable_text_overlays=enable_text_overlays,
         duration_config_path=duration_config_path,
         enable_documentary_effects=enable_documentary_effects,
+        sync_to_beats=sync_to_beats,
+        enable_audio_ducking=enable_audio_ducking,
+        export_preset=export_preset,
     )
     orchestrator.create_video()
 
@@ -116,4 +122,7 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         enable_text_overlays=config.get('enable_text_overlays', True),
         duration_config_path=duration_config_path,
         enable_documentary_effects=config.get('enable_documentary_effects', True),
+        sync_to_beats=config.get('sync_to_beats', True),
+        enable_audio_ducking=config.get('enable_audio_ducking', True),
+        export_preset=config.get('export_preset', 'social'),
     )

@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 
 import numpy as np
-from PIL import Image as PILImage, ImageFilter
+from PIL import Image as PILImage, ImageFilter, ImageEnhance
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
@@ -123,6 +123,9 @@ class MovementStyles:
         enable_vignette: bool = False,
         section: str = '',
         brightness_target: float = None,
+        color_reference: np.ndarray = None,
+        motion_start_zoom: float = 0.0,
+        motion_pan_bias: Tuple[float, float] = (0.0, 0.0),
     ):
         """Create an animated clip with the specified movement style and effects.
 
@@ -142,13 +145,15 @@ class MovementStyles:
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        base_img = self._smart_resize_to_fit(base_img)
+        base_img, focus_point = self._smart_resize_to_fit(base_img)
         base_array = np.array(base_img)
 
         if color_grader and color_grade:
             base_array = color_grader.apply_grade(base_array, color_grade)
             if brightness_target is not None:
                 base_array = color_grader.normalize_luminance(base_array, brightness_target)
+            if color_reference is not None:
+                base_array = color_grader.match_color_to_reference(base_array, color_reference)
 
         if enable_vignette:
             base_array = self._apply_vignette(base_array)
@@ -157,6 +162,7 @@ class MovementStyles:
                     base_array,
                     brightness_target if brightness_target is not None else 118.0
                 )
+        base_array = self._apply_lens_distortion(base_array, intensity=0.008)
 
         scaled_img = PILImage.fromarray(base_array)
 
@@ -167,8 +173,12 @@ class MovementStyles:
                 ImageFilter.GaussianBlur(radius=int(8 * (self.height / 1080)))
             )
 
-        center_x = self.width / 2.0
-        center_y = self.height / 2.0
+        frame_center_x = self.width / 2.0
+        frame_center_y = self.height / 2.0
+        # Move only partway toward detected content. Full focus locking can
+        # feel robotic; this keeps faces/text safer while preserving composition.
+        center_x = frame_center_x + (focus_point[0] - frame_center_x) * 0.35
+        center_y = frame_center_y + (focus_point[1] - frame_center_y) * 0.35
 
         out_w, out_h = self.resolution
 
@@ -213,6 +223,10 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
+            zoom += motion_start_zoom * (1.0 - eased)
+            zoom += 0.004 * np.sin(t * 2 * np.pi * 0.5)
+            pan_x += motion_pan_bias[0] * (1.0 - eased)
+            pan_y += motion_pan_bias[1] * (1.0 - eased)
             zoom, pan_x, pan_y = self._apply_motion_safety(zoom, pan_x, pan_y)
 
             crop_w = out_w / zoom
@@ -257,7 +271,7 @@ class MovementStyles:
 
     # ---- Visual effect helpers ----
 
-    def _smart_resize_to_fit(self, image: PILImage.Image) -> PILImage.Image:
+    def _smart_resize_to_fit(self, image: PILImage.Image) -> Tuple[PILImage.Image, Tuple[float, float]]:
         """Resize to the output frame without cropping source content.
 
         A blurred cover layer fills the 16:9 frame and the original image is
@@ -285,11 +299,75 @@ class MovementStyles:
         fit_h = int(target_h * (1.0 - safe_margin * 2))
         fit_scale = min(fit_w / src_w, fit_h / src_h)
         fg_size = (max(1, int(src_w * fit_scale)), max(1, int(src_h * fit_scale)))
-        foreground = image.resize(fg_size, PILImage.LANCZOS)
+        foreground = self._enhance_image_quality(image).resize(fg_size, PILImage.LANCZOS)
         paste_x = (target_w - fg_size[0]) // 2
         paste_y = (target_h - fg_size[1]) // 2
         canvas.paste(foreground, (paste_x, paste_y))
-        return canvas
+        focus_src = self._detect_focus_point(image)
+        focus_x = paste_x + focus_src[0] * fit_scale
+        focus_y = paste_y + focus_src[1] * fit_scale
+        focus_x = float(np.clip(focus_x, target_w * 0.15, target_w * 0.85))
+        focus_y = float(np.clip(focus_y, target_h * 0.15, target_h * 0.85))
+        return canvas, (focus_x, focus_y)
+
+    def _enhance_image_quality(self, image: PILImage.Image) -> PILImage.Image:
+        """Apply mild, non-destructive still-image enhancement before motion."""
+        enhanced = ImageEnhance.Contrast(image).enhance(1.04)
+        enhanced = ImageEnhance.Sharpness(enhanced).enhance(1.08)
+        enhanced = ImageEnhance.Color(enhanced).enhance(1.02)
+        return enhanced
+
+    def _detect_focus_point(self, image: PILImage.Image) -> Tuple[float, float]:
+        """Find a likely subject center using faces first, then contrast."""
+        src_w, src_h = image.size
+        try:
+            import cv2
+            preview_max = 360
+            scale = min(1.0, preview_max / max(src_w, src_h))
+            if scale < 1.0:
+                preview_size = (max(1, int(src_w * scale)), max(1, int(src_h * scale)))
+                preview = image.resize(preview_size, PILImage.BILINEAR)
+            else:
+                preview = image
+            arr = np.array(preview)
+            gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+            face_cascade = self._get_face_cascade(cv2)
+            min_face = max(24, int(min(gray.shape[:2]) * 0.08))
+            faces = []
+            if face_cascade is not None:
+                faces = face_cascade.detectMultiScale(
+                    gray,
+                    scaleFactor=1.2,
+                    minNeighbors=4,
+                    flags=cv2.CASCADE_SCALE_IMAGE,
+                    minSize=(min_face, min_face),
+                )
+            if len(faces) > 0:
+                # Prefer the largest face; it is usually the primary subject.
+                x, y, w, h = max(faces, key=lambda box: box[2] * box[3])
+                inv_scale = 1.0 / max(scale, 1e-6)
+                return (x + w / 2.0) * inv_scale, (y + h / 2.0) * inv_scale
+
+            small = cv2.resize(gray, (max(1, gray.shape[1] // 4), max(1, gray.shape[0] // 4)))
+            edges = cv2.Canny(small, 60, 140).astype(np.float32)
+            if edges.sum() > 0:
+                yy, xx = np.indices(edges.shape)
+                cx = float((xx * edges).sum() / edges.sum()) * src_w / edges.shape[1]
+                cy = float((yy * edges).sum() / edges.sum()) * src_h / edges.shape[0]
+                return cx, cy
+        except Exception:
+            pass
+
+        return src_w / 2.0, src_h / 2.0
+
+    def _get_face_cascade(self, cv2):
+        """Load the OpenCV face cascade once per movement engine."""
+        if hasattr(self, '_face_cascade'):
+            return self._face_cascade
+        cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+        cascade = cv2.CascadeClassifier(cascade_path)
+        self._face_cascade = None if cascade.empty() else cascade
+        return self._face_cascade
 
     def _apply_motion_safety(
         self, zoom: float, pan_x: float, pan_y: float
@@ -381,6 +459,38 @@ class MovementStyles:
             img = PILImage.fromarray(frame)
             img = img.filter(ImageFilter.BoxBlur(kernel_size))
             return np.array(img)
+
+    def _apply_lens_distortion(self, frame: np.ndarray, intensity: float = 0.008) -> np.ndarray:
+        """Add very subtle barrel distortion for an organic camera feel."""
+        if intensity <= 0:
+            return frame
+        try:
+            import cv2
+        except ImportError:
+            return frame
+
+        h, w = frame.shape[:2]
+        map_x, map_y = self._get_lens_maps(w, h, intensity)
+        return cv2.remap(frame, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+
+    def _get_lens_maps(self, w: int, h: int, intensity: float) -> Tuple[np.ndarray, np.ndarray]:
+        """Cache remap grids so lens distortion is cheap across clips."""
+        if not hasattr(self, '_lens_map_cache'):
+            self._lens_map_cache = {}
+        key = (w, h, round(float(intensity), 5))
+        cached = self._lens_map_cache.get(key)
+        if cached is not None:
+            return cached
+
+        y, x = np.indices((h, w), dtype=np.float32)
+        x_norm = (x - w / 2.0) / (w / 2.0)
+        y_norm = (y - h / 2.0) / (h / 2.0)
+        r2 = x_norm * x_norm + y_norm * y_norm
+        factor = 1.0 + intensity * r2
+        map_x = (x_norm * factor * (w / 2.0) + w / 2.0).astype(np.float32)
+        map_y = (y_norm * factor * (h / 2.0) + h / 2.0).astype(np.float32)
+        self._lens_map_cache[key] = (map_x, map_y)
+        return map_x, map_y
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
         """Apply handheld camera micro-shake by shifting pixels.
