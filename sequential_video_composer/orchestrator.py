@@ -298,8 +298,67 @@ class SequentialVideoOrchestrator:
         else:
             return self.transition_style if self.transition_style in TransitionEffects.TRANSITION_TYPES else 'crossfade'
 
+    def _normalize_image_brightness(self, numbered_images: List[Tuple[int, Path]]) -> None:
+        """Pre-process images to normalize brightness across the batch.
+
+        Calculates the average luminance of all images, picks a target
+        (default 120 on 0-255), and adjusts each image **as a temporary
+        copy** so the originals are never modified.  Only images that
+        deviate significantly (>25 units) from the target are touched.
+        """
+        import shutil
+        import tempfile
+        from PIL import Image as PILImage
+
+        TARGET_LUMINANCE = 120.0
+        DEVIATION_THRESHOLD = 25.0
+
+        luminances: List[float] = []
+        for _num, img_path in numbered_images:
+            try:
+                img = PILImage.open(img_path).convert('RGB')
+                arr = np.array(img, dtype=np.float64)
+                lum = np.dot(arr[..., :3], [0.299, 0.587, 0.114]).mean()
+                luminances.append(lum)
+            except Exception:
+                luminances.append(TARGET_LUMINANCE)
+
+        if not luminances:
+            return
+
+        avg_lum = float(np.mean(luminances))
+        target = min(max(avg_lum, TARGET_LUMINANCE), 160.0)
+
+        # Create a temp directory for adjusted copies so originals stay intact
+        tmp_dir = Path(tempfile.mkdtemp(prefix='vid_bright_'))
+
+        adjusted = 0
+        for idx, (_num, img_path) in enumerate(numbered_images):
+            lum = luminances[idx]
+            diff = target - lum
+            if abs(diff) < DEVIATION_THRESHOLD:
+                continue
+            try:
+                img = PILImage.open(img_path).convert('RGB')
+                arr = np.array(img, dtype=np.float64)
+                arr = arr + diff * 0.6
+                arr = np.clip(arr, 0, 255).astype(np.uint8)
+                tmp_path = tmp_dir / img_path.name
+                PILImage.fromarray(arr).save(tmp_path)
+                # Update the tuple in-place so downstream code reads the copy
+                numbered_images[idx] = (_num, tmp_path)
+                adjusted += 1
+            except Exception:
+                continue
+
+        if adjusted:
+            print(f"  Brightness normalization: adjusted {adjusted}/{len(numbered_images)} images (target lum={target:.0f})")
+        # Store temp dir so it can be cleaned up after export
+        self._brightness_tmp_dir = tmp_dir
+
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info."""
+        self._normalize_image_brightness(numbered_images)
         return self.clip_factory.create_image_clips(numbered_images)
 
     def create_timeline_video(self, clips_data: List[Dict]) -> CompositeVideoClip:
@@ -308,39 +367,49 @@ class SequentialVideoOrchestrator:
 
     def create_video(self) -> None:
         """Main method to create the sequential video with professional effects."""
-        print("Starting Sequential Video Orchestrator (Documentary Enhanced)...")
-        print(f"Images root: {self.images_root}")
-        print(f"Output path: {self.output_path}")
-        print(f"Resolution: {self.resolution}")
-        print(f"Image duration: {self.image_duration}s")
-        print(f"Transition style: {self.transition_style}")
-        print(f"Movement style: {self.movement_style}")
-        print(f"Color grade: {self.color_grade}")
-        print(f"Documentary effects: {self.enable_documentary_effects}")
+        import time as _time
+        t0 = _time.monotonic()
+
+        print("="*60)
+        print("Sequential Video Orchestrator (Documentary Enhanced)")
+        print("="*60)
+        print(f"  Images root     : {self.images_root}")
+        print(f"  Output path     : {self.output_path}")
+        print(f"  Resolution      : {self.resolution}")
+        print(f"  FPS             : {self.fps}")
+        print(f"  Image duration  : {self.image_duration}s")
+        print(f"  Transition style: {self.transition_style}")
+        print(f"  Movement style  : {self.movement_style}")
+        print(f"  Color grade     : {self.color_grade}")
+        print(f"  Effects enabled : {self.enable_documentary_effects}")
         if self.total_video_duration:
-            print(f"Target video duration: {self.total_video_duration}s")
+            print(f"  Target duration : {self.total_video_duration}s")
+        print("="*60)
 
         numbered_images = self.discover_numbered_images()
+        print(f"\n[1/5] Creating animated clips...")
         clips_data = self.create_image_clips(numbered_images)
 
         if not clips_data:
             raise ValueError("No valid image clips were created")
 
+        print(f"\n[2/5] Building timeline...")
         main_video = self.create_timeline_video(clips_data)
 
         if main_video is None:
             raise ValueError("Failed to create timeline video")
 
-        print(f"Main video duration: {main_video.duration}s")
+        print(f"  Main video duration: {main_video.duration}s")
 
         overlays = [main_video]
 
         # Documentary effects (section-aware overlays)
+        print(f"\n[3/5] Applying effects...")
         if self.enable_documentary_effects:
             doc_overlays = self._create_documentary_effect_overlays(clips_data)
             overlays.extend(doc_overlays)
+            print(f"  Applied {len(doc_overlays)} documentary effect overlays")
         else:
-            # Legacy particle/grain overlays
             if self.effects_intensity > 0.3:
                 particles = self.clip_factory.create_particle_overlay(
                     main_video.duration,
@@ -356,22 +425,33 @@ class SequentialVideoOrchestrator:
                 overlays.append(grain)
 
         # Text overlays from duration config
+        print(f"\n[4/5] Adding text overlays...")
         if self.enable_text_overlays and self.overlay_texts:
             text_clips = self._create_text_overlay_clips(clips_data)
             overlays.extend(text_clips)
+            print(f"  Added {len(text_clips)} text overlay clips")
+        else:
+            print("  No text overlays configured")
 
         if len(overlays) > 1:
             main_video = CompositeVideoClip(overlays)
 
         if self.audio_path and self.audio_path.exists():
-            print(f"Adding audio from: {self.audio_path}")
+            print(f"  Adding audio from: {self.audio_path}")
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
             main_video = main_video.set_audio(audio_clip)
 
+        print(f"\n[5/5] Exporting video...")
         self._export_video(main_video)
-        print(f"Video created successfully: {self.output_path}")
+
+        elapsed = _time.monotonic() - t0
+        print(f"\n{'='*60}")
+        print(f"Video created successfully in {elapsed:.1f}s")
+        print(f"  Output: {self.output_path}")
+        print(f"  Size  : {self.output_path.stat().st_size / (1024*1024):.1f} MB")
+        print(f"{'='*60}")
 
     def _create_documentary_effect_overlays(self, clips_data: List[Dict]) -> List:
         """Create documentary effect overlays.
@@ -559,8 +639,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return result * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'highlight':
@@ -590,8 +670,8 @@ class SequentialVideoOrchestrator:
                 fade_in = min(t / 0.3, 1.0)
                 return _alpha * fade * fade_in
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'slide_up':
@@ -615,8 +695,8 @@ class SequentialVideoOrchestrator:
                     result *= fade
                 return result
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(15)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(15)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'glow_underline':
@@ -654,8 +734,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return _alpha * fade_in * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(20)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(20)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
 
         else:
@@ -666,8 +746,8 @@ class SequentialVideoOrchestrator:
             def make_mask(_t, _alpha=alpha_mask):
                 return _alpha
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(1)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(1)
+            clip = VideoClip(make_frame, duration=duration).set_fps(24)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
             clip = clip.set_mask(mask_clip)
             fade_in = min(0.5, duration * 0.15)
             fade_out = min(0.4, duration * 0.12)
@@ -794,19 +874,22 @@ class SequentialVideoOrchestrator:
                 fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
             return _alpha * fade_in * fade
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(12)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(12)
+        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
         clip = clip.set_mask(mask_clip)
         return clip
 
     def _export_video(self, video: CompositeVideoClip) -> None:
-        """Export the final video with professional settings."""
-        print("Exporting video...")
+        """Export the final video with professional settings.
 
+        Uses H.264 High profile and progressive-download flag so the
+        file plays correctly in VS Code, web browsers, and QuickTime.
+        Multi-threaded encoding with optimized settings for quality/speed.
+        """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Use a unique temp audio file to avoid conflicts with parallel exports
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
+        thread_count = min(os.cpu_count() or 4, 8)
 
         try:
             video.write_videofile(
@@ -814,19 +897,27 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
+                bitrate='8000k',
                 temp_audiofile=temp_audio,
                 remove_temp=True,
-                threads=4,
-                preset='fast',
-                ffmpeg_params=['-crf', '23', '-pix_fmt', 'yuv420p']
+                threads=thread_count,
+                preset='slow',
+                ffmpeg_params=[
+                    '-crf', '18',
+                    '-pix_fmt', 'yuv420p',
+                    '-profile:v', 'high',
+                    '-level', '4.1',
+                    '-movflags', '+faststart',
+                ]
             )
-            print(f"Video exported successfully: {self.output_path}")
         except Exception as e:
-            print(f"Export error: {e}")
+            print(f"Export error with optimized settings: {e}")
             print("Retrying with basic settings...")
             video.write_videofile(
                 str(self.output_path),
                 fps=self.fps,
                 codec='libx264',
-                audio_codec='aac'
+                audio_codec='aac',
+                threads=thread_count,
+                ffmpeg_params=['-pix_fmt', 'yuv420p', '-movflags', '+faststart']
             )

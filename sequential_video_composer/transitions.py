@@ -182,28 +182,13 @@ class TransitionEffects:
     def _whip_pan(
         self, clip1: ImageClip, clip2: ImageClip, duration: float
     ) -> CompositeVideoClip:
-        """Whip pan: fast horizontal slide with motion blur overlay."""
+        """Whip pan: fast horizontal slide — clean crossfade, no blur."""
         overlap_start = clip1.duration - duration
-        w = self.width
-
-        def blur_frame(t):
-            progress = t / duration if duration > 0 else 1
-            blur_amount = max(0, 1.0 - abs(progress - 0.5) * 4)
-            brightness = int(255 * blur_amount * 0.15)
-            return np.full((self.height, w, 3), brightness, dtype=np.uint8)
-
-        def blur_opacity(t):
-            progress = t / duration if duration > 0 else 1
-            return max(0, 1.0 - abs(progress - 0.5) * 3) * 0.6
-
-        blur_clip = VideoClip(blur_frame, duration=duration).set_fps(30)
-        blur_clip = blur_clip.set_start(overlap_start)
-        blur_clip = blur_clip.set_opacity(0.7)
 
         clip1_fade = clip1.fadeout(duration * 0.3)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.3)
 
-        return CompositeVideoClip([clip1_fade, clip2_fade, blur_clip])
+        return CompositeVideoClip([clip1_fade, clip2_fade])
 
     def _light_leak(
         self, clip1: ImageClip, clip2: ImageClip, duration: float
@@ -296,19 +281,19 @@ class TransitionEffects:
     def _blur_through(
         self, clip1: ImageClip, clip2: ImageClip, duration: float
     ) -> CompositeVideoClip:
-        """Blur through: defocus to blur, then refocus on new image."""
+        """Soft dissolve with a subtle white bloom — no blur applied."""
         clip1_fade = clip1.fadeout(duration * 0.6)
         clip2_fade = clip2.set_start(clip1.duration - duration).fadein(duration * 0.6)
 
-        # White bloom overlay during peak blur
+        # Subtle white bloom overlay at the midpoint for a soft feel
         def bloom_frame(t):
             progress = t / duration if duration > 0 else 1
-            bloom = np.sin(progress * np.pi) * 0.15
+            bloom = np.sin(progress * np.pi) * 0.10
             val = int(255 * bloom)
             return np.full((self.height, self.width, 3), val, dtype=np.uint8)
 
         bloom = VideoClip(bloom_frame, duration=duration).set_fps(30)
-        bloom = bloom.set_start(clip1.duration - duration).set_opacity(0.6)
+        bloom = bloom.set_start(clip1.duration - duration).set_opacity(0.4)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, bloom])
 
@@ -372,26 +357,25 @@ class TransitionEffects:
     def _zoom_blur(
         self, clip1: ImageClip, clip2: ImageClip, duration: float
     ) -> CompositeVideoClip:
-        """Zoom blur: radial blur effect during transition suggesting fast zoom."""
+        """Radial vignette transition — dark edges pulse in/out, no blur."""
         overlap_start = clip1.duration - duration
 
         def radial_frame(t):
             progress = t / duration if duration > 0 else 1
             intensity = np.sin(progress * np.pi)
             frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
-            # Radial gradient from center
             y, x = np.ogrid[:self.height, :self.width]
             cx, cy = self.width / 2, self.height / 2
             max_r = np.sqrt(cx ** 2 + cy ** 2)
             dist = np.sqrt((x - cx) ** 2 + (y - cy) ** 2) / max_r
-            radial = (dist * intensity * 0.3 * 255).astype(np.uint8)
+            radial = (dist * intensity * 0.2 * 255).astype(np.uint8)
             frame[:, :, 0] = radial
             frame[:, :, 1] = radial
             frame[:, :, 2] = radial
             return frame
 
         radial_clip = VideoClip(radial_frame, duration=duration).set_fps(30)
-        radial_clip = radial_clip.set_start(overlap_start).set_opacity(0.5)
+        radial_clip = radial_clip.set_start(overlap_start).set_opacity(0.35)
 
         clip1_fade = clip1.fadeout(duration * 0.5)
         clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.5)
@@ -527,7 +511,7 @@ class TransitionEffects:
                 cropped = frame[y1:y1 + ch, x1:x1 + cw]
                 try:
                     import cv2
-                    return cv2.resize(cropped, (fw, fh), interpolation=cv2.INTER_LINEAR)
+                    return cv2.resize(cropped, (fw, fh), interpolation=cv2.INTER_LANCZOS4)
                 except ImportError:
                     pil = PILImage.fromarray(cropped)
                     return np.array(pil.resize((fw, fh), PILImage.BILINEAR))
