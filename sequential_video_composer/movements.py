@@ -66,6 +66,13 @@ class MovementStyles:
         'map_pan',
         # Timeline / chronology
         'timeline_reveal',
+        # Cinematic camera movements
+        'truck_left',
+        'truck_right',
+        'static_motion',
+        'shoulder_drift',
+        'tracking_shot',
+        'cinematic_reveal',
     ]
 
     # Movements grouped by documentary section / emotional tone
