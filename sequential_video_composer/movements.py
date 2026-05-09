@@ -91,18 +91,18 @@ class MovementStyles:
         'bittersweet': ['parallax_depth', 'gentle_drift', 'float_up', 'zoom_out', 'breathing'],
     }
 
-    # Section-aware zoom intensity multipliers: dramatic sections get stronger
-    # zoom, emotional/calm sections get gentler movement.
+    # Section-aware zoom intensity multipliers: kept conservative to prevent
+    # content from being cropped out of frame.
     SECTION_ZOOM_MULTIPLIERS = {
-        'COLD_OPEN': 1.4,
-        'EARLY_LIFE': 0.9,
-        'THE_SPARK': 1.15,
-        'THE_RISE': 1.25,
-        'THE_CONFLICT': 1.35,
-        'THE_CLIMAX': 1.5,
-        'THE_FALL': 1.0,
-        'LEGACY': 0.85,
-        'CTA': 0.8,
+        'COLD_OPEN': 1.1,
+        'EARLY_LIFE': 0.85,
+        'THE_SPARK': 1.0,
+        'THE_RISE': 1.05,
+        'THE_CONFLICT': 1.1,
+        'THE_CLIMAX': 1.15,
+        'THE_FALL': 0.9,
+        'LEGACY': 0.8,
+        'CTA': 0.75,
     }
 
     def __init__(self, resolution: Tuple[int, int]):
@@ -136,27 +136,28 @@ class MovementStyles:
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.35)
-        scaled_width = int(self.width * max_zoom * 1.5)
-        scaled_height = int(self.height * max_zoom * 1.5)
+        max_zoom = max(zoom_intensity, 1.20)
+        scaled_width = int(self.width * max_zoom * 1.4)
+        scaled_height = int(self.height * max_zoom * 1.4)
 
         orig_width, orig_height = base_img.size
         orig_aspect = orig_width / orig_height
         target_aspect = scaled_width / scaled_height
 
+        # Fill-crop: scale the image so it completely covers the canvas
+        # (no black bars, no blur borders). Minor edges may be cropped but
+        # a 10% safe margin is maintained during movements.
         if orig_aspect > target_aspect:
-            new_width = scaled_width
-            new_height = int(scaled_width / orig_aspect)
+            fill_height = scaled_height
+            fill_width = int(scaled_height * orig_aspect)
         else:
-            new_height = scaled_height
-            new_width = int(scaled_height * orig_aspect)
+            fill_width = scaled_width
+            fill_height = int(scaled_width / orig_aspect)
 
-        resized_img = base_img.resize((new_width, new_height), PILImage.LANCZOS)
-
-        canvas = PILImage.new('RGB', (scaled_width, scaled_height), (0, 0, 0))
-        paste_x = (scaled_width - new_width) // 2
-        paste_y = (scaled_height - new_height) // 2
-        canvas.paste(resized_img, (paste_x, paste_y))
+        resized_img = base_img.resize((fill_width, fill_height), PILImage.LANCZOS)
+        crop_x = (fill_width - scaled_width) // 2
+        crop_y = (fill_height - scaled_height) // 2
+        canvas = resized_img.crop((crop_x, crop_y, crop_x + scaled_width, crop_y + scaled_height))
 
         base_img = canvas
         base_array = np.array(base_img)
@@ -191,27 +192,28 @@ class MovementStyles:
         except ImportError:
             _has_cv2 = False
 
-        # Select the best easing curve per movement type for professional results
+        # Use smooth sine easing for all movements — gives the most fluid,
+        # professional feel with no sudden acceleration or deceleration.
         _easing_map = {
-            'dramatic_zoom': self._dramatic_ease,
-            'push_in': self._ease_in_quad,
-            'push_out': self._ease_out_quad,
-            'whip_pan': self._ease_in_out_quint,
-            'crane_up': self._ease_in_out_quart,
-            'crane_down': self._ease_in_out_quart,
-            'rack_focus': self._ease_out_expo,
-            'bounce_zoom': self._ease_in_out_cubic,
+            'dramatic_zoom': self._ease_in_out_sine,
+            'push_in': self._ease_in_out_sine,
+            'push_out': self._ease_in_out_sine,
+            'whip_pan': self._ease_in_out_sine,
+            'crane_up': self._ease_in_out_sine,
+            'crane_down': self._ease_in_out_sine,
+            'rack_focus': self._ease_in_out_sine,
+            'bounce_zoom': self._ease_in_out_sine,
             'dolly_zoom': self._ease_in_out_sine,
-            'spiral_zoom': self._ease_in_out_quart,
+            'spiral_zoom': self._ease_in_out_sine,
             'orbit': self._ease_in_out_sine,
             'float_up': self._ease_in_out_sine,
-            'reveal_left': self._ease_in_out_quart,
-            'reveal_right': self._ease_in_out_quart,
-            'map_zoom': self._ease_in_out_quart,
-            'map_pan': self._ease_in_out_quart,
-            'timeline_reveal': self._ease_in_out_quart,
+            'reveal_left': self._ease_in_out_sine,
+            'reveal_right': self._ease_in_out_sine,
+            'map_zoom': self._ease_in_out_sine,
+            'map_pan': self._ease_in_out_sine,
+            'timeline_reveal': self._ease_in_out_sine,
         }
-        _ease_fn = _easing_map.get(movement_type, self._ease_in_out_cubic)
+        _ease_fn = _easing_map.get(movement_type, self._ease_in_out_sine)
 
         def make_frame(t):
             progress = t / duration if duration > 0 else 0
@@ -222,8 +224,8 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            # Safety cap: allows up to 30% zoom for visibly dynamic motion
-            zoom = min(zoom, 1.30)
+            # Safety cap: max 15% zoom to prevent content cropping
+            zoom = min(zoom, 1.15)
 
             crop_w = self.width / zoom
             crop_h = self.height / zoom
@@ -268,7 +270,14 @@ class MovementStyles:
     # ---- Visual effect helpers ----
 
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply a subtle vignette effect to the image."""
+        """Apply an adaptive vignette that weakens on dark images."""
+        avg_brightness = np.mean(image)
+        if avg_brightness < 80:
+            strength = 0.12
+        elif avg_brightness < 120:
+            strength = 0.20
+        else:
+            strength = 0.30
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -276,8 +285,8 @@ class MovementStyles:
         center_x, center_y = cols / 2, rows / 2
         distance = np.sqrt((X - center_x) ** 2 + (Y - center_y) ** 2)
         max_distance = np.sqrt(center_x ** 2 + center_y ** 2)
-        vignette = 1 - (distance / max_distance) * 0.4
-        vignette = np.clip(vignette, 0.6, 1.0)
+        vignette = 1 - (distance / max_distance) * strength
+        vignette = np.clip(vignette, 1.0 - strength, 1.0)
         vignette = np.dstack([vignette] * 3)
         return (image * vignette).astype(np.uint8)
 
@@ -321,7 +330,7 @@ class MovementStyles:
         if blur_strength < 0.05:
             return frame
 
-        kernel_size = int(blur_strength * 12 * (self.width / 1920))
+        kernel_size = int(blur_strength * 3 * (self.width / 1920))
         if kernel_size < 2:
             return frame
 

@@ -47,18 +47,37 @@ class ColorGrading:
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
         """Ensure no frame is excessively dark by lifting shadows.
 
-        If more than 50% of pixels are below brightness 40, the frame is
-        considered underexposed and gets an automatic brightness boost.
-        Minimum pixel value is clamped to 15 so nothing is pure black.
+        Uses a two-pass approach:
+        1. If >30% of pixels are below luminance 60, apply a strong global
+           brightness boost proportional to how dark the frame is.
+        2. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) on
+           dark frames for local contrast recovery.
+        3. Clamp minimum pixel value to 30 so nothing is crushed to black.
         """
         img = image.astype(np.float64)
         luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
-        dark_ratio = np.mean(luminance < 40)
-        if dark_ratio > 0.5:
-            boost = 25 + 20 * (dark_ratio - 0.5)
+        dark_ratio = np.mean(luminance < 60)
+
+        if dark_ratio > 0.3:
+            boost = 40 + 30 * dark_ratio
             img = img + boost
-        img = np.clip(img, 15, 255)
-        return img.astype(np.uint8)
+
+        img = np.clip(img, 30, 255)
+        result = img.astype(np.uint8)
+
+        # CLAHE for local contrast on very dark frames
+        if dark_ratio > 0.5:
+            try:
+                import cv2
+                lab = cv2.cvtColor(result, cv2.COLOR_RGB2LAB)
+                l_channel = lab[:, :, 0]
+                clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+                lab[:, :, 0] = clahe.apply(l_channel)
+                result = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
+            except ImportError:
+                pass
+
+        return result
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
         """Apply color grading to an image then enforce minimum brightness."""

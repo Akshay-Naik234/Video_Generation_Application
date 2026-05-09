@@ -298,8 +298,57 @@ class SequentialVideoOrchestrator:
         else:
             return self.transition_style if self.transition_style in TransitionEffects.TRANSITION_TYPES else 'crossfade'
 
+    def _normalize_image_brightness(self, numbered_images: List[Tuple[int, Path]]) -> None:
+        """Pre-process images to normalize brightness across the batch.
+
+        Calculates the average luminance of all images, picks a target
+        (default 120 on 0-255), and adjusts each image file in-place so
+        brightness is consistent across the entire video.  Only images
+        that deviate significantly (>25 units) from the target are touched.
+        """
+        from PIL import Image as PILImage
+
+        TARGET_LUMINANCE = 120.0
+        DEVIATION_THRESHOLD = 25.0
+
+        luminances: List[float] = []
+        for _num, img_path in numbered_images:
+            try:
+                img = PILImage.open(img_path).convert('RGB')
+                arr = np.array(img, dtype=np.float64)
+                lum = np.dot(arr[..., :3], [0.299, 0.587, 0.114]).mean()
+                luminances.append(lum)
+            except Exception:
+                luminances.append(TARGET_LUMINANCE)
+
+        if not luminances:
+            return
+
+        avg_lum = float(np.mean(luminances))
+        target = min(max(avg_lum, TARGET_LUMINANCE), 160.0)
+
+        adjusted = 0
+        for idx, (_num, img_path) in enumerate(numbered_images):
+            lum = luminances[idx]
+            diff = target - lum
+            if abs(diff) < DEVIATION_THRESHOLD:
+                continue
+            try:
+                img = PILImage.open(img_path).convert('RGB')
+                arr = np.array(img, dtype=np.float64)
+                arr = arr + diff * 0.6
+                arr = np.clip(arr, 0, 255).astype(np.uint8)
+                PILImage.fromarray(arr).save(img_path)
+                adjusted += 1
+            except Exception:
+                continue
+
+        if adjusted:
+            print(f"  Brightness normalization: adjusted {adjusted}/{len(numbered_images)} images (target lum={target:.0f})")
+
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info."""
+        self._normalize_image_brightness(numbered_images)
         return self.clip_factory.create_image_clips(numbered_images)
 
     def create_timeline_video(self, clips_data: List[Dict]) -> CompositeVideoClip:
