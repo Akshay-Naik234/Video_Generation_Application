@@ -108,6 +108,54 @@ class MovementStyles:
     def __init__(self, resolution: Tuple[int, int]):
         self.width, self.height = resolution
         self.resolution = resolution
+        self.aspect_mode = 'fill'
+        self._easing_map = {k: self._ease_in_out_sine for k in [
+            'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
+            'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
+            'dolly_zoom', 'spiral_zoom', 'orbit', 'float_up',
+            'reveal_left', 'reveal_right', 'map_zoom', 'map_pan',
+            'timeline_reveal',
+        ]}
+
+    def _fit_image(
+        self, img: PILImage.Image, target_w: int, target_h: int
+    ) -> PILImage.Image:
+        """Fit image to target dimensions using the configured aspect mode.
+
+        Modes:
+            fill — scale + center-crop (no black bars, slight edge crop)
+            fit — scale to fit inside, preserving aspect ratio (may leave bars)
+            letterbox — same as fit but with explicit black background
+        """
+        orig_w, orig_h = img.size
+        orig_aspect = orig_w / orig_h
+        target_aspect = target_w / target_h
+
+        if self.aspect_mode == 'fill':
+            if orig_aspect > target_aspect:
+                fill_h = target_h
+                fill_w = int(target_h * orig_aspect)
+            else:
+                fill_w = target_w
+                fill_h = int(target_w / orig_aspect)
+            resized = img.resize((fill_w, fill_h), PILImage.LANCZOS)
+            cx = (fill_w - target_w) // 2
+            cy = (fill_h - target_h) // 2
+            return resized.crop((cx, cy, cx + target_w, cy + target_h))
+
+        # fit / letterbox — scale to fit inside
+        if orig_aspect > target_aspect:
+            new_w = target_w
+            new_h = int(target_w / orig_aspect)
+        else:
+            new_h = target_h
+            new_w = int(target_h * orig_aspect)
+        resized = img.resize((new_w, new_h), PILImage.LANCZOS)
+        canvas = PILImage.new('RGB', (target_w, target_h), (0, 0, 0))
+        paste_x = (target_w - new_w) // 2
+        paste_y = (target_h - new_h) // 2
+        canvas.paste(resized, (paste_x, paste_y))
+        return canvas
 
     def create_animated_clip(
         self,
@@ -140,26 +188,7 @@ class MovementStyles:
         scaled_width = int(self.width * max_zoom * 1.4)
         scaled_height = int(self.height * max_zoom * 1.4)
 
-        orig_width, orig_height = base_img.size
-        orig_aspect = orig_width / orig_height
-        target_aspect = scaled_width / scaled_height
-
-        # Fill-crop: scale the image so it completely covers the canvas
-        # (no black bars, no blur borders). Minor edges may be cropped but
-        # a 10% safe margin is maintained during movements.
-        if orig_aspect > target_aspect:
-            fill_height = scaled_height
-            fill_width = int(scaled_height * orig_aspect)
-        else:
-            fill_width = scaled_width
-            fill_height = int(scaled_width / orig_aspect)
-
-        resized_img = base_img.resize((fill_width, fill_height), PILImage.LANCZOS)
-        crop_x = (fill_width - scaled_width) // 2
-        crop_y = (fill_height - scaled_height) // 2
-        canvas = resized_img.crop((crop_x, crop_y, crop_x + scaled_width, crop_y + scaled_height))
-
-        base_img = canvas
+        base_img = self._fit_image(base_img, scaled_width, scaled_height)
         base_array = np.array(base_img)
 
         if color_grader and color_grade:
@@ -192,31 +221,12 @@ class MovementStyles:
         except ImportError:
             _has_cv2 = False
 
-        # Use smooth sine easing for all movements — gives the most fluid,
-        # professional feel with no sudden acceleration or deceleration.
-        _easing_map = {
-            'dramatic_zoom': self._ease_in_out_sine,
-            'push_in': self._ease_in_out_sine,
-            'push_out': self._ease_in_out_sine,
-            'whip_pan': self._ease_in_out_sine,
-            'crane_up': self._ease_in_out_sine,
-            'crane_down': self._ease_in_out_sine,
-            'rack_focus': self._ease_in_out_sine,
-            'bounce_zoom': self._ease_in_out_sine,
-            'dolly_zoom': self._ease_in_out_sine,
-            'spiral_zoom': self._ease_in_out_sine,
-            'orbit': self._ease_in_out_sine,
-            'float_up': self._ease_in_out_sine,
-            'reveal_left': self._ease_in_out_sine,
-            'reveal_right': self._ease_in_out_sine,
-            'map_zoom': self._ease_in_out_sine,
-            'map_pan': self._ease_in_out_sine,
-            'timeline_reveal': self._ease_in_out_sine,
-        }
-        _ease_fn = _easing_map.get(movement_type, self._ease_in_out_sine)
+        _ease_fn = self._easing_map.get(movement_type, self._ease_in_out_sine)
+
+        _safe_duration = max(duration, 1e-6)
 
         def make_frame(t):
-            progress = t / duration if duration > 0 else 0
+            progress = t / _safe_duration
             progress = max(0.0, min(1.0, progress))
             eased = _ease_fn(progress)
 

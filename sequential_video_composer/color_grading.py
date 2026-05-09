@@ -90,34 +90,23 @@ class ColorGrading:
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
         """Apply color grading to an image then enforce minimum brightness."""
-        if grade_type == 'cinematic':
-            return self._cinematic_grade(image)
-        elif grade_type == 'documentary':
-            return self._documentary_grade(image)
-        elif grade_type == 'vintage':
-            return self._vintage_grade(image)
-        elif grade_type == 'modern':
-            return self._modern_grade(image)
-        elif grade_type == 'warm':
-            return self._warm_grade(image)
-        elif grade_type == 'cool':
-            return self._cool_grade(image)
-        elif grade_type == 'high_contrast':
-            return self._high_contrast_grade(image)
-        elif grade_type == 'soft':
-            return self._soft_grade(image)
-        elif grade_type == 'dramatic':
-            return self._dramatic_grade(image)
-        elif grade_type == 'natural':
-            return self._natural_grade(image)
-        elif grade_type == 'teal_orange':
-            return self._teal_orange_grade(image)
-        elif grade_type == 'noir':
-            return self._noir_grade(image)
-        elif grade_type == 'golden_hour':
-            return self._golden_hour_grade(image)
-        else:
-            return self._enforce_min_brightness(image)
+        dispatch = {
+            'cinematic': self._cinematic_grade,
+            'documentary': self._documentary_grade,
+            'vintage': self._vintage_grade,
+            'modern': self._modern_grade,
+            'warm': self._warm_grade,
+            'cool': self._cool_grade,
+            'high_contrast': self._high_contrast_grade,
+            'soft': self._soft_grade,
+            'dramatic': self._dramatic_grade,
+            'natural': self._natural_grade,
+            'teal_orange': self._teal_orange_grade,
+            'noir': self._noir_grade,
+            'golden_hour': self._golden_hour_grade,
+        }
+        grader = dispatch.get(grade_type, self._enforce_min_brightness)
+        return grader(image)
 
     def _cinematic_grade(self, image: np.ndarray) -> np.ndarray:
         """Cinematic color grading with lifted shadows and gentle contrast."""

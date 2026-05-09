@@ -1,6 +1,7 @@
 """Command-line interface for Sequential Video Composer."""
 
 import argparse
+import logging
 import sys
 from pathlib import Path
 
@@ -11,6 +12,8 @@ from .sequential_video_orchestrator import (
     MovementStyles,
     ColorGrading
 )
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -45,7 +48,8 @@ Transition Styles:
   random, sequential, cinematic, crossfade, slide_left, slide_right, slide_up, slide_down,
   zoom_in, zoom_out, fade_through_black, fade_through_white, wipe_left, wipe_right,
   whip_pan, light_leak, film_burn, glitch, blur_through, flash_cut, iris_wipe,
-  morph_dissolve, zoom_blur, push_left, push_right, luma_fade, fade_through_warm
+  morph_dissolve, zoom_blur, push_left, push_right, luma_fade, fade_through_warm,
+  ink_splash, parallax_slide, zoom_dissolve, color_sweep
 
 Movement Styles:
   random, sequential, dramatic_sequence, documentary,
@@ -53,10 +57,11 @@ Movement Styles:
   diagonal_tl_br, diagonal_tr_bl, breathing, dramatic_zoom, gentle_drift, focus_center,
   parallax_depth, push_in, push_out, orbit, whip_pan, dolly_zoom, handheld_drift,
   crane_up, crane_down, spiral_zoom, tilt_shift, dutch_tilt, rack_focus, bounce_zoom,
-  float_up, reveal_left, reveal_right
+  float_up, reveal_left, reveal_right, map_zoom, map_pan, timeline_reveal
 
 Color Grades:
-  cinematic, documentary, vintage, modern, warm, cool, high_contrast, soft, dramatic, natural
+  cinematic, documentary, vintage, modern, warm, cool, high_contrast, soft, dramatic,
+  natural, teal_orange, noir, golden_hour
         """
     )
 
@@ -199,7 +204,53 @@ Color Grades:
         help='Disable documentary effects'
     )
 
+    parser.add_argument(
+        '--preview',
+        action='store_true',
+        help='Quick preview render at 480p with CRF 28 (much faster)'
+    )
+
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Validate config and images without rendering'
+    )
+
+    parser.add_argument(
+        '--render-frame',
+        type=int,
+        default=None,
+        metavar='N',
+        help='Render only image N as a single PNG frame for debugging'
+    )
+
+    parser.add_argument(
+        '--aspect-mode',
+        type=str,
+        choices=['fill', 'fit', 'letterbox'],
+        default='fill',
+        help='How to fit images: fill (crop to fill), fit (scale down), letterbox (black bars) (default: fill)'
+    )
+
+    parser.add_argument(
+        '-v', '--verbose',
+        action='count',
+        default=0,
+        help='Increase logging verbosity (-v for INFO, -vv for DEBUG)'
+    )
+
     args = parser.parse_args()
+
+    # Configure logging based on verbosity
+    log_level = logging.WARNING
+    if args.verbose >= 2:
+        log_level = logging.DEBUG
+    elif args.verbose >= 1:
+        log_level = logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format='%(levelname)s [%(name)s] %(message)s',
+    )
 
     if args.config:
         config_path = Path(args.config)
@@ -238,6 +289,53 @@ Color Grades:
         enable_text_overlays = args.text_overlays and not args.no_text_overlays
         enable_documentary_effects = args.documentary_effects and not args.no_documentary_effects
 
+        # Dry-run: validate without rendering
+        if args.dry_run:
+            from .orchestrator import SequentialVideoOrchestrator
+            orch = SequentialVideoOrchestrator(
+                images_root=images_path,
+                output_path=args.output,
+                resolution=resolution,
+                fps=args.fps,
+                image_duration=args.duration,
+                duration_config_path=duration_config_path,
+            )
+            images = orch.discover_numbered_images()
+            print(f"Dry-run OK: {len(images)} images found, config valid.")
+            return
+
+        # Render single frame for debugging
+        if args.render_frame is not None:
+            from .orchestrator import SequentialVideoOrchestrator
+            orch = SequentialVideoOrchestrator(
+                images_root=images_path,
+                output_path=args.output,
+                resolution=resolution,
+                fps=args.fps,
+                image_duration=args.duration,
+                duration_config_path=duration_config_path,
+            )
+            orch.aspect_mode = args.aspect_mode
+            images = orch.discover_numbered_images()
+            target = args.render_frame
+            match = [p for n, p in images if n == target]
+            if not match:
+                print(f"Error: Image {target} not found among {len(images)} images")
+                sys.exit(1)
+            clip = orch.movements.create_animated_clip(
+                match[0], args.duration, args.zoom,
+                movement_type='zoom_in', section='EARLY_LIFE',
+            )
+            frame = clip.get_frame(0)
+            from PIL import Image as PILImage
+            out_path = Path(args.output).with_suffix('.png')
+            PILImage.fromarray(frame).save(str(out_path))
+            print(f"Frame saved to: {out_path}")
+            return
+
+        if args.preview:
+            print("Preview mode: rendering at 480p with fast settings")
+
         print(f"Creating video from images in: {images_path}")
         print(f"  Transition style: {args.transition}")
         print(f"  Movement style: {args.movement}")
@@ -265,6 +363,8 @@ Color Grades:
             enable_text_overlays=enable_text_overlays,
             duration_config_path=duration_config_path,
             enable_documentary_effects=enable_documentary_effects,
+            aspect_mode=args.aspect_mode,
+            preview_mode=args.preview,
         )
 
     else:

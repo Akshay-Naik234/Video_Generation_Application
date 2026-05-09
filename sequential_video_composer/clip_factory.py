@@ -1,5 +1,6 @@
 """Clip factory for creating and composing video clips."""
 
+import logging
 from pathlib import Path
 from typing import List, Tuple, Dict, TYPE_CHECKING
 
@@ -8,6 +9,8 @@ from moviepy.editor import CompositeVideoClip, ColorClip, concatenate_videoclips
 from moviepy.video.VideoClip import VideoClip
 from PIL import Image as PILImage
 from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from .orchestrator import SequentialVideoOrchestrator
@@ -26,10 +29,10 @@ class ClipFactory:
         failed = 0
 
         for i, (num, image_path) in enumerate(tqdm(numbered_images, desc="Processing images")):
-            print(f"Processing image {num}: {image_path.name}")
+            logger.info("Processing image %d: %s", num, image_path.name)
 
             if not image_path.exists():
-                print(f"WARNING: Image file does not exist, skipping: {image_path}")
+                logger.warning("Image file does not exist, skipping: %s", image_path)
                 failed += 1
                 continue
 
@@ -37,9 +40,9 @@ class ClipFactory:
                 img = PILImage.open(image_path)
                 img.verify()
                 img = PILImage.open(image_path)
-                print(f"  Loaded image: {img.size}, mode: {img.mode}")
+                logger.debug("  Loaded image: %s, mode: %s", img.size, img.mode)
             except Exception as e:
-                print(f"ERROR: Failed to load image {image_path}: {e}")
+                logger.error("Failed to load image %s: %s", image_path, e)
                 failed += 1
                 continue
 
@@ -49,10 +52,10 @@ class ClipFactory:
             end_time = timing.get('end_time')
             
             movement = self.orchestrator._get_movement_for_image(i, total, image_num=num)
-            print(f"  Duration: {image_duration}s")
-            print(f"  Start time: {start_time}s")
-            print(f"  End time: {end_time}s")
-            print(f"  Movement style: {movement}")
+            logger.debug("  Duration: %ss", image_duration)
+            logger.debug("  Start time: %ss", start_time)
+            logger.debug("  End time: %ss", end_time)
+            logger.debug("  Movement style: %s", movement)
 
             # Section-aware color grading: use section-specific grade when available
             section = self.orchestrator.image_sections.get(num, '')
@@ -83,8 +86,8 @@ class ClipFactory:
             })
 
         if failed:
-            print(f"\nWARNING: {failed}/{total} images failed to load")
-        print(f"Successfully created {len(clips_data)} clips from {total} images")
+            logger.warning("%d/%d images failed to load", failed, total)
+        logger.info("Successfully created %d clips from %d images", len(clips_data), total)
         return clips_data
 
     # Section-aware fade durations: dramatic sections get snappier cuts,
@@ -116,7 +119,7 @@ class ClipFactory:
         has_timing = clips_data[0].get('start_time') is not None
 
         if has_timing:
-            print("Creating timeline-based video with seamless crossfade overlap...")
+            logger.info("Creating timeline-based video with seamless crossfade overlap...")
             positioned_clips = []
             total_clips = len(clips_data)
 
@@ -160,8 +163,8 @@ class ClipFactory:
                     positioned_clip = positioned_clip.crossfadeout(fade_duration)
 
                 positioned_clips.append(positioned_clip)
-                print(f"  Image {data['image_num']}: starts at {effective_start:.2f}s "
-                      f"(orig {start_time}s), dur {duration}s, fade {fade_duration:.2f}s")
+                logger.debug("  Image %s: starts at %.2fs (orig %ss), dur %ss, fade %.2fs",
+                             data['image_num'], effective_start, start_time, duration, fade_duration)
 
             total_duration = self.orchestrator.total_video_duration
             if not total_duration and clips_data:
@@ -170,8 +173,8 @@ class ClipFactory:
                     last_clip.get('start_time', 0) + last_clip.get('duration', 0)
                 )
 
-            print(f"Total video duration: {total_duration}s")
-            print(f"Positioned {len(positioned_clips)} clips with crossfade overlap")
+            logger.info("Total video duration: %ss", total_duration)
+            logger.info("Positioned %d clips with crossfade overlap", len(positioned_clips))
 
             background = ColorClip(
                 size=self.orchestrator.resolution,
@@ -186,7 +189,7 @@ class ClipFactory:
 
             return final_video
         else:
-            print("No timing data available, using sequential concatenation...")
+            logger.info("No timing data available, using sequential concatenation...")
             return self._concatenate_clips(clips_data)
 
     def _concatenate_clips(self, clips_data: List[Dict]) -> CompositeVideoClip:

@@ -199,13 +199,12 @@ class TextOverlayEngine:
     ) -> None:
         """Draw text with outline stroke and optional drop shadow.
 
-        This makes text readable over any background by adding a dark outline
-        around each character plus an optional soft shadow underneath.
+        Uses Pillow's native stroke_width for fast single-call outline
+        rendering instead of an O(n²) multi-direction loop.
         """
         x, y = position
         ow = max(2, int(outline_width * self.scale))
 
-        # Drop shadow (strong, drawn four times for max visibility on any background)
         if shadow:
             so = max(4, int(shadow_offset * self.scale))
             draw.text((x + so, y + so), text, font=font, fill=shadow_color)
@@ -215,16 +214,20 @@ class TextOverlayEngine:
             draw.text((x + so + 2, y + so + 2), text, font=font,
                       fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
 
-        # Outline: draw text in 8 directions around the center point
-        for dx in range(-ow, ow + 1):
-            for dy in range(-ow, ow + 1):
-                if dx == 0 and dy == 0:
-                    continue
-                draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
-
-        # Main text on top (drawn twice for crispness)
-        draw.text((x, y), text, font=font, fill=fill)
-        draw.text((x, y), text, font=font, fill=fill)
+        # Native stroke_width is orders of magnitude faster than the O(n²) loop
+        try:
+            draw.text(
+                (x, y), text, font=font, fill=fill,
+                stroke_width=ow, stroke_fill=outline_color,
+            )
+        except TypeError:
+            # Fallback for older Pillow without stroke_width
+            for dx in range(-ow, ow + 1, max(1, ow // 2)):
+                for dy in range(-ow, ow + 1, max(1, ow // 2)):
+                    if dx == 0 and dy == 0:
+                        continue
+                    draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
+            draw.text((x, y), text, font=font, fill=fill)
 
     def _create_gradient_bar_fast(
         self,

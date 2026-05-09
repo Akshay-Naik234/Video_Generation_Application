@@ -116,13 +116,12 @@ class DocumentaryEffects:
         grain_w = max(w // 2, 480)
         grain_h = max(h // 2, 270)
 
+        from PIL import Image as _PILImage
+
         def make_frame(t):
-            # Base grain noise
             noise = np.random.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
-            # Scale up to full resolution
-            from PIL import Image as PILImage
-            grain_img = PILImage.fromarray(noise, 'L')
-            grain_img = grain_img.resize((w, h), PILImage.BILINEAR)
+            grain_img = _PILImage.fromarray(noise, 'L')
+            grain_img = grain_img.resize((w, h), _PILImage.BILINEAR)
             grain = np.array(grain_img).astype(np.float32)
 
             # Flicker: subtle brightness variation
