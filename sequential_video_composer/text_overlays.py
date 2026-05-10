@@ -170,19 +170,20 @@ class TextOverlayEngine:
         shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         shadow_offset: int = 10,
     ) -> None:
-        """Draw text with a strong drop shadow for depth and readability."""
+        """Draw text with a drop shadow and outline stroke for readability."""
         x, y = position
         offset = max(4, int(shadow_offset * self.scale))
-        # Shadow (drawn four times at different offsets for maximum visibility)
+        sw = max(1, int(2 * self.scale))
+        sf = (0, 0, 0, 200)
+        # Shadow
         draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
         draw.text((x + offset + 1, y + offset + 1), text, font=font, fill=shadow_color)
-        draw.text((x + offset - 1, y + offset - 1), text, font=font,
-                  fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-        draw.text((x + offset + 2, y + offset + 2), text, font=font,
-                  fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
-        # Main text (drawn twice for crispness)
-        draw.text((x, y), text, font=font, fill=fill)
-        draw.text((x, y), text, font=font, fill=fill)
+        # Main text with stroke
+        try:
+            draw.text((x, y), text, font=font, fill=fill,
+                      stroke_width=sw, stroke_fill=sf)
+        except TypeError:
+            draw.text((x, y), text, font=font, fill=fill)
 
     def _draw_text_with_outline(
         self,

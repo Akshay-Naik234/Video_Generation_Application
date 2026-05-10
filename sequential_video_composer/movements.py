@@ -284,9 +284,6 @@ class MovementStyles:
             if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
 
-            if not _fast:
-                frame = self._apply_output_sharpen(frame)
-
             return frame
 
         from moviepy.video.VideoClip import VideoClip
@@ -297,14 +294,11 @@ class MovementStyles:
     # ---- Visual effect helpers ----
 
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply an adaptive vignette that weakens on dark images."""
+        """Apply a very subtle vignette, skipped entirely on dark images."""
         avg_brightness = np.mean(image)
-        if avg_brightness < 80:
-            strength = 0.12
-        elif avg_brightness < 120:
-            strength = 0.20
-        else:
-            strength = 0.30
+        if avg_brightness < 100:
+            return image
+        strength = 0.10
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)

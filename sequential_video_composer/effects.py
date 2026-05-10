@@ -136,7 +136,7 @@ class DocumentaryEffects:
         return clip
 
     def create_dust_particles(
-        self, duration: float, intensity: float = 0.2, particle_count: int = 30
+        self, duration: float, intensity: float = 0.2, particle_count: int = 12
     ) -> VideoClip:
         """Floating dust particles drifting across the frame.
 
@@ -709,7 +709,7 @@ class DocumentaryEffects:
             return np.clip(rgb, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(18)
-        clip = clip.set_opacity(min(intensity * 0.7, 0.3))
+        clip = clip.set_opacity(min(intensity * 0.35, 0.15))
         return clip
 
     def create_shimmer_sparkles(
@@ -987,7 +987,7 @@ class DocumentaryEffects:
         creators = {
             'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
             'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
-            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.5, particle_count=50),
+            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.25, particle_count=12),
             'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.35),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
@@ -1006,7 +1006,7 @@ class DocumentaryEffects:
             'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.5),
             'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
             'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.25),
-            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.4),
+            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.15),
             'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5),
             'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.6),
         }

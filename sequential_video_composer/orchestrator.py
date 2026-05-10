@@ -409,7 +409,6 @@ class SequentialVideoOrchestrator:
 
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info."""
-        self._normalize_image_brightness(numbered_images)
         return self.clip_factory.create_image_clips(numbered_images)
 
     def create_timeline_video(self, clips_data: List[Dict]) -> CompositeVideoClip:
@@ -530,7 +529,7 @@ class SequentialVideoOrchestrator:
         effect_clips = []
 
         # 1. Per-image effects from JSON config (highest priority)
-        max_effects_per_image = 3
+        max_effects_per_image = 2
         per_image_handled = set()
         if self.image_effects:
             logger.info(f"\nApplying per-image effects from JSON config...")
@@ -955,21 +954,7 @@ class SequentialVideoOrchestrator:
 
     @staticmethod
     def _post_process_frame(frame: np.ndarray) -> np.ndarray:
-        """Apply final post-processing to every output frame.
-
-        Only adaptive brightness lift — sharpening is already handled
-        in the per-clip make_frame via _apply_output_sharpen, so doing
-        it again here would double-sharpen and waste ~35% of per-frame time.
-        """
-        try:
-            import cv2
-            gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            mean_lum = gray.mean()
-            if mean_lum < 85:
-                boost = int(30 + (85 - mean_lum) * 0.5)
-                frame = cv2.add(frame, np.full_like(frame, boost))
-        except ImportError:
-            pass
+        """No-op: post-processing disabled to preserve original image quality."""
         return frame
 
     def _export_video(self, video: CompositeVideoClip) -> None:

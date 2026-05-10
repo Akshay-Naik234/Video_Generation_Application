@@ -96,10 +96,10 @@ class ClipFactory:
         'COLD_OPEN': 0.8,
         'THE_CONFLICT': 0.7,
         'THE_CLIMAX': 0.75,
-        'EARLY_LIFE': 1.4,
-        'LEGACY': 1.5,
-        'CTA': 1.3,
-        'THE_FALL': 1.2,
+        'EARLY_LIFE': 1.0,
+        'LEGACY': 1.0,
+        'CTA': 0.9,
+        'THE_FALL': 0.9,
         'THE_SPARK': 1.0,
         'THE_RISE': 0.9,
     }
@@ -150,9 +150,8 @@ class ClipFactory:
                 # Build the positioned clip with smooth fade
                 positioned_clip = clip.set_start(effective_start)
 
-                # First clip: fade in from black only
+                # First clip: no fade-in (avoid black screen at start)
                 if i == 0:
-                    positioned_clip = positioned_clip.crossfadein(fade_duration)
                     positioned_clip = positioned_clip.crossfadeout(fade_duration)
                 # Last clip: fade out to black only
                 elif i == total_clips - 1:
