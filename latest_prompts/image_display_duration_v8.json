@@ -287,7 +287,7 @@
         "light_leak",
         "edge_bloom"
       ],
-      "overlay_text": "NYU Stern | Harvard Business School",
+      "overlay_text": "NYU Stern — Finance & Statistics",
       "prompt": "Wide establishing shot of the New York University Stern School of Business building in Greenwich Village Manhattan, the modern glass and limestone facade with the NYU Stern logo visible, foreground: students walking on the sidewalk with backpacks, warm autumn afternoon sunlight casting long golden shadows, American flags visible on nearby buildings, the prestigious business school where Lorna Hajdini earned her Bachelor of Science in Finance and Statistics., key visual elements center-composed away from frame edges. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
       "text_animation": "typewriter"
     },
@@ -307,8 +307,9 @@
         "warm_wash",
         "photo_frame"
       ],
-      "overlay_text": "",
-      "prompt": "Medium shot of the iconic Harvard Business School Baker Library with its Georgian red-brick architecture and white cupola, warm golden hour sunlight bathing the campus in amber light, manicured green lawns in the foreground, Lorna Hajdini walking across the quad in professional executive education attire, her NYU Stern degree behind her and now completing Harvard's executive program, red Harvard banners flanking the entrance columns., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+      "overlay_text": "Harvard Business School",
+      "prompt": "Medium shot of the iconic Harvard Business School Baker Library with its Georgian red-brick architecture and white cupola, warm golden hour sunlight bathing the campus in amber light, manicured green lawns in the foreground, Lorna Hajdini walking across the quad in professional executive education attire, her NYU Stern degree behind her and now completing Harvard's executive program, red Harvard banners flanking the entrance columns., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture",
+      "text_animation": "slide_up"
     },
     {
       "image": 14,
@@ -403,8 +404,7 @@
         "light_leak",
         "film_strip"
       ],
-      "overlay_text": "\"A reputation takes a decade to build\"",
-      "text_animation": "highlight",
+      "overlay_text": "",
       "prompt": "Silhouette of a professional woman walking confidently through a sunlit corporate lobby, Lorna Hajdini's outline against golden morning light streaming through massive windows, marble floors reflecting the warm light, other professionals in the background as blurred figures, the elegant silhouette of someone who spent a decade building a flawless reputation, warm amber backlighting creating a halo effect around the figure., silhouette figure centered against backdrop with breathing room. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
     },
     {
@@ -462,8 +462,9 @@
         "warm_wash",
         "bokeh_orbs"
       ],
-      "overlay_text": "",
-      "prompt": "Medium shot of a JPMorgan leveraged finance trading floor during market hours, multiple screens showing deal flow data and financial models, two empty adjacent executive desks suggesting the proximity of colleagues Lorna Hajdini and Chirayu Rana working in the same division, professional atmosphere with traders and analysts visible in the background, warm overhead corporate lighting mixed with the blue glow of multiple monitors., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+      "overlay_text": "\"A reputation takes a decade to build\"",
+      "prompt": "Medium shot of a JPMorgan leveraged finance trading floor during market hours, multiple screens showing deal flow data and financial models, two empty adjacent executive desks suggesting the proximity of colleagues Lorna Hajdini and Chirayu Rana working in the same division, professional atmosphere with traders and analysts visible in the background, warm overhead corporate lighting mixed with the blue glow of multiple monitors., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture",
+      "text_animation": "highlight"
     },
     {
       "image": 22,
@@ -594,8 +595,7 @@
         "chromatic_aberration",
         "bokeh_orbs"
       ],
-      "overlay_text": "\"The structural fact that should have stopped every headline\"",
-      "text_animation": "highlight",
+      "overlay_text": "",
       "prompt": "Extreme close-up of a financial terminal Bloomberg screen in the JPMorgan leveraged finance division, the display showing a Bregal Sagemount private equity fund analysis worth billions, Lorna Hajdini's reflection faintly visible in the monitor glass, the trading floor desk cluttered with deal memos and corporate buyout documents, the institutional scale of JPMorgan Chase and its four trillion dollar asset base visible in the data flowing across multiple screens., important objects centrally positioned in frame. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
     },
     {
@@ -614,8 +614,9 @@
         "vignette_pulse",
         "bokeh_orbs"
       ],
-      "overlay_text": "",
-      "prompt": "Medium shot of a corporate organizational chart displayed on a large conference room screen, two distinct reporting chains clearly visible — one showing Lorna Hajdini reporting to Managing Director Brandon Graffeo, the other showing Chirayu Rana reporting to a different Managing Director Jon Wolter, red lines drawn between them with a large X indicating no direct supervisory relationship, cool blue screen light illuminating the dark conference room, the structural truth nobody checked first., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
+      "overlay_text": "\"The fact that should have stopped every headline\"",
+      "prompt": "Medium shot of a corporate organizational chart displayed on a large conference room screen, two distinct reporting chains clearly visible — one showing Lorna Hajdini reporting to Managing Director Brandon Graffeo, the other showing Chirayu Rana reporting to a different Managing Director Jon Wolter, red lines drawn between them with a large X indicating no direct supervisory relationship, cool blue screen light illuminating the dark conference room, the structural truth nobody checked first., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
+      "text_animation": "highlight"
     },
     {
       "image": 30,
@@ -1516,8 +1517,9 @@
         "dust_particles",
         "vignette_pulse"
       ],
-      "overlay_text": "",
-      "prompt": "Still life close-up of a laptop screen displaying the AskALawyerOnCall.com legal advice platform, an old conversation thread visible with a user identified as Chirayu Rana asking for legal advice, the public nature of the platform emphasized by the open forum layout, the conversation dated approximately July with timestamps visible, cold harsh fluorescent light from the screen illuminating the dark room, the digital evidence in the Lorna Hajdini JPMorgan case., important objects centrally positioned in frame. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
+      "overlay_text": "AskALawyerOnCall.com | July 2024",
+      "prompt": "Still life close-up of a laptop screen displaying the AskALawyerOnCall.com legal advice platform, an old conversation thread visible with a user identified as Chirayu Rana asking for legal advice, the public nature of the platform emphasized by the open forum layout, the conversation dated approximately July with timestamps visible, cold harsh fluorescent light from the screen illuminating the dark room, the digital evidence in the Lorna Hajdini JPMorgan case., important objects centrally positioned in frame. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
+      "text_animation": "typewriter"
     },
     {
       "image": 77,
@@ -1574,8 +1576,7 @@
         "vignette_pulse",
         "fog_overlay"
       ],
-      "overlay_text": "\"The entire narrative cracked straight down the middle\"",
-      "text_animation": "highlight",
+      "overlay_text": "",
       "prompt": "Close-up of a glass surface with a visible crack running through it from top to bottom, through the cracked glass a blurred newspaper headline about the Lorna Hajdini JPMorgan case is visible, the crack metaphorically representing the narrative splitting apart under scrutiny, dramatic single-source side lighting creating sharp shadow along the crack line, shattered transparency as visual metaphor for a crumbling accusation., important objects centrally positioned in frame. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
     },
     {
@@ -1670,9 +1671,8 @@
         "cinematic_bars",
         "shimmer_sparkles"
       ],
-      "overlay_text": "AskALawyerOnCall.com | July 2024",
-      "prompt": "Medium shot of a legal analysis board or evidence wall, foreground: sticky notes and printed documents, midground: a whiteboard with three columns labeled 'Chatbot Post July 2024' and 'Lawsuit April 2026' showing the contradictions side by side — Morgan Stanley vs JPMorgan, He vs She, 2020 vs 2024, background: an office wall with legal reference books, the analytical breakdown of contradictions in Chirayu Rana's claims about Lorna Hajdini, cool office fluorescent lighting., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
-      "text_animation": "typewriter"
+      "overlay_text": "",
+      "prompt": "Medium shot of a legal analysis board or evidence wall, foreground: sticky notes and printed documents, midground: a whiteboard with three columns labeled 'Chatbot Post July 2024' and 'Lawsuit April 2026' showing the contradictions side by side — Morgan Stanley vs JPMorgan, He vs She, 2020 vs 2024, background: an office wall with legal reference books, the analytical breakdown of contradictions in Chirayu Rana's claims about Lorna Hajdini, cool office fluorescent lighting., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
     },
     {
       "image": 85,
@@ -1709,7 +1709,7 @@
         "vignette_pulse",
         "shimmer_sparkles"
       ],
-      "overlay_text": "3 Critical Contradictions",
+      "overlay_text": "3 Things Stand Out",
       "prompt": "Close-up of the chatbot text with the pronoun 'he' in large bold highlighted text, the second critical contradiction where Chirayu Rana described a male harasser in his July 2024 post but later accused Lorna Hajdini a female executive in the April 2026 lawsuit, the gender switch highlighted with red annotation, cold screen light creating harsh shadows on the desk surface around the monitor, the pronoun nobody questioned., subject centered in frame with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
       "text_animation": "bounce"
     },
@@ -1749,7 +1749,7 @@
         "dust_particles",
         "zoom_burst"
       ],
-      "overlay_text": "#2: “He” — Not “She”",
+      "overlay_text": "#3: Timeline Off by 4 Years",
       "prompt": "Wide shot of the New York Post investigative team's workspace with printed chatbot screenshots pinned to a board alongside the Lorna Hajdini lawsuit document, red string connecting the contradictions like a detective's evidence wall, the journalists who broke the story about the narrative cracking, coffee cups and notebooks scattered on desks, the traditional investigative journalism that caught what 65 million social media viewers missed, cool newsroom lighting., key visual elements center-composed away from frame edges. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture",
       "text_animation": "bounce"
     },
@@ -1827,8 +1827,9 @@
         "dust_particles",
         "shimmer_sparkles"
       ],
-      "overlay_text": "",
-      "prompt": "Close-up of a corporate phone on a conference table with call logs displayed, foreground: the phone screen showing a call history being reviewed as evidence, midground: printed email transcripts stacked beside it, background: a glass conference room wall reflecting the investigators' blurred figures, the forensic review of communications in the Lorna Hajdini JPMorgan internal investigation, the meticulous evidence collection that found nothing to support the allegations., subject centered in frame with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture"
+      "overlay_text": "\"The narrative cracked straight down the middle\"",
+      "prompt": "Close-up of a corporate phone on a conference table with call logs displayed, foreground: the phone screen showing a call history being reviewed as evidence, midground: printed email transcripts stacked beside it, background: a glass conference room wall reflecting the investigators' blurred figures, the forensic review of communications in the Lorna Hajdini JPMorgan internal investigation, the meticulous evidence collection that found nothing to support the allegations., subject centered in frame with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, film grain texture",
+      "text_animation": "highlight"
     },
     {
       "image": 93,
@@ -3018,8 +3019,7 @@
         "light_leak",
         "warm_wash"
       ],
-      "overlay_text": "\"What do we owe each other before we share?\"",
-      "text_animation": "highlight",
+      "overlay_text": "",
       "prompt": "Medium shot of two people sitting across from each other at a cafe table, foreground: coffee cups and a newspaper with the Lorna Hajdini story visible, midground: the two people in conversation one holding a phone the other gesturing to wait, background: a window showing a city street, the human moment of pause and consideration before amplifying allegations, the question of responsibility in the age of instant sharing, warm cafe lighting, golden afternoon., main subject centered in composition with breathing room on all sides. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
     },
     {
