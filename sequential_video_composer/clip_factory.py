@@ -194,11 +194,14 @@ class ClipFactory:
     def _concatenate_clips(self, clips_data: List[Dict]) -> CompositeVideoClip:
         """Fallback method to concatenate clips sequentially."""
         clean_clips = []
-        for data in clips_data:
+        for i, data in enumerate(clips_data):
             clip = data['clip']
             duration = data['duration']
             fade_duration = min(self.orchestrator.crossfade_duration * 0.3, duration * 0.15)
-            clean_clip = clip.fadein(fade_duration).fadeout(fade_duration)
+            if i == 0:
+                clean_clip = clip.fadeout(fade_duration)
+            else:
+                clean_clip = clip.fadein(fade_duration).fadeout(fade_duration)
             clean_clips.append(clean_clip)
 
         return concatenate_videoclips(clean_clips, method="compose")
