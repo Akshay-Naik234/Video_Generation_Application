@@ -235,8 +235,8 @@ Color Grades:
         '--aspect-mode',
         type=str,
         choices=['fill', 'fit', 'letterbox'],
-        default='fill',
-        help='How to fit images: fill (crop to fill), fit (scale down), letterbox (black bars) (default: fill)'
+        default='letterbox',
+        help='How to fit images: fill (crop to fill), fit (scale down), letterbox (black bars) (default: letterbox)'
     )
 
     parser.add_argument(

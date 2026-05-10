@@ -56,9 +56,10 @@ class DocumentaryEffects:
         'CTA': 0.7,
     }
 
-    def __init__(self, resolution: Tuple[int, int] = (1920, 1080)):
+    def __init__(self, resolution: Tuple[int, int] = (1920, 1080), fps: int = 30):
         self.width, self.height = resolution
         self.scale = self.height / 1080.0
+        self._overlay_fps = fps
 
     def create_light_leak(
         self, duration: float, intensity: float = 0.3, speed: float = 1.0
@@ -99,7 +100,7 @@ class DocumentaryEffects:
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 1.5, 0.85))
         return clip
 
@@ -112,26 +113,32 @@ class DocumentaryEffects:
         with periodic brightness flicker for authentic film feel.
         """
         w, h = self.width, self.height
-        # Use a smaller grain texture and scale up for performance
         grain_w = max(w // 2, 480)
         grain_h = max(h // 2, 270)
 
         from PIL import Image as _PILImage
 
-        def make_frame(t):
-            noise = np.random.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
+        # Pre-generate a pool of grain frames and cycle through them
+        _grain_pool_size = 60
+        _grain_pool = []
+        _rng = np.random.RandomState(77)
+        for _ in range(_grain_pool_size):
+            noise = _rng.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
             grain_img = _PILImage.fromarray(noise, 'L')
             grain_img = grain_img.resize((w, h), _PILImage.BILINEAR)
-            grain = np.array(grain_img).astype(np.float32)
+            _grain_pool.append(np.array(grain_img).astype(np.float32))
 
-            # Flicker: subtle brightness variation
+        def make_frame(t):
+            idx = int(t * self._overlay_fps) % _grain_pool_size
+            grain = _grain_pool[idx]
+
             flicker = 1.0 + 0.03 * np.sin(t * 8.0) + 0.02 * np.sin(t * 13.0)
-            grain *= flicker * intensity
+            grain_out = grain * flicker * intensity
 
-            frame = np.stack([grain, grain, grain], axis=-1)
+            frame = np.stack([grain_out, grain_out, grain_out], axis=-1)
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 1.2, 0.7))
         return clip
 
@@ -175,7 +182,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2] = bright
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 1.5, 0.8))
         return clip
 
@@ -233,7 +240,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2, 2] += glow * 180
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(20)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.8, 0.45))
         return clip
 
@@ -263,7 +270,7 @@ class DocumentaryEffects:
                 frame[y_start:y_end, :, 2] = brightness
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.4, 0.25))
         return clip
 
@@ -303,8 +310,8 @@ class DocumentaryEffects:
                 mask[h - current_bar:, :] = 1.0
             return mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask)
         return clip
 
@@ -351,7 +358,7 @@ class DocumentaryEffects:
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 1.5, 0.8))
         return clip
 
@@ -381,7 +388,7 @@ class DocumentaryEffects:
 
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.7, 0.35))
         return clip
 
@@ -424,7 +431,7 @@ class DocumentaryEffects:
                 frame[y1:y2, x1:x2] = val
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(20)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.8, 0.5))
         return clip
 
@@ -464,8 +471,8 @@ class DocumentaryEffects:
             pulse = 0.06 + 0.02 * np.sin(t * 0.5 * 2 * np.pi)
             return base_vignette * pulse * scaled_intensity
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask)
         return clip
 
@@ -520,7 +527,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = int(10 * pulse * intensity)
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 1.0, 0.4))
         return clip
 
@@ -555,7 +562,7 @@ class DocumentaryEffects:
 
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.8, 0.4))
         return clip
 
@@ -588,7 +595,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = shadow_val
             return frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.2, 0.15))
         return clip
 
@@ -638,8 +645,8 @@ class DocumentaryEffects:
         def make_mask(t):
             return static_mask
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask_clip)
         return clip
 
@@ -669,7 +676,7 @@ class DocumentaryEffects:
             frame[:, :, 2] = val * 180
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(20)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.5, 0.2))
         return clip
 
@@ -708,12 +715,12 @@ class DocumentaryEffects:
             rgb = np.stack([frame * 220, frame * 220, frame * 230], axis=-1)
             return np.clip(rgb, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
         clip = clip.set_opacity(min(intensity * 0.35, 0.15))
         return clip
 
     def create_shimmer_sparkles(
-        self, duration: float, intensity: float = 0.4, count: int = 40
+        self, duration: float, intensity: float = 0.4, count: int = 20
     ) -> VideoClip:
         """Magical floating sparkles with starburst glow.
 
@@ -731,8 +738,8 @@ class DocumentaryEffects:
                 'y': rng.uniform(0, h),
                 'life_start': rng.uniform(0, duration * 0.8),
                 'life_dur': rng.uniform(0.3, 1.2),
-                'size': rng.uniform(2, 6) * (h / 1080),
-                'brightness': rng.uniform(0.5, 1.0),
+                'size': rng.uniform(1.5, 4) * (h / 1080),
+                'brightness': rng.uniform(0.3, 0.7),
                 'drift_x': rng.uniform(-10, 10) * (w / 1920),
                 'drift_y': rng.uniform(-15, -3) * (h / 1080),
             })
@@ -777,8 +784,8 @@ class DocumentaryEffects:
                     frame[cy1:cy2, cx1:cx2] += br * 255
             return np.clip(frame, 0, 255).astype(np.uint8)
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(20)
-        clip = clip.set_opacity(min(intensity * 0.9, 0.6))
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        clip = clip.set_opacity(min(intensity * 0.5, 0.35))
         return clip
 
     def create_film_strip(
@@ -835,8 +842,8 @@ class DocumentaryEffects:
                 result[:jitter] = static_mask[-jitter:]
             return result
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask)
         return clip
 
@@ -917,8 +924,8 @@ class DocumentaryEffects:
         def make_frame(t):
             return static_frame
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask)
         return clip
 
@@ -951,8 +958,8 @@ class DocumentaryEffects:
             pulse = 0.8 + 0.2 * np.sin(t * 0.4 * 2 * np.pi)
             return bloom * intensity * pulse * 0.3
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(18)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(18)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
+        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
         clip = clip.set_mask(mask)
         return clip
 

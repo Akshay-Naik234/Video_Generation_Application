@@ -14,6 +14,7 @@ Includes classic Ken Burns effects plus advanced documentary techniques:
 - Tilt shift (miniature effect)
 """
 
+from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 
@@ -22,6 +23,14 @@ from PIL import Image as PILImage, ImageFilter
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
+
+
+@lru_cache(maxsize=32)
+def _cached_image_open(path_str: str) -> PILImage.Image:
+    """Cache recently loaded images to avoid repeated disk I/O."""
+    img = PILImage.open(path_str)
+    img.load()  # force pixel data into memory before returning
+    return img
 
 
 class MovementStyles:
@@ -115,7 +124,7 @@ class MovementStyles:
     def __init__(self, resolution: Tuple[int, int]):
         self.width, self.height = resolution
         self.resolution = resolution
-        self.aspect_mode = 'fill'
+        self.aspect_mode = 'letterbox'
         self.fast_mode = False
         self._easing_map = {k: self._ease_in_out_sine for k in [
             'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
@@ -186,10 +195,11 @@ class MovementStyles:
         Accepts an optional *section* name so section-aware zoom multipliers
         can be applied automatically.
         """
-        # Apply section-aware zoom boost
+        # Apply section-aware zoom boost, capped to prevent excessive cropping
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
-        base_img = PILImage.open(image_path)
+        zoom_intensity = min(zoom_intensity, 1.15)  # hard cap
+        base_img = _cached_image_open(str(image_path)).copy()
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
@@ -419,7 +429,16 @@ class MovementStyles:
     ) -> Tuple[float, float, float]:
         """Calculate zoom and pan values for the given movement type.
 
-        Returns (zoom, pan_x, pan_y) where pan values are normalized offsets.
+        Args:
+            movement_type: One of MOVEMENT_TYPES (e.g. 'zoom_in', 'orbit').
+            eased: Progress 0→1 after easing function is applied.
+            zoom_intensity: Base zoom multiplier (typically 1.08–1.15).
+            raw_progress: Linear 0→1 progress before easing (used for
+                some effects that need raw time, like sinusoidal drift).
+
+        Returns:
+            (zoom, pan_x, pan_y) where zoom is a scale factor (1.0 = no zoom)
+            and pan_x/pan_y are fractional offsets of the frame centre.
         """
         # Classic movements
         if movement_type == 'zoom_in':

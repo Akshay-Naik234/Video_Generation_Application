@@ -101,7 +101,7 @@ class SequentialVideoOrchestrator:
         self.color_grading = ColorGrading()
         self.clip_factory = ClipFactory(self)
         self.text_overlay_engine = TextOverlayEngine(resolution, accent_color=overlay_accent_color)
-        self.effects = DocumentaryEffects(resolution)
+        self.effects = DocumentaryEffects(resolution, fps=fps)
 
     def _validate_config(self) -> None:
         """Validate configuration values and log warnings for suspect values."""
@@ -147,7 +147,13 @@ class SequentialVideoOrchestrator:
             self.total_video_duration = metadata.get('total_duration_seconds', 0)
 
             images_data = config.get('images', [])
+            if not isinstance(images_data, list):
+                logger.error("Duration config 'images' must be a list, got %s", type(images_data).__name__)
+                return
             for img_data in images_data:
+                if not isinstance(img_data, dict):
+                    logger.warning("Skipping non-dict entry in images list: %s", type(img_data).__name__)
+                    continue
                 image_num = img_data.get('image')
                 duration = img_data.get('duration')
                 start_time = img_data.get('start_time')
@@ -682,8 +688,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return _alpha * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'typewriter':
@@ -705,8 +711,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return result * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'highlight':
@@ -736,8 +742,8 @@ class SequentialVideoOrchestrator:
                 fade_in = min(t / 0.3, 1.0)
                 return _alpha * fade * fade_in
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'slide_up':
@@ -761,8 +767,8 @@ class SequentialVideoOrchestrator:
                     result *= fade
                 return result
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         elif animation == 'glow_underline':
@@ -800,8 +806,8 @@ class SequentialVideoOrchestrator:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return _alpha * fade_in * fade
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         else:
@@ -822,8 +828,8 @@ class SequentialVideoOrchestrator:
                         opacity *= max(0.0, 1.0 - (t - _fade_out_start) / out_dur)
                 return _alpha * opacity
 
-            clip = VideoClip(make_frame, duration=duration).set_fps(24)
-            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
             clip = clip.set_mask(mask_clip)
 
         return clip
@@ -947,8 +953,8 @@ class SequentialVideoOrchestrator:
                 fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
             return _alpha * fade_in * fade
 
-        clip = VideoClip(make_frame, duration=duration).set_fps(24)
-        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(24)
+        clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
         clip = clip.set_mask(mask_clip)
         return clip
 
@@ -978,8 +984,8 @@ class SequentialVideoOrchestrator:
         # Encoding speed/quality trade-off:
         #   fast_mode  → veryfast preset, CRF 23, skip per-frame sharpening
         #   preview    → veryfast preset, CRF 28, 480p
-        #   normal     → medium preset, CRF 18 (was 'slow', 'medium' is 2-3x faster
-        #                with negligible quality loss at CRF 18)
+        #   normal     → medium preset, CRF 20 + -tune stillimage (optimised
+        #                for mostly-static content, ~30% smaller files)
         if self.preview_mode:
             preset = 'veryfast'
             crf = '28'
@@ -988,7 +994,7 @@ class SequentialVideoOrchestrator:
             crf = '23'
         else:
             preset = 'medium'
-            crf = '18'
+            crf = '20'  # CRF 20 (was 18) — negligible quality loss, ~30% smaller files
 
         try:
             video.write_videofile(
@@ -1002,6 +1008,7 @@ class SequentialVideoOrchestrator:
                 preset=preset,
                 ffmpeg_params=[
                     '-crf', crf,
+                    '-tune', 'stillimage',
                     '-pix_fmt', 'yuv420p',
                     '-profile:v', 'high',
                     '-level', '4.1',

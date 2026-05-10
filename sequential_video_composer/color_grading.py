@@ -45,8 +45,15 @@ class ColorGrading:
         return self.SECTION_GRADES.get(section, 'cinematic')
 
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
-        """Pass-through: brightness enforcement disabled to preserve source image quality."""
-        return image
+        """Lift deep shadows to preserve detail without altering overall brightness.
+
+        Only pixels below value 20 are gently lifted so pure-black areas
+        retain some visible detail. This is NOT brightness enforcement —
+        the overall image brightness is untouched.
+        """
+        img = image.astype(np.float64)
+        img = np.where(img < 20, img * 1.3 + 10, img)
+        return np.clip(img, 0, 255).astype(np.uint8)
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
         """Apply color grading to an image."""

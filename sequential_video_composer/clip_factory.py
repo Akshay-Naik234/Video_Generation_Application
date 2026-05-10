@@ -20,6 +20,15 @@ if TYPE_CHECKING:
 class ClipFactory:
     """Factory for creating and composing video clips."""
 
+    # Crossfade / overlap tuning constants
+    MAX_FADE_DURATION = 0.8       # seconds
+    FADE_DURATION_RATIO = 0.18    # fraction of clip duration used as base fade
+    MIN_FADE_DURATION = 0.25      # seconds (floor)
+    MAX_FADE_RATIO = 0.35         # fade may not exceed this fraction of clip duration
+    MAX_OVERLAP_RATIO = 0.25      # overlap may not exceed this fraction of clip duration
+    LAST_CLIP_FADE_MULT = 1.5     # last clip gets a longer fade-out
+    LAST_CLIP_MAX_FADE = 0.4      # max fraction of duration for last clip fade
+
     def __init__(self, orchestrator: 'SequentialVideoOrchestrator'):
         self.orchestrator = orchestrator
 
@@ -33,8 +42,18 @@ class ClipFactory:
             logger.info("Processing image %d: %s", num, image_path.name)
 
             if not image_path.exists():
-                logger.warning("Image file does not exist, skipping: %s", image_path)
+                logger.warning("Image %d missing: %s — inserting black placeholder", num, image_path)
                 failed += 1
+                timing = self.orchestrator.get_timing_for_image(num)
+                dur = timing.get('duration', self.orchestrator.image_duration)
+                placeholder = self._create_placeholder_clip(dur, f"Image {num} missing")
+                clips_data.append({
+                    'clip': placeholder, 'transition': 'crossfade',
+                    'image_num': num,
+                    'start_time': timing.get('start_time'),
+                    'end_time': timing.get('end_time'),
+                    'duration': dur,
+                })
                 continue
 
             try:
@@ -42,8 +61,18 @@ class ClipFactory:
                 img.load()
                 logger.debug("  Loaded image: %s, mode: %s", img.size, img.mode)
             except Exception as e:
-                logger.error("Failed to load image %s: %s", image_path, e)
+                logger.error("Failed to load image %d (%s): %s", num, image_path, e)
                 failed += 1
+                timing = self.orchestrator.get_timing_for_image(num)
+                dur = timing.get('duration', self.orchestrator.image_duration)
+                placeholder = self._create_placeholder_clip(dur, f"Image {num} load error")
+                clips_data.append({
+                    'clip': placeholder, 'transition': 'crossfade',
+                    'image_num': num,
+                    'start_time': timing.get('start_time'),
+                    'end_time': timing.get('end_time'),
+                    'duration': dur,
+                })
                 continue
 
             timing = self.orchestrator.get_timing_for_image(num)
@@ -135,14 +164,14 @@ class ClipFactory:
                 img_num = data.get('image_num', 0)
                 section = self.orchestrator.image_sections.get(img_num, '')
                 fade_mult = self.SECTION_FADE_MULTIPLIERS.get(section, 1.0)
-                base_fade = min(0.8, duration * 0.18)
+                base_fade = min(self.MAX_FADE_DURATION, duration * self.FADE_DURATION_RATIO)
                 fade_duration = base_fade * fade_mult
-                fade_duration = max(0.25, min(fade_duration, duration * 0.35))
+                fade_duration = max(self.MIN_FADE_DURATION, min(fade_duration, duration * self.MAX_FADE_RATIO))
 
                 # Compute overlap: extend clip start earlier so it overlaps
                 # with the previous clip, eliminating any black gap.
                 if i > 0:
-                    overlap = min(fade_duration, duration * 0.25)
+                    overlap = min(fade_duration, duration * self.MAX_OVERLAP_RATIO)
                     effective_start = max(0.0, start_time - overlap)
                 else:
                     effective_start = start_time
@@ -156,14 +185,17 @@ class ClipFactory:
                 # Last clip: fade out to black only
                 elif i == total_clips - 1:
                     positioned_clip = positioned_clip.crossfadein(fade_duration)
-                    positioned_clip = positioned_clip.crossfadeout(min(fade_duration * 1.5, duration * 0.4))
+                    positioned_clip = positioned_clip.crossfadeout(
+                        min(fade_duration * self.LAST_CLIP_FADE_MULT, duration * self.LAST_CLIP_MAX_FADE)
+                    )
                 else:
                     positioned_clip = positioned_clip.crossfadein(fade_duration)
                     positioned_clip = positioned_clip.crossfadeout(fade_duration)
 
                 positioned_clips.append(positioned_clip)
-                logger.debug("  Image %s: starts at %.2fs (orig %ss), dur %ss, fade %.2fs",
-                             data['image_num'], effective_start, start_time, duration, fade_duration)
+                logger.debug("  Image %s: starts at %.2fs (orig %ss), dur %ss, fade %.2fs, transition=%s",
+                             data['image_num'], effective_start, start_time, duration, fade_duration,
+                             data.get('transition', 'crossfade'))
 
             total_duration = self.orchestrator.total_video_duration
             if not total_duration and clips_data:
@@ -205,6 +237,46 @@ class ClipFactory:
             clean_clips.append(clean_clip)
 
         return concatenate_videoclips(clean_clips, method="compose")
+
+    def _create_placeholder_clip(self, duration: float, label: str = '') -> 'VideoClip':
+        """Create a black placeholder clip with optional warning text.
+
+        Used when an image fails to load so the timeline stays in sync
+        with the audio rather than producing a gap.
+        """
+        w, h = self.orchestrator.resolution
+        black_frame = np.zeros((h, w, 3), dtype=np.uint8)
+
+        if label:
+            try:
+                from PIL import ImageDraw, ImageFont
+                pil_img = PILImage.fromarray(black_frame)
+                draw = ImageDraw.Draw(pil_img)
+                try:
+                    font = ImageFont.truetype(
+                        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24
+                    )
+                except (OSError, IOError):
+                    font = ImageFont.load_default()
+                bbox = draw.textbbox((0, 0), label, font=font)
+                tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+                draw.text(
+                    ((w - tw) // 2, (h - th) // 2), label,
+                    font=font, fill=(180, 180, 180)
+                )
+                black_frame = np.array(pil_img)
+            except Exception:
+                pass
+
+        static = black_frame
+
+        def make_frame(t):
+            return static
+
+        clip = VideoClip(make_frame, duration=duration).set_fps(
+            self.orchestrator.fps
+        )
+        return clip
 
     def create_particle_overlay(self, duration: float, intensity: float = 0.3) -> ColorClip:
         """Create a subtle particle/dust overlay effect."""
