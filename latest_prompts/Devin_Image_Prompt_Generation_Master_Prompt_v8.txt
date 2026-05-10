@@ -53,7 +53,7 @@ DOCUMENTARY ANIMATION SYSTEM (v3.0) — COMPLETE REFERENCE
 The video system supports 34 movement styles, 28 transition types, and 24 cinematic effect overlays.
 You MUST select the appropriate ones for each image based on the scene content and emotional tone.
 
-**ENGINE IMPROVEMENTS (v5.0 — quality + speed overhaul):**
+**ENGINE IMPROVEMENTS (v5.1 — quality-preserving pipeline):**
 - All movements use smooth sine easing (ease_in_out_sine) for the most fluid, professional feel
   with no sudden acceleration or deceleration.
 - Effects intensity is now SECTION-AWARE: dramatic sections (THE_CLIMAX ×1.4, THE_CONFLICT ×1.25,
@@ -61,29 +61,29 @@ You MUST select the appropriate ones for each image based on the scene content a
   get subtler effects. You no longer need to worry about effects overpowering quiet scenes.
 - All frames use LANCZOS interpolation for sharper, smoother zoom/pan animations (INTER_AREA in
   --fast mode for 3-5x faster resize with minimal quality loss).
-- **Per-clip sharpening**: Each animated clip applies an unsharp mask after every crop+resize
-  to counteract softness from the interpolation pipeline. Frames are noticeably crisper.
-  (Skipped in --fast mode for speed.)
 - Motion blur is now applied ONLY to whip_pan (the genuinely fast movement), keeping all other
   movements sharp. Even whip_pan blur is subtle (blended 60% sharp / 40% blurred).
-- **Adaptive brightness enforcement**: Dark frames are automatically detected and brightened at
-  multiple stages — during color grading, brightness normalization, AND final post-processing.
-  No frame in the output will be too dark to see.
-- **Post-processing pipeline**: Before encoding, frames with mean luminance < 85 receive an
-  adaptive brightness lift. Sharpening is handled per-clip (not in post-processing) to avoid
-  double-sharpening artifacts. Skipped entirely in --fast/--preview modes for speed.
-- **Parallel image processing**: Brightness normalization uses ThreadPoolExecutor for significant
-  speedup with large image sets (20+ images).
+- **Quality-preserving philosophy**: The engine preserves source image quality as-is. NO automatic
+  brightness enforcement, NO per-frame sharpening, NO post-processing brightness lifts. The source
+  image is the ground truth — if the AI-generated image is well-lit, the video frame will be too.
+  This means YOUR IMAGE PROMPTS must specify proper lighting. Do NOT rely on the engine to fix
+  dark images — generate bright, well-lit images in the first place.
+- **Effects are limited to 2 per image** by the engine. If you specify 3, only the first 2 are
+  applied. This prevents darkening from overlay stacking (vignette + fog + dust = too dark).
+- **Vignette is very subtle** (10% strength) and skipped entirely on dark images (avg brightness < 100).
+- **Fog/dust are very light**: fog intensity ×0.15, dust 12 particles at ×0.25 intensity.
+  These add atmosphere without washing out or darkening the image.
 - Clips overlap with section-aware crossfade durations — there are NEVER black gaps between images.
+- The first clip does NOT fade in from black — it starts immediately visible.
 - All overlay effects run at 18-24 FPS for buttery-smooth animation.
-- Text overlays have stronger outlines (8px via native Pillow stroke_width), deeper shadows
-  (4-layer), and double-drawn text for maximum readability over any background.
+- Text overlays have stroke outlines (2px stroke_width + dark stroke_fill) and drop shadows
+  for readability over any background.
 - Video exports with H.264 High profile level 4.1 + CRF 18 (pure quality-controlled encoding,
   no bitrate cap) + progressive download for universal playback.
 - **Rendering speed tiers**:
-  * Default: medium preset (~2x faster than v7's slow preset, negligible quality difference)
-  * --fast: skip per-frame sharpening, INTER_AREA resize, veryfast encoding, CRF 23 (~2-4x faster)
-  * --preview: 480p output, CRF 28, all post-processing skipped (~5-8x faster)
+  * Default: medium preset, CRF 18, full quality
+  * --fast: INTER_AREA resize, veryfast encoding, CRF 23 (~2-4x faster)
+  * --preview: 480p output, CRF 28, maximum speed (~5-8x faster)
 - **Aspect ratio modes**: --aspect-mode fill (crop to fill, default), fit (scale down), or
   letterbox (black bars) for non-16:9 source images.
 - **Config validation**: fps, duration, zoom intensity, effects intensity, and resolution are
@@ -258,18 +258,26 @@ You choose WHAT effects to use — the engine handles HOW intense they appear pe
   edge_bloom              — Dreamy cinematic glow radiating from center (18 FPS). Use for: THE_SPARK, THE_RISE, LEGACY, beauty, hope.
 
 EFFECTS SELECTION RULES:
-- EVERY image should have at least 1-2 effects for visual richness
-- Use 2-3 effects per image for maximum wow factor. More effects = more dramatic
-- Prioritize the NEW high-impact effects (god_rays, shimmer_sparkles, fog_overlay, bokeh_orbs) over basic ones
-- god_rays + shimmer_sparkles is the TRIUMPH combo (THE_RISE, LEGACY — divine/magical feel)
-- fog_overlay + color_pulse_red is the CONFLICT combo (THE_CONFLICT, THE_FALL — tension/dread)
-- shimmer_sparkles + zoom_burst is the WOW combo (COLD_OPEN, THE_CLIMAX — maximum visual impact)
-- bokeh_orbs + edge_bloom is the BEAUTY combo (EARLY_LIFE, THE_SPARK — dreamy/nostalgic)
-- film_strip + warm_wash is the VINTAGE combo (EARLY_LIFE, THE_FALL — classic film feel)
+- EVERY image should have exactly 2 effects (the engine limits to 2 max per image)
+- The FIRST effect should always be film_grain (base cinematic texture)
+- The SECOND effect should be chosen for emotional impact from the list above
+- **NEVER stack 2 darkening effects together** (vignette_pulse, fog_overlay, dust_particles, spotlight).
+  Stacking these makes the image too dark. Pick ONE darkening effect OR NONE.
+- Prioritize BRIGHT effects (god_rays, shimmer_sparkles, bokeh_orbs, light_leak, edge_bloom,
+  warm_wash) over darkening effects (vignette_pulse, fog_overlay, dust_particles, spotlight)
+- god_rays + film_grain is the TRIUMPH combo (THE_RISE, LEGACY — divine/golden feel)
+- shimmer_sparkles + film_grain is the WOW combo (COLD_OPEN, THE_CLIMAX — maximum visual impact)
+- bokeh_orbs + film_grain is the BEAUTY combo (EARLY_LIFE, THE_SPARK — dreamy/nostalgic)
+- chromatic_aberration + film_grain is the TENSION combo (THE_CONFLICT, THE_FALL — unease)
+- warm_wash + film_grain is the VINTAGE combo (EARLY_LIFE — classic film feel)
+- fog_overlay should be used SPARINGLY (max 5-8 images in entire video, ONLY for mystery/suspense)
+- vignette_pulse should be used SPARINGLY (max 10-15 images, ONLY for dramatic focus moments)
+- dust_particles should be used SPARINGLY (max 5-8 images, ONLY for old/aged scenes)
 - NEVER use camera_shake on LEGACY, CTA, or EARLY_LIFE images
 - film_scratches should only appear on pre-1950s historical scenes
 - Use god_rays on at least 15-20% of images for consistent cinematic quality
 - Use shimmer_sparkles on key emotional moments and hooks
+- **NEVER duplicate the same effect** in one image's effects list (e.g., ["vignette_pulse", "vignette_pulse"] is WRONG)
 
 **SECTION-AWARE EFFECT INTENSITY (v3.0):**
 The engine automatically scales effect intensity per section:
