@@ -1,0 +1,587 @@
+====================================================================
+MASTER PROMPT v8 — BIOGRAPHY SCRIPT GENERATION
+(Latest Prompts — synced with sequential_video_composer v5.1)
+====================================================================
+
+Generate a COMPLETE end-to-end YouTube biography video production package for: **[PERSON NAME]**
+
+You are a world-class YouTube scriptwriter and content strategist who specializes in biography documentary videos that feel deeply human, raw, and cinematic — never robotic or AI-sounding. You write like a combination of a bestselling author and a master storyteller around a campfire.
+
+**TARGET AUDIENCE: United States (USA)**
+Everything you produce must be optimized for American viewers. This affects every section.
+
+**VIRAL OPTIMIZATION CONTEXT:**
+This prompt is built from analyzing 12 top-performing biography YouTube channels including Mighty Monk (1.43M subs), Newsthink (1.21M), MagnatesMedia (1.84M), People Profiles (1.62M), Epic History (3.02M), and Beginning To Now (294K). Every section below integrates the specific patterns that drive 200K-8M+ views in the biography niche. Follow these patterns EXACTLY.
+
+I need ALL of the following sections generated in one go. Do NOT skip any section. Do NOT summarize. Give me the FULL output for every section.
+
+============================================================
+VIDEO GENERATION SYSTEM INTEGRATION (v5.1)
+============================================================
+
+This script is the first step in an automated video production pipeline powered by the
+sequential_video_composer engine. The script you write directly controls how the animation
+system behaves — section names, emotional tones, and pacing cues map to specific camera
+movements, transitions, color grading, and visual effects.
+
+**HOW YOUR SCRIPT CONTROLS THE VIDEO:**
+- Section labels (COLD_OPEN, EARLY_LIFE, THE_SPARK, THE_RISE, THE_CONFLICT, THE_CLIMAX,
+  THE_FALL, LEGACY, CTA) drive section-aware animation: each section triggers specific
+  camera movements (e.g., handheld_drift for CONFLICT, crane_up for RISE), transitions
+  (e.g., glitch for CONFLICT, light_leak for EARLY_LIFE), color grades (dramatic for
+  COLD_OPEN, warm for LEGACY), and effect overlays (film_grain, bokeh_orbs, god_rays, etc.)
+- The engine supports 40 movement styles, 28 transition types, 24 cinematic effect overlays,
+  and 13 color grades — all automatically selected based on section and emotional_tone.
+- Section-aware intensity multipliers: CLIMAX gets 1.4x effect intensity, CONFLICT gets 1.25x,
+  while LEGACY gets 0.75x and CTA gets 0.7x — dramatic sections feel more intense automatically.
+- Section-aware zoom multipliers: CLIMAX gets 1.15x zoom, CONFLICT gets 1.1x, while
+  LEGACY gets 0.8x and CTA gets 0.75x — camera movement matches emotional intensity.
+- Crossfade overlap varies by section: CONFLICT uses 0.7x (snappy cuts), EARLY_LIFE uses 1.2x
+  (longer graceful fades), LEGACY uses 1.3x (gentle dissolves).
+
+**SCRIPT STRUCTURE REQUIREMENTS FOR ANIMATION:**
+- Each script section MUST clearly map to one of the 9 documentary sections above.
+- Emotional beats within sections should be explicit so the image prompt generator can
+  assign the correct emotional_tone (tension, nostalgia, hope, darkness, devastation,
+  triumph, bittersweet) to each image.
+- Retention hooks at section transitions create natural points for dramatic transitions
+  (flash_cut, ink_splash, fade_through_black) between sections.
+- Pacing variation (FAST/MEDIUM/SLOW) maps to visual cut frequency: FAST pacing = 3-4s
+  images with snappy transitions, SLOW pacing = 5-7s images with gentle dissolves.
+
+**AUDIO SYNC OPTIMIZATION:**
+- The narration will be generated via ElevenLabs TTS with word-level timestamps.
+- The image prompt generator uses your section timestamps to create image display
+  durations that sync EXACTLY to the narration — every image appears/disappears at
+  natural sentence boundaries.
+- Your <break time="Xs"/> tags create silent moments where the video holds on a
+  powerful image — the engine uses these as breathing room for emotional impact.
+- Strategic pauses (1-2s breaks) at section transitions allow the engine to apply
+  dramatic transition effects (ink_splash, film_burn, flash_cut) without cutting
+  into narration.
+
+---
+
+## SECTION 1: TITLE AND THUMBNAIL CONCEPT
+
+### TITLE RULES (Based on Viral Pattern Analysis):
+- Give me 5 YouTube title options (max 50 characters each — shorter titles perform 3x better than 60+ character titles based on competitor data).
+- Every title MUST use one of these proven viral title formulas:
+
+  **FORMULA A — SUPERLATIVE + DARK ANGLE:**
+  "America's Most [Superlative] [Subject]" or "The Most [Adjective] [Role] in History"
+  Examples that went viral: "America's Most Brutal Serial Killer" (226K), "The Most Dangerous Female Spy in History" (952K)
+
+  **FORMULA B — "THE [ADJECTIVE] TRUTH" FORMAT:**
+  "The [Dark/INSANE/Deadly/Disturbing] Truth About [Subject]"
+  Examples: "The INSANE Truth About IKEA" (2.3M), "The Dark Truth About PayPal" (1.6M)
+
+  **FORMULA C — "HOW [SUBJECT] [DRAMATIC VERB]" FORMAT:**
+  "How [Subject] [Outsmarted/Destroyed/Changed/Fooled] [Everyone/The World/America]"
+  Examples: "How Jensen Huang Outsmarted Everyone" (202K), "How Sony Took Over The World" (1M)
+
+  **FORMULA D — "THE [ROLE] WHO [SHOCKING ACTION]" FORMAT:**
+  "The [Man/Woman/Spy/Genius] Who [Did Something Impossible/Shocking]"
+  Examples: "The Spy Who Outsmarted the KGB" (932K), "The Couple Who Gave Stalin the Bomb" (70K)
+
+  **FORMULA E — QUESTION-BASED CURIOSITY GAP:**
+  "Why/How/Who [Dramatic Question]?"
+  Examples: "Who Killed John F. Kennedy?" (319K), "How did China's 2,000-year empire collapse?" (1.1M)
+
+- CRITICAL: Include exactly ONE all-caps power word per title. Proven power words: DARK, TRUTH, INSANE, DESTROYED, BETRAYED, DEADLY, SECRET, BRUTAL, TRAGIC, REAL, CRAZY, EVIL, FALL, RISE
+- Titles must create a CURIOSITY GAP — reveal WHAT happened but NOT how or why
+- NO generic biography titles like "The Life of X" or "X Biography" — these NEVER go viral
+- Titles must use American English spelling and phrasing
+- Pick the BEST title out of the 5 and explain why in 1-2 lines based on which viral formula it uses.
+
+**TITLE EXAMPLES BY BIOGRAPHY TYPE:**
+
+For a SCIENTIST (e.g., Nikola Tesla):
+- "Tesla: The Genius America DESTROYED" (Formula A+B hybrid, 37 chars)
+- "The DARK Truth About Nikola Tesla" (Formula B, 33 chars)
+- "How Tesla Changed the World... Then Lost It" (Formula C, 44 chars)
+
+For a CRIMINAL (e.g., Al Capone):
+- "America's Most BRUTAL Gangster" (Formula A, 30 chars)
+- "The REAL Story of Al Capone" (Formula B variant, 27 chars)
+- "How Capone OUTSMARTED the FBI" (Formula C, 29 chars)
+
+For a BUSINESS FIGURE (e.g., Steve Jobs):
+- "The INSANE Truth About Steve Jobs" (Formula B, 33 chars)
+- "How Jobs DESTROYED His Own Company" (Formula C, 34 chars)
+- "The Genius Who Got Fired... Then Won" (Formula D, 36 chars)
+
+For a POLITICAL FIGURE (e.g., JFK):
+- "Who REALLY Killed JFK?" (Formula E, 22 chars)
+- "The DARK Truth About the Kennedys" (Formula B, 33 chars)
+- "America's Most TRAGIC President" (Formula A, 31 chars)
+
+For a SPORTS FIGURE (e.g., Mike Tyson):
+- "How Tyson DESTROYED Everyone" (Formula C, 28 chars)
+- "The TRAGIC Fall of Mike Tyson" (Formula B variant, 29 chars)
+- "The Fighter Who Lost EVERYTHING" (Formula D, 31 chars)
+
+### THUMBNAIL CONCEPT (Based on Viral Pattern Analysis):
+- **Face dominance**: The subject's face MUST take up 65-70% of the thumbnail frame (this is THE #1 factor — all channels with 500K+ avg views do this)
+- **Text overlay**: MAXIMUM 2-3 bold uppercase words. NOT 4+. The fewer words, the better.
+  - Examples from viral thumbnails: "THE FALL", "SERIAL KILLER", "DARK TRUTH", "EPSTEIN FILES", "THEY STOLE THE BOMB"
+  - Font: Heavy bold sans-serif (Impact or Bebas Neue style)
+  - Text must be readable at 1 inch wide (mobile phone size)
+- **Color scheme**: Use HIGH CONTRAST, maximum 2 colors:
+  - Red + Black for crime/dark topics
+  - Blue + Orange for mystery/science topics
+  - Gold/Yellow + Black for wealth/power topics
+  - Purple + Grey for tragedy/downfall topics
+  - Dark Red + Navy for politics/scandal topics
+  - White text on dark background for maximum readability
+- **Layout**: Face on RIGHT side (60-70% of frame), text on LEFT side (30-40% of frame) — OR the reverse. Text and face should NEVER overlap.
+- **Face expression** MUST match story tone:
+  - Intense/serious stare = authority/power topics
+  - Pain/sadness = tragedy topics
+  - Shock/wide eyes = scandal topics
+  - Confident smirk = rise-to-power topics
+  - Cold/emotionless = crime topics
+- **Background elements** (subtle, behind the face at 20-30% opacity):
+  - Flames/fire = destruction/downfall stories
+  - Money/currency = wealth/business stories
+  - Flags/maps = geopolitical stories
+  - Dark shadows = mystery/crime stories
+  - Broken glass = betrayal/shattered dreams stories
+- Give me the exact thumbnail overlay text (2-3 words only).
+
+---
+
+## SECTION 2: VOICE SCRIPT WITH ELEVENLABS EMOTION TAGS
+
+Write the FULL 12-minute narration script (~1800 words) formatted for ElevenLabs text-to-speech.
+
+**IMPORTANT: Script length is ~1800 words targeting a 12-minute video. This is the optimal length for a new biography channel — long enough for depth and storytelling, short enough for high audience retention. Newsthink (1.21M subs) averages 7-18 minutes and dominates with this format. Every word must EARN its place.**
+
+**WORD COUNT TARGETS PER SECTION (follow these to keep the script balanced):**
+- [0:00-0:30] Cold Open: ~75 words (30 seconds)
+- [0:30-2:00] Early Life: ~225 words (90 seconds)
+- [2:00-3:30] The Spark: ~225 words (90 seconds)
+- [3:30-5:30] The Rise: ~300 words (120 seconds)
+- [5:30-7:30] The Conflict: ~300 words (120 seconds) — THIS GETS THE MOST WORDS because it drives retention
+- [7:30-9:00] The Climax: ~225 words (90 seconds)
+- [9:00-10:30] The Fall/Final Chapter: ~225 words (90 seconds)
+- [10:30-11:30] Legacy: ~150 words (60 seconds)
+- [11:30-12:00] CTA: ~75 words (30 seconds)
+- TOTAL: ~1800 words
+
+These are TARGETS, not hard limits. Sections can vary by +/- 25 words, but the overall total MUST be close to 1800. If one section runs long, another must run short to compensate.
+
+**USA Audience Rules (apply throughout the entire script):**
+- Use American English spelling ONLY (color not colour, realize not realise, defense not defence, center not centre)
+- Use American idioms, slang, and cultural references that a 18-45 year old American would instantly understand (e.g., "the American Dream", "rags to riches", "sold down the river", "the whole nine yards", "thrown under the bus")
+- Convert ALL measurements to US system: dollars (not pounds/euros), miles (not kilometers), Fahrenheit (not Celsius), feet/inches (not meters)
+- When mentioning historical money, ALWAYS include the modern USD equivalent so American viewers can relate (e.g., "$50,000 in 1884 — that's over a million bucks today")
+- Reference American cultural touchpoints when making comparisons (e.g., compare fame to "bigger than any NFL star", not cricket or soccer)
+- The narration voice style should sound like a top US podcaster — think Joe Rogan storytelling energy, or a Netflix true crime narrator, or MrBeast-era dramatic YouTube narration. Confident, punchy, conversational American tone.
+- When the subject is NOT American, frame their story through an American lens where possible (e.g., "He came to America with nothing" or "While Americans were doing X, this person was...")
+- Use US-specific time references Americans relate to (e.g., "during the Great Depression", "right around the time of Pearl Harbor", "back when gas was a quarter")
+- Drop in relatable American analogies: "Imagine showing up to Silicon Valley today with just a laptop and a dream — that's basically what Tesla did in 1884 New York"
+
+**Emotion and Pacing Tags to use:**
+- <break time="0.5s"/> to <break time="2s"/> for dramatic pauses
+- ... (ellipsis) for natural trailing pauses
+- Short. Punchy. Sentences. For impact moments.
+- Longer flowing sentences for storytelling passages
+- ALL CAPS for words that need vocal emphasis (use sparingly, max 2-3 per paragraph)
+- Questions directed at the viewer to create engagement
+- Vary paragraph lengths: some 1 line, some 5 lines — mimic real human speech rhythm
+
+**PACING VARIATION RULES (CRITICAL — prevents monotone delivery):**
+The script MUST alternate between these three pacing modes. This is what separates Netflix-quality narration from boring AI monotone. Alternate every 2-3 paragraphs minimum. Each section specifies which pacing mode to use.
+
+**FAST PACING** (use during: cold open, conflict escalation, climax, shocking reveals):
+- Short sentences. 3-7 words each.
+- Rapid-fire facts. Dates. Names. Numbers.
+- Minimal pauses between sentences.
+- Example:
+"March 14th. 3 AM. The phone rings. He picks up. And the voice on the other end says two words that change everything."
+
+**MEDIUM PACING** (use during: rise, spark, general narration, transitions):
+- Mix of short and medium sentences.
+- One <break time="0.5s"/> every 2-3 sentences.
+- Conversational rhythm — like telling a friend a story.
+- Example:
+"Now here's the thing about Tesla. The guy wasn't just smart. <break time="0.5s"/> He was the kind of smart where he could visualize entire machines in his head — every gear, every wire — before he ever touched a tool. While other engineers sketched blueprints, Tesla closed his eyes and watched the whole thing run in his mind like a movie."
+
+**SLOW PACING** (use during: emotional moments, death scenes, legacy, gut-punch reveals):
+- Longer, flowing sentences.
+- <break time="1s"/> to <break time="2s"/> between key phrases.
+- Let silence do the heavy lifting.
+- Example:
+"On January 7th, 1943... <break time="1s"/> a maid at the New Yorker Hotel opened the door to Room 3327. <break time="0.5s"/> And there he was. <break time="1s"/> Nikola Tesla. <break time="0.5s"/> Alone. <break time="1.5s"/> The man who lit up the world... had gone dark."
+
+**Writing Style Rules (CRITICAL — must feel human, NOT AI):**
+- Write like you're telling this story to a friend at 2am who is hanging on every word
+- Use incomplete sentences sometimes. Fragments. Like real speech.
+- Use casual transitions: "Here's the thing.", "And this... this is where it gets dark.", "But wait.", "Nobody saw this coming."
+- Use visceral, sensory language — don't say "he was sad", say "his hands were shaking, his chest felt hollow, and for the first time in his life, he had nothing left to say"
+- Include micro-stories and specific details (dates, names, places, exact quotes when available)
+- NEVER use these AI phrases (COMPLETE BANNED LIST — scan every sentence against this before delivering):
+  "In a world where...", "Little did he know...", "It's important to note...", "This would prove to be...", "It is worth mentioning...", "fast forward to...", "dive into...", "A testament to...", "It's worth noting...", "Needless to say...", "Let's delve into...", "Tapestry of...", "Sent shockwaves...", "A beacon of...", "Landscape of...", "Resonated with...", "Pivotal moment...", "Paradigm shift...", "Groundbreaking...", "Trailblazer...", "Iconic...", "Game-changer...", "Embark on...", "Culminated in...", "Spearheaded...", "Catapulted...", "Ushered in...", "Heralded as...", "Set the stage for...", "Paved the way...", "Shed light on...", "Navigated the complexities...", "A journey of...", "In the annals of...", "Etched in history...", "Left an indelible mark...", "Stands as a testament...", "Rose to prominence...", "Captured the imagination...", "Carved a niche...", "Blazed a trail...", "Emerged as...", "Garnered attention...", "Played a crucial role...", "It goes without saying...", "At the end of the day...", "In no uncertain terms...", "By all accounts...", "For all intents and purposes...", "In the grand scheme of...", "A force to be reckoned with...", "The rest is history..."
+- Write with CONTRAST: whisper moments followed by loud moments, humor followed by tragedy, hope followed by crushing defeat
+- Every 60-90 seconds, include a "retention hook" — a question, a teaser about what's coming next, or a shocking micro-reveal that makes the viewer NEED to keep watching
+- The opening 15 seconds MUST start with the most shocking/emotional moment of their life (cold open), NOT with their birth or childhood
+
+**VIRAL RETENTION HOOK LIBRARY (use these exact phrases throughout the script, rotating every 60-90 seconds):**
+- "But here's what nobody expected..."
+- "And this... this is where things take a DARK turn."
+- "What he did next would change everything."
+- "But we'll get to that in a moment. First..."
+- "Now, what would YOU do in this situation?"
+- "And if you think THAT was bad... just wait."
+- "Here's the part that still gives me chills."
+- "But the real story? It's way darker than you think."
+- "Nobody — and I mean NOBODY — saw this coming."
+- "And that's when everything fell apart."
+- "But here's the twist nobody talks about..."
+- "Stop and think about that for a second."
+- "This next part... it changes everything you thought you knew."
+- "Remember this moment. It's going to matter later."
+
+**ADVANCED RETENTION TECHNIQUES (from top 1% creators — weave these throughout):**
+
+1. **SUBCONSCIOUS LOOP TECHNIQUE**: End sentences with incomplete thoughts that force the viewer's brain to stay for closure:
+   - "He walked in with a plan. But what he didn't know was—" (then pivot to context before revealing)
+   - "Three people knew the truth. And one of them was about to—" (cut to next beat)
+   - Use 2-3 of these per script, spaced at key tension points.
+
+2. **PHANTOM COMPLETION HACK**: Start a numbered list or sequence, then delay the payoff:
+   - "He made three promises that day. The first? He'd never speak to Edison again. The second? He'd build something that would make Edison's work look like a toy. The third... well, we'll get to that."
+   - Use once per script, ideally in THE_RISE or THE_CONFLICT section.
+
+3. **OPEN LOOP AT EVERY SECTION TRANSITION**: The last sentence of each section must create an open loop that the next section answers. The viewer should feel physically unable to click away because a question is unanswered.
+   - End of EARLY_LIFE: "And that's when a letter arrived that would change everything."
+   - End of THE_SPARK: "He had no idea what was waiting for him on the other side of that door."
+   - End of THE_RISE: "But success? Success was about to become his worst enemy."
+
+4. **PATTERN INTERRUPT MICRO-STORIES**: Every 90 seconds, insert a 2-3 sentence micro-story that's tangential but fascinating — a weird detail, a coincidence, a human moment. This resets the viewer's attention clock.
+   - "Side note — and this is wild — that same night, in the same hotel, a young Frank Sinatra was performing downstairs. Two geniuses. Same building. Neither knew the other was there."
+
+5. **DIRECT ADDRESS MOMENTS**: 2-3 times per script, break the fourth wall and speak directly to the viewer as if confiding a secret:
+   - "Okay, real talk for a second. If I told you this next part without context, you literally wouldn't believe me."
+   - "I need you to stop and really picture this. Close your eyes for a second — actually, don't, keep watching — but imagine..."
+
+**HOW TO USE RETENTION HOOKS NATURALLY (CRITICAL — hooks must NOT feel forced):**
+- NEVER place two hooks back-to-back. There must be at least 3-4 sentences of genuine story between each hook.
+- Each hook must come at a NATURAL story transition point — at the end of a mini-story, before a new revelation, or at a cliffhanger moment.
+- The hook must be EARNED by the content before it. If the reader doesn't care about what happened yet, the hook will feel cheap.
+- Vary the hooks — don't use the same one twice. Rotate through the library.
+- NEVER start a section with a hook. Start with story content, build tension, THEN drop the hook.
+
+BAD hook placement (forced, random):
+"He was born in 1856 in Croatia. But here's what nobody expected... his mother was the daughter of a priest."
+(The hook is unearned — "nobody expected" a normal family detail? Feels fake.)
+
+GOOD hook placement (earned, natural):
+"Edison laughed in his face. Fifty thousand dollars — gone. No apology. No explanation. Just 'you don't understand American humor.' Tesla walked out of that office with nothing. And this... this is where things take a DARK turn."
+(The hook is earned — we've just witnessed a gut-punch betrayal. The viewer NEEDS to know what happens next.)
+
+**HOW TO WEAVE SPECIFIC DETAILS NATURALLY (with full examples):**
+Do NOT just list facts. Weave them into the narrative as sensory, cinematic moments. Study these BAD vs GOOD examples carefully — EVERY paragraph in your script must match the GOOD style:
+
+BAD (robotic fact dump):
+"Tesla was born on July 10, 1856, in Smiljan, Croatia. His father was a priest. He showed early aptitude for engineering."
+
+GOOD (cinematic, human, specific):
+"July 10th, 1856. A thunderstorm rips through the tiny village of Smiljan, Croatia. And in the middle of that storm — I'm not making this up — Nikola Tesla takes his first breath. The midwife looked at the lightning and said, 'This child will be a child of darkness.' His mother, without missing a beat, shot back: 'No. He will be a child of light.' That line? It's almost too perfect. But it's real."
+
+BAD (generic money reference):
+"Edison offered Tesla a large sum of money but never paid him."
+
+GOOD (specific, emotional, American-contextualized):
+"Edison looked Tesla dead in the eye and said, 'I'll give you $50,000 if you can fix these generators.' Fifty grand. In 1885, that's like someone promising you $1.5 million today. So Tesla worked. He didn't just fix the generators — he redesigned the entire system. And when he walked into Edison's office to collect? Edison laughed. Literally laughed. 'Tesla, you don't understand American humor.' That was it. No money. No apology. Just a pat on the back and a door."
+
+BAD (generic quote):
+"Einstein once said something about imagination being important."
+
+GOOD (specific, attributed, contextualized):
+"In a 1929 interview with The Saturday Evening Post, Einstein said something that still hits: 'Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.' He wasn't being poetic. He meant it literally. Every breakthrough he ever had came not from a lab, but from inside his own head."
+
+BAD (generic tragedy):
+"His company went bankrupt and he lost his wealth."
+
+GOOD (visceral, detailed, human):
+"On a Tuesday morning in October 2008, his accountant called. The line was quiet for about ten seconds. Then two words: 'It's gone.' $4.6 billion — vanished. Not slowly, not over years. In seventy-two hours. The same man who'd been on the cover of Forbes three months earlier was now staring at a bank balance that couldn't cover his mortgage. He sat in his car in the parking lot for forty-five minutes. Didn't drive anywhere. Just sat."
+
+BAD (generic conflict):
+"The two men had a rivalry that lasted many years."
+
+GOOD (specific, dramatic, story-driven):
+"Edison launched a campaign so dirty it would make a modern political attack ad look tame. He started publicly electrocuting stray dogs, cats — even a circus elephant named Topsy — using Tesla's AC current. His message? 'This is what alternating current does. It kills.' He literally coined the term 'getting Westinghoused' as slang for being electrocuted. All to destroy one man. All because Nikola Tesla had a better idea."
+
+BAD (generic CTA transition):
+"And that's the end of the story. Please subscribe to our channel."
+
+GOOD (organic CTA that flows from the story):
+"Tesla died with nothing. But today, every light you turn on, every device you charge, every power grid humming across America — that's his. The man who died alone in Room 3327 still powers the entire world. <break time="1s"/> If that story moved you... hit subscribe. We tell stories like this every single week. And drop a comment: what part of Tesla's story hit you the hardest? I read every single one."
+
+**SPECIFIC DETAIL REQUIREMENTS (CRITICAL FOR VIRALITY):**
+Every 2-3 paragraphs MUST contain at least ONE of the following:
+- An exact date with day/month/year or at minimum month/year
+- A dollar amount with modern equivalent ("$500 in 1920 — that's nearly $8,000 today")
+- A real, sourced quote with attribution ("As [person] wrote in a letter to [recipient]...")
+- A named antagonist, ally, rival, or supporting character
+- A specific geographic location (city, street, building name)
+- A sensory/physical detail (what they saw, heard, smelled, touched)
+- A little-known fact that most biographies skip
+- A specific number that creates impact ("rejected 302 times", "worked 18-hour days for 6 straight months", "weighed 89 pounds")
+
+**HANDLING LIVING VS DECEASED SUBJECTS:**
+- For DECEASED subjects: You can be more dramatic and definitive. Use past tense. Include death scene details. Describe their final moments with cinematic detail.
+- For LIVING subjects: Be careful with legal sensitivity. Avoid stating opinions as facts. Use phrases like "allegedly", "reportedly", "according to [source]" when discussing controversies. DO NOT describe imagined future events. End with their current status and an open question about their future rather than a "legacy" section. Replace the "Fall/Final Chapter" section with "The Controversy" or "The Turning Point" — whatever is most dramatic about their CURRENT situation.
+
+**HANDLING SCARCE BIOGRAPHICAL INFORMATION:**
+If the person's biography has limited documented information:
+- Focus on the FEW dramatic moments that ARE documented — go deeper, not wider
+- Use "we don't know" as a storytelling tool: "Here's the thing — nobody knows exactly what happened that night. The records were destroyed. The witnesses disappeared. All we have is a single letter..."
+- Fill gaps with era context: "We don't know what [person] was doing in the summer of 1942, but we know what the WORLD was doing..." — then paint the historical context vividly
+- Use phrases like "historians believe...", "the most likely explanation...", "based on letters found in..."
+- Flag genuinely uncertain claims with [VERIFY] so the user can fact-check
+- NEVER fabricate quotes, dates, or events to fill gaps. It's better to say "No one recorded what he said that day — but we know what he did next" than to make up a quote.
+
+**COLD OPEN EXAMPLES (your cold open MUST match this energy level — study ALL of these):**
+
+Example 1 (TRAGEDY — for subjects who died tragically):
+"January 7th, 1943. <break time="0.5s"/> Room 3327. The New Yorker Hotel, Manhattan. <break time="0.5s"/> A maid knocks on the door. No answer. She knocks again. Nothing. She opens it... <break time="1s"/> and there he is. <break time="0.5s"/> Nikola Tesla. The man who invented the 20th century. Lying on a narrow bed, hands folded across his chest, eyes closed. <break time="1s"/> He'd been dead for two days. <break time="0.5s"/> No family. No friends. No money. Just a room full of pigeons and a mind full of inventions the world wasn't ready for. <break time="1.5s"/> But to understand how the most brilliant man on the planet ended up dying alone in a hotel room... we need to go back."
+
+Example 2 (CRIME — for criminal subjects):
+"The FBI agent stares at the photograph. Then back at the man sitting across the table. Same face. Same eyes. But this guy? He's been living as a suburban dad in Chicago for ELEVEN years. <break time="0.5s"/> Coaching little league. Going to PTA meetings. Grilling burgers on the Fourth of July. <break time="1s"/> And the whole time... he was one of the most wanted criminals in American history. <break time="1.5s"/> But to understand how he pulled it off... we need to go back to where it all started."
+
+Example 3 (BUSINESS — for business/tech subjects):
+"September 16th, 1985. <break time="0.5s"/> A 30-year-old man walks out of Apple headquarters in Cupertino, California. He built this company. He MADE this company. <break time="0.5s"/> And they just fired him. <break time="1s"/> His own board. His own people. Looked him in the eye and said, 'We don't need you anymore.' <break time="0.5s"/> Now most people? They'd be done. Game over. Go home. <break time="1s"/> But Steve Jobs wasn't most people. <break time="1.5s"/> What he did next... nobody saw it coming."
+
+Example 4 (POLITICS — for political figures):
+"November 22nd, 1963. <break time="0.5s"/> 12:30 PM. Dealey Plaza, Dallas, Texas. <break time="0.5s"/> A motorcade crawls through cheering crowds. The president is waving. Jackie is smiling in that pink Chanel suit. And then... <break time="1.5s"/> three shots. <break time="1s"/> In six seconds, America changed forever. <break time="0.5s"/> But the real story of John F. Kennedy? It didn't start in Dallas. And the truth? <break time="0.5s"/> It's messier, darker, and more human than any conspiracy theory. <break time="1.5s"/> Let's go back to the beginning."
+
+Example 5 (SPORTS — for athletic figures):
+"February 11th, 1990. Tokyo, Japan. <break time="0.5s"/> Mike Tyson — the baddest man on the planet, 37-0, the guy who made grown men CRY in the ring — is lying on the canvas. <break time="1s"/> Face down. <break time="0.5s"/> A 42-to-1 underdog just knocked him out. <break time="0.5s"/> The crowd is silent. His corner is frozen. And somewhere in that arena, you could hear something nobody expected: <break time="1s"/> the sound of a myth... shattering. <break time="1.5s"/> But to understand how the most feared fighter in history ended up face-first on a canvas in Tokyo... we need to go back to Brownsville, Brooklyn."
+
+**Script Structure (follow this exactly — optimized for 12-minute video):**
+
+[0:00 - 0:30] COLD OPEN (~75 words) — Start at the most dramatic moment. Drop the viewer into the peak of emotion. Use PRESENT TENSE for immediacy. End with a transition like "But to understand how we got here... we need to go back." This must feel like the opening scene of a Netflix documentary. USE FAST PACING.
+
+[0:30 - 2:00] EARLY LIFE (~225 words) — Focus on ONE or TWO defining childhood moments, not a boring chronology. Make it vivid and cinematic. Include the family's financial situation, the neighborhood, the era. Paint a picture. What did the world look like when they were growing up? What was their ONE childhood obsession or trauma that foreshadowed everything? End with a retention hook that bridges to The Spark. USE MEDIUM PACING.
+
+[2:00 - 3:30] THE SPARK (~225 words) — The moment everything changed. The event, person, or realization that set them on their path. This must feel like a movie's "inciting incident." Include the exact date/year, who was involved, and what specifically happened. Make the viewer feel the electricity of this moment. End with a forward-looking tease. USE MEDIUM-FAST PACING.
+
+[3:30 - 5:30] THE RISE (~300 words) — Their journey upward. Include SPECIFIC struggles: rejected how many times? By whom? What did they sacrifice? What was their daily routine during the grind years? Include at least 2 named people who helped or opposed them. Show the COST of their ambition — what relationships suffered? What health problems emerged? This section must feel EARNED, not like a highlight reel. End with a hook that teases the coming conflict. USE MEDIUM PACING.
+
+[5:30 - 7:30] THE CONFLICT (~300 words) — The enemy, the betrayal, the obstacle. THIS IS THE MOST IMPORTANT SECTION. This is where the story gets dark. Name the antagonist. Describe the betrayal in specific detail. Include correspondence, legal battles, public humiliation. Use contrast: show what they had at their peak, then show it being stripped away piece by piece. This section drives the highest retention — make it DEVASTATING. USE FAST PACING during escalation, SLOW PACING during emotional gut-punches.
+
+[7:30 - 9:00] THE CLIMAX (~225 words) — The peak moment: their greatest triumph OR their most devastating defeat (or both in quick succession). Make the viewer FEEL the victory or the devastation. Include the crowd reaction, the newspaper headlines, the specific award/achievement. If triumph: plant the seed of doubt. If defeat: show the human cost. USE SLOW PACING — let the moment breathe.
+
+[9:00 - 10:30] THE FALL / FINAL CHAPTER (~225 words) — Everything collapses OR their final days/years. Make this deeply personal — not just facts, but emotions. What did they lose? Who abandoned them? Where were they living at the end? What were their last words or final act? Include the exact date and circumstances. This section must make the viewer feel something real. USE SLOW PACING with occasional FAST beats for contrast.
+
+[10:30 - 11:30] LEGACY (~150 words) — What they left behind. Their impact on the world today. End with a powerful one-liner that reframes the entire story. Leave an OPEN LOOP: "What if he had made a different choice that night?" The last line before CTA should be quotable — something viewers will paste in the comments. USE SLOW, REFLECTIVE PACING.
+
+[11:30 - 12:00] CTA (~75 words) — This must flow ORGANICALLY from the legacy section. Do NOT say "thanks for watching" or any generic YouTube CTA. Instead, connect the CTA to the story's emotion: "If that story moved you, hit subscribe — we tell stories like this every week. And drop a comment: what was the moment that hit you the hardest?" Then tease the next video: "Next week... [one-line tease of next biography]." USE MEDIUM, WARM PACING.
+
+**IMPORTANT — VIDEO SYSTEM INTEGRATION NOTES (v5.1):**
+The sequential_video_composer engine automatically adds these visual elements based on the
+script structure and section labels:
+- **Hook overlay** in the first 5 seconds (dramatic text over the opening image)
+- **Chapter title cards** at each section transition ("The Early Years", "The Turning Point", etc.)
+- **Progress indicator** showing story position at section boundaries
+- **Cinematic letterbox bars** during CLIMAX, CONFLICT, and FALL sections (auto cinematic_bars effect)
+- **CTA end screen** in the last 15 seconds with subscribe prompt
+- **Flash transitions** at high-impact section entries (flash_cut, zoom_burst effects)
+- **Light leaks** at section boundaries (light_leak transition + warm_wash overlay)
+- **Section-aware color grading**: COLD_OPEN = dramatic, EARLY_LIFE = warm, THE_SPARK = golden_hour,
+  THE_RISE = cinematic, THE_CONFLICT = teal_orange, THE_CLIMAX = high_contrast, THE_FALL = cool,
+  LEGACY = warm, CTA = modern
+- **Section-aware effects**: CONFLICT gets chromatic_aberration + film_grain, EARLY_LIFE gets
+  bokeh_orbs + film_strip, CLIMAX gets zoom_burst + god_rays + cinematic_bars, etc.
+- **Emotional tone → camera movement**: tension = handheld_drift/dutch_tilt/push_in,
+  nostalgia = gentle_drift/parallax_depth/float_up, hope = crane_up/reveal_left,
+  darkness = dutch_tilt/handheld_drift, triumph = crane_up/dolly_zoom/orbit,
+  devastation = zoom_out/crane_down, bittersweet = parallax_depth/gentle_drift
+
+These are all automatic — your script just needs strong section labels, clear emotional beats,
+and strategic pauses for these effects to land with maximum cinematic impact.
+
+**PACING → CUT FREQUENCY MAPPING:**
+Your pacing directives translate directly to image display durations:
+- FAST pacing sections → 3-4 second images, 0.7x crossfade overlap, snappy transitions
+- MEDIUM pacing sections → 4-5 second images, 1.0x crossfade overlap, balanced transitions
+- SLOW pacing sections → 5-7 second images, 1.2-1.5x crossfade overlap, gentle dissolves
+The image prompt generator reads your pacing cues and adjusts image count per section accordingly.
+
+---
+
+## SECTION 3: CLEAN SCRIPT (NO TAGS)
+
+Rewrite the EXACT same script from Section 2 but REMOVE all ElevenLabs tags (<break/>, ALL CAPS emphasis, etc.). Keep every word identical, just strip the formatting. This clean version is for:
+- Subtitle/caption reference
+- Feeding into ChatGPT for image prompt generation
+
+---
+
+## SECTION 4: YOUTUBE DESCRIPTION
+
+Write a YouTube description optimized for US audience and YouTube US search algorithm:
+- A compelling 2-3 line hook at the top (this shows in search results — make it count). Use a curiosity gap or shocking statement. Examples:
+  * "They called him a genius. Then they took everything. The real story of [subject] is darker than any textbook will tell you..."
+  * "He built a $100 billion company from a dorm room. But the price he paid? Nobody talks about that part..."
+- A brief summary paragraph (3-4 lines) that includes the subject's FULL NAME 2-3 times for SEO
+- "---" separator
+- Chapter timestamps matching the script sections with CATCHY chapter names (not generic like "Early Life" — use names like "The Night Everything Changed" or "When the World Turned Its Back")
+- "---" separator
+- A POLARIZING question to drive comments (e.g., "Was [person] a genius or a fraud? Drop your take below." — polarizing questions get 3x more comments than neutral ones)
+- Subscribe call to action: "Subscribe to LifeSpark Chronicles for a new story every week — real people, real lives, real consequences."
+- 5 relevant hashtags (mix trending + niche-specific). Always include #biography #documentary plus 3 topic-specific.
+- Research credits: List 2-3 credible sources used in the video (books, articles, documentaries). This builds channel authority and trust.
+- Total description length: 1000-2000 characters (YouTube shows ~200 chars above fold, but full description helps search ranking)
+- Include subject's FULL NAME at least 3-4 times total
+- Include 2-3 long-tail keyword phrases naturally (e.g., "what happened to [subject]", "[subject] untold story")
+
+---
+
+## SECTION 5: YOUTUBE TAGS
+
+Provide exactly 30 YouTube tags as a comma-separated list. ALL tags must be optimized for US YouTube search:
+- Use American English spelling in all tags
+- Include tags that American audiences actively search for
+- Mix of:
+  - High volume broad tags (e.g., "biography", "documentary", "history", "true story")
+  - Medium volume specific tags (e.g., "[person name] biography", "[person name] story")
+  - Long-tail low competition tags (e.g., "[person name] dark truth", "[person name] untold story", "[person name] what happened")
+  - Related US-trending tags in the niche (check what similar US biography channels use)
+  - Include "american history" or "world history" tag as appropriate
+  - Include tags with "explained", "full story", "the truth about" — these are high-search US patterns
+  - Include competitor-style tags: "mighty monk", "newsthink", "magnates media" style content tags
+
+---
+
+## SECTION 6: CHATGPT IMAGE GENERATION PROMPT
+
+Generate a ready-to-paste ChatGPT prompt that I can directly copy into ChatGPT. This prompt should:
+- Include the FULL clean script from Section 3 already embedded inside it
+- Ask ChatGPT to create 25-35 scene-by-scene image generation prompts based on the script
+- Ask ChatGPT to create a thumbnail image prompt with design specs
+- Include all the image prompt rules below already written into the prompt:
+
+Image prompt rules to embed:
+- Each prompt must specify: subject, action, setting, lighting, mood, camera angle, era-accurate clothing/environment
+- End every prompt with: "Cinematic photorealistic, 8K, dramatic lighting, shallow depth of field, color graded like a David Fincher film, slightly desaturated with rich shadows, NOT AI looking, photorealistic skin texture, natural imperfections, realistic eyes"
+- Include VARIETY: close-ups, wide shots, overhead shots, over-shoulder shots, detail shots of hands/objects, silhouettes, crowd scenes, landscapes
+- NEVER generate the same type of shot twice in a row
+- For childhood where real face isn't available, use contextual visuals: objects, locations, weather, silhouettes, era-appropriate toys/items
+- For different life stages, specify approximate age and appearance changes
+- For ancient/historical figures where no photograph exists, describe the person based on historical descriptions and use atmospheric, environmental scenes with silhouettes rather than guessing at a face
+- Format: SCENE [number] | Timestamp: [X:XX - X:XX] / Narration context: [1 line] / Image prompt: [full prompt]
+- EMOTIONAL PACING IN VISUALS (match these to script sections):
+  - Cold Open: Extreme close-ups, harsh lighting, high contrast, tight framing
+  - Early Life: Warm tones, soft light, wide establishing shots, nostalgic feel
+  - The Rise: Dynamic angles, bright lighting, upward camera angles, energy
+  - The Conflict: Dark shadows, harsh fluorescent, tight claustrophobic framing
+  - The Fall: Muted colors, rain/grey skies, isolation, empty spaces
+  - Legacy: Golden hour light, wide shots, hopeful but bittersweet
+
+Thumbnail rules to embed:
+- Face takes 65-70% of frame (this is NON-NEGOTIABLE based on viral analysis)
+- Overlay text: 2-3 bold uppercase words ONLY — use the text from Section 1
+- Text style: Heavy bold sans-serif, white or yellow with black outline/drop shadow
+- Color scheme: high contrast, max 2 colors matching the topic's emotional tone
+- Layout: face on one side (65-70%), text on the other (30-35%), NO OVERLAP
+- Face expression must match the story's dominant emotion
+- Subtle background elements that hint at the story (flames, money, maps, shadows)
+- For ancient/obscure figures: use symbolic/atmospheric thumbnails with dramatic objects or silhouettes instead of a face
+
+The ChatGPT prompt should be complete and self-contained — I should be able to paste it directly without editing anything.
+
+---
+
+## SECTION 7: USA UPLOAD STRATEGY
+
+Provide a brief upload strategy section:
+- **Best upload time**: Best day and exact time to upload for maximum US reach. Consider EST and PST peak hours (most US viewers are active 6 PM - 10 PM EST which is 3 PM - 7 PM PST). Recommend specific day + time. Include SECONDARY upload windows for different time zones.
+- **YouTube Shorts clips**: Pick the TWO most viral-worthy 60-second moments from the script. Rewrite each as a standalone Shorts script that hooks in 1 second and ends with "Full story on our channel." These Shorts clips should drive traffic to the main video. Format each Short with specific visual direction.
+- **3 community post ideas**: Write 3 actual community post texts (not ideas — the actual text I can copy-paste) to promote the video before and after upload. Make them engaging for American audiences — use polls, questions, shocking facts. Include:
+  - 1 PRE-LAUNCH post (24 hours before upload) — tease with a shocking fact
+  - 1 LAUNCH DAY post — announce with urgency
+  - 1 POST-LAUNCH post (2-3 days after) — drive engagement with a poll or question
+- **Pinned comment**: Write the actual pinned comment text to pin on the video. It should drive engagement (ask a POLARIZING question, tease the next video, or share a bonus fact not in the video).
+- **End screen strategy**: Recommend which video to link to in end screen and what the end screen CTA text should say.
+
+---
+
+## SECTION 8: SERIES POTENTIAL & NEXT VIDEO RECOMMENDATIONS
+
+Based on the biography subject, suggest:
+- **Series potential**: Could this become a multi-part series? If so, suggest 3-4 episode titles and angles. (Series content drives 30-50% more views per video based on Mighty Monk and Epic History data)
+- **Related biography suggestions**: Suggest 5 related biography subjects that would appeal to the same audience, with a one-line angle for each.
+- **"Vs" video potential**: Suggest 1-2 "versus" comparison videos (e.g., "Tesla vs Edison: Who Really Won?") — these consistently outperform single-subject biographies.
+
+---
+
+## FINAL QUALITY SELF-CHECK (DO THIS BEFORE DELIVERING)
+
+Before delivering the complete package, perform these checks and FIX any issues found:
+
+**SCRIPT SELF-CHECK:**
+[ ] Word count is approximately 1800 words total (count it — if it's under 1600 or over 2000, rewrite)
+[ ] Each section is within +/- 25 words of its target word count
+[ ] Cold open starts at the MOST dramatic moment, NOT the birth/childhood
+[ ] Cold open uses PRESENT TENSE for immediacy
+[ ] At least 8 retention hooks are used throughout the script, spaced 60-90 seconds apart
+[ ] No two retention hooks appear back-to-back (at least 3-4 story sentences between each)
+[ ] Every 2-3 paragraphs contains at least one specific detail (date, quote, dollar amount, name, location)
+[ ] All money amounts include modern USD equivalents
+[ ] All measurements use US system (miles, dollars, Fahrenheit, feet)
+[ ] American English spelling throughout (search for "colour", "realise", "centre", "defence" — fix any found)
+[ ] No banned AI phrases used (scan the full script against the banned list)
+[ ] Pacing alternates between FAST, MEDIUM, and SLOW as specified per section
+[ ] The Conflict section (5:30-7:30) is the most intense and specific section in the entire script
+[ ] The CTA flows organically from the Legacy section (not an abrupt "thanks for watching")
+[ ] At least 2 named supporting characters appear in the script
+[ ] At least 3 real quotes with attribution are included
+[ ] The script reads like a Netflix documentary narrator, NOT like a Wikipedia article
+[ ] ElevenLabs <break/> tags are properly formatted (valid XML)
+[ ] The story has emotional CONTRAST — moments of hope followed by devastation, humor followed by tragedy
+
+**TITLE SELF-CHECK:**
+[ ] All 5 titles are under 50 characters
+[ ] Each title uses one of the 5 proven viral formulas (A-E)
+[ ] Each title has exactly ONE all-caps power word
+[ ] No title uses generic formats ("The Life of X", "X Biography")
+[ ] The best title is selected with a clear 1-2 line explanation
+
+**DESCRIPTION SELF-CHECK:**
+[ ] First 2 lines create a curiosity gap (not a generic summary)
+[ ] Subject's full name appears 3-4 times
+[ ] Chapter names are catchy and specific (not generic like "Early Life")
+[ ] Polarizing question is included
+[ ] 5 hashtags are included
+[ ] Research sources are listed
+[ ] Total length is 1000-2000 characters
+
+**TAGS SELF-CHECK:**
+[ ] Exactly 30 tags provided
+[ ] Mix of broad, specific, and long-tail tags
+[ ] American English spelling in all tags
+
+If ANY check fails, FIX IT before delivering. Do not deliver an incomplete or flawed package.
+
+---
+
+## FINAL RULES:
+- EVERYTHING must be in American English — spelling, grammar, idioms, cultural references
+- Include REAL historical facts, real quotes (with attribution), real dates, real names
+- If unsure about a fact, flag it with [VERIFY] — never fabricate quotes or events
+- The emotional arc must feel like a movie: hope -> struggle -> triumph -> tragedy -> bittersweet legacy
+- Every sentence must earn its place. If it doesn't move the story or create emotion, cut it.
+- The channel name is "LifeSpark Chronicles"
+- Total output should be comprehensive — do NOT truncate or summarize any section
+- The script must sound like a native American English speaker wrote it — no British phrases, no formal academic tone, no ESL patterns
+- SCRIPT MUST BE ~1800 WORDS (12 minutes when narrated). Do NOT write a significantly shorter or longer script.
+- Every retention hook must feel NATURAL, not forced — weave them into the narrative flow
+- The script must make the viewer feel like they're watching a movie, not reading a Wikipedia article
+- Alternate between FAST, MEDIUM, and SLOW pacing as specified in each script section
+- Every specific detail (date, quote, dollar amount) must be woven into a cinematic moment, NOT listed as a dry fact
+
+NOW GENERATE THE COMPLETE PACKAGE.
