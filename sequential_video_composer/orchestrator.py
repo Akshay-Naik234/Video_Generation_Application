@@ -42,7 +42,7 @@ class SequentialVideoOrchestrator:
         fps: int = 30,
         image_duration: float = 4.0,
         crossfade_duration: float = 1.5,
-        zoom_intensity: float = 1.08,
+        zoom_intensity: float = 1.15,
         effects_intensity: float = 0.4,
         audio_path: Optional[Union[str, Path]] = None,
         transition_style: str = "random",
