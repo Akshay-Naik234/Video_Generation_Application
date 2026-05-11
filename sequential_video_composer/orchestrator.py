@@ -419,9 +419,6 @@ class SequentialVideoOrchestrator:
             logger.info("  Target duration : %ss", self.total_video_duration)
         logger.info("=" * 60)
 
-        # Clear effect caches from any previous run to free memory
-        self.effects.clear_cache()
-
         numbered_images = self.discover_numbered_images()
         logger.info("[1/5] Creating animated clips...")
         clips_data = self.create_image_clips(numbered_images)
@@ -482,9 +479,7 @@ class SequentialVideoOrchestrator:
         logger.info("[5/5] Exporting video...")
         self._export_video(main_video)
 
-        # Clean up caches and release memory after export
-        cache_mb = self.optimizer.estimate_memory_mb()
-        self.effects.clear_cache()
+        # Release thread pool and buffers after export
         self.optimizer.cleanup()
 
         elapsed = _time.monotonic() - t0
@@ -492,8 +487,6 @@ class SequentialVideoOrchestrator:
         logger.info("Video created successfully in %.1fs", elapsed)
         logger.info("  Output: %s", self.output_path)
         logger.info("  Size  : %.1f MB", self.output_path.stat().st_size / (1024 * 1024))
-        if cache_mb > 0:
-            logger.info("  Peak cache: %.1f MB (freed)", cache_mb)
         logger.info("=" * 60)
 
     def _create_documentary_effect_overlays(self, clips_data: List[Dict]) -> List:

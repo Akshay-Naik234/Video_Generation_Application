@@ -3,15 +3,11 @@
 Provides utilities to reduce video generation time without sacrificing
 visible quality:
 
-- Frame-level caching for identical or near-identical frames
-- Batch image pre-loading with memory-mapped I/O
-- Optimized NumPy operations (pre-allocated buffers, in-place ops)
-- Parallel image processing via ThreadPoolExecutor
+- Batch image pre-loading via ThreadPoolExecutor
+- Pre-allocated frame buffer (avoids per-frame malloc)
 - Smart resize strategy (skip resize when source matches target)
 
 Safety:
-- All caches are bounded with configurable max entries
-- Memory usage is tracked and caches auto-evict on pressure
 - Thread pool is bounded and properly shut down
 - No global state — all state is instance-scoped
 """
@@ -20,7 +16,7 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Tuple, Optional, List, Callable
+from typing import Tuple, Optional, List
 
 import numpy as np
 from PIL import Image as PILImage
@@ -41,10 +37,7 @@ class RenderOptimizer:
         optimizer.cleanup()
     """
 
-    # Safety: max cached frames (each ~6 MB at 1080p)
-    MAX_FRAME_CACHE = 30    # ~180 MB ceiling
-    MAX_IMAGE_CACHE = 50    # ~300 MB ceiling for pre-loaded images
-    MAX_WORKERS = None       # Set in __init__ based on CPU count
+    MAX_WORKERS = None  # Set in __init__ based on CPU count
 
     def __init__(
         self,
@@ -56,8 +49,6 @@ class RenderOptimizer:
         # Bound thread pool to avoid over-subscription
         cpu_count = os.cpu_count() or 4
         self.MAX_WORKERS = max_workers or min(cpu_count, 6)
-        self._frame_cache: dict = {}
-        self._image_cache: dict = {}
         # Pre-allocated frame buffer for in-place operations
         self._frame_buffer: Optional[np.ndarray] = None
         self._pool: Optional[ThreadPoolExecutor] = None
@@ -153,42 +144,12 @@ class RenderOptimizer:
             resample = PILImage.LANCZOS
             return np.array(pil_img.resize((target_w, target_h), resample))
 
-    def cache_frame(self, key: str, frame: np.ndarray) -> None:
-        """Cache a rendered frame with bounded eviction.
-
-        Key should encode the unique render parameters (e.g., image_num,
-        movement_type, progress). Evicts oldest entry when at capacity.
-        """
-        if len(self._frame_cache) >= self.MAX_FRAME_CACHE:
-            oldest = next(iter(self._frame_cache))
-            del self._frame_cache[oldest]
-        self._frame_cache[key] = frame
-
-    def get_cached_frame(self, key: str) -> Optional[np.ndarray]:
-        """Retrieve a cached frame, or None if not cached."""
-        return self._frame_cache.get(key)
-
-    def estimate_memory_mb(self) -> float:
-        """Estimate current cache memory usage in megabytes."""
-        frame_bytes = sum(
-            arr.nbytes for arr in self._frame_cache.values()
-            if isinstance(arr, np.ndarray)
-        )
-        image_bytes = sum(
-            img.size[0] * img.size[1] * 3
-            for img in self._image_cache.values()
-            if img is not None
-        )
-        return (frame_bytes + image_bytes) / (1024 * 1024)
-
     def cleanup(self) -> None:
-        """Release all cached resources and shut down thread pool.
+        """Release resources and shut down thread pool.
 
         Safe to call multiple times. After cleanup, the optimizer can still
-        be reused — caches and pool will be lazily recreated on next use.
+        be reused — pool will be lazily recreated on next use.
         """
-        self._frame_cache.clear()
-        self._image_cache.clear()
         self._frame_buffer = None
         if self._pool is not None:
             self._pool.shutdown(wait=False)
