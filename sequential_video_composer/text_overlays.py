@@ -122,6 +122,20 @@ class TextOverlayEngine:
                 if os.path.isfile(path):
                     cls._resolved_bold = path
                     return path
+
+        # Dynamic fallback via matplotlib font_manager (finds any system font)
+        try:
+            from matplotlib import font_manager as fm
+            prop = fm.FontProperties(weight='bold' if bold else 'normal')
+            found = fm.findfont(prop, fallback_to_default=True)
+            if found and os.path.isfile(found):
+                if bold:
+                    cls._resolved_bold = found
+                else:
+                    cls._resolved_regular = found
+                return found
+        except ImportError:
+            pass
         return None
 
     def _get_font(self, size_key: str, bold: bool = False) -> ImageFont.FreeTypeFont:
@@ -158,6 +172,52 @@ class TextOverlayEngine:
         except TypeError:
             return ImageFont.load_default()
 
+    # ---- Text wrapping / safe margin helpers ----
+
+    # Safe margin percentage (title-safe area) — text stays within this zone.
+    _SAFE_MARGIN_PCT = 0.05  # 5% on each side
+
+    def _safe_rect(self) -> Tuple[int, int, int, int]:
+        """Return (left, top, right, bottom) of the title-safe area."""
+        mx = int(self.width * self._SAFE_MARGIN_PCT)
+        my = int(self.height * self._SAFE_MARGIN_PCT)
+        return mx, my, self.width - mx, self.height - my
+
+    def _wrap_text(
+        self,
+        text: str,
+        font: ImageFont.FreeTypeFont,
+        max_width: int,
+        draw: Optional[ImageDraw.ImageDraw] = None,
+    ) -> List[str]:
+        """Word-wrap *text* so no line exceeds *max_width* pixels."""
+        if draw is None:
+            tmp = PILImage.new('RGBA', (1, 1))
+            draw = ImageDraw.Draw(tmp)
+        words = text.split()
+        lines: List[str] = []
+        current: List[str] = []
+        for word in words:
+            test_line = ' '.join(current + [word])
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            if bbox[2] - bbox[0] <= max_width or not current:
+                current.append(word)
+            else:
+                lines.append(' '.join(current))
+                current = [word]
+        if current:
+            lines.append(' '.join(current))
+        return lines or [text]
+
+    def _clamp_position(
+        self, x: int, y: int, obj_w: int, obj_h: int
+    ) -> Tuple[int, int]:
+        """Clamp (x, y) so the object stays within the title-safe area."""
+        sl, st, sr, sb = self._safe_rect()
+        x = max(sl, min(x, sr - obj_w))
+        y = max(st, min(y, sb - obj_h))
+        return x, y
+
     # ---- Drawing helpers ----
 
     def _draw_text_with_shadow(
@@ -167,20 +227,23 @@ class TextOverlayEngine:
         text: str,
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 250),
-        shadow_offset: int = 8,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        shadow_offset: int = 10,
     ) -> None:
-        """Draw text with a strong drop shadow for depth and readability."""
+        """Draw text with a drop shadow and outline stroke for readability."""
         x, y = position
-        offset = max(3, int(shadow_offset * self.scale))
-        # Shadow (drawn three times at different offsets for maximum visibility)
+        offset = max(4, int(shadow_offset * self.scale))
+        sw = max(1, int(2 * self.scale))
+        sf = (0, 0, 0, 200)
+        # Shadow
         draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
-        draw.text((x + offset - 1, y + offset - 1), text, font=font,
-                  fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-        draw.text((x + offset + 1, y + offset + 1), text, font=font,
-                  fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
-        # Main text
-        draw.text((x, y), text, font=font, fill=fill)
+        draw.text((x + offset + 1, y + offset + 1), text, font=font, fill=shadow_color)
+        # Main text with stroke
+        try:
+            draw.text((x, y), text, font=font, fill=fill,
+                      stroke_width=sw, stroke_fill=sf)
+        except TypeError:
+            draw.text((x, y), text, font=font, fill=fill)
 
     def _draw_text_with_outline(
         self,
@@ -190,37 +253,42 @@ class TextOverlayEngine:
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
         outline_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-        outline_width: int = 6,
+        outline_width: int = 8,
         shadow: bool = True,
-        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 250),
-        shadow_offset: int = 8,
+        shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        shadow_offset: int = 10,
     ) -> None:
         """Draw text with outline stroke and optional drop shadow.
 
-        This makes text readable over any background by adding a dark outline
-        around each character plus an optional soft shadow underneath.
+        Uses Pillow's native stroke_width for fast single-call outline
+        rendering instead of an O(n²) multi-direction loop.
         """
         x, y = position
-        ow = max(1, int(outline_width * self.scale))
+        ow = max(2, int(outline_width * self.scale))
 
-        # Drop shadow (strong, drawn three times for max visibility on dark backgrounds)
         if shadow:
-            so = max(3, int(shadow_offset * self.scale))
+            so = max(4, int(shadow_offset * self.scale))
             draw.text((x + so, y + so), text, font=font, fill=shadow_color)
+            draw.text((x + so + 1, y + so + 1), text, font=font, fill=shadow_color)
             draw.text((x + so - 1, y + so - 1), text, font=font,
                       fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-            draw.text((x + so + 1, y + so + 1), text, font=font,
+            draw.text((x + so + 2, y + so + 2), text, font=font,
                       fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
 
-        # Outline: draw text in 8 directions around the center point
-        for dx in range(-ow, ow + 1):
-            for dy in range(-ow, ow + 1):
-                if dx == 0 and dy == 0:
-                    continue
-                draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
-
-        # Main text on top
-        draw.text((x, y), text, font=font, fill=fill)
+        # Native stroke_width is orders of magnitude faster than the O(n²) loop
+        try:
+            draw.text(
+                (x, y), text, font=font, fill=fill,
+                stroke_width=ow, stroke_fill=outline_color,
+            )
+        except TypeError:
+            # Fallback for older Pillow without stroke_width
+            for dx in range(-ow, ow + 1, max(1, ow // 2)):
+                for dy in range(-ow, ow + 1, max(1, ow // 2)):
+                    if dx == 0 and dy == 0:
+                        continue
+                    draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
+            draw.text((x, y), text, font=font, fill=fill)
 
     def _create_gradient_bar_fast(
         self,
@@ -278,6 +346,16 @@ class TextOverlayEngine:
         name_font = self._get_font('lower_third_name', bold=True)
         title_font = self._get_font('lower_third_title')
 
+        sl, st, sr, sb = self._safe_rect()
+        safe_w = sr - sl
+
+        # Wrap name/title if they exceed safe width
+        pad_x = int(36 * self.scale)
+        accent_w = int(6 * self.scale)
+        max_text_w = safe_w - pad_x * 3 - accent_w - int(120 * self.scale)
+        name_lines = self._wrap_text(name, name_font, max_text_w, draw)
+        name = '\n'.join(name_lines)
+
         # Measure text
         name_bbox = draw.textbbox((0, 0), name, font=name_font)
         name_w = name_bbox[2] - name_bbox[0]
@@ -286,25 +364,26 @@ class TextOverlayEngine:
         title_h = 0
         title_w = 0
         if title:
+            title_lines = self._wrap_text(title, title_font, max_text_w, draw)
+            title = '\n'.join(title_lines)
             title_bbox = draw.textbbox((0, 0), title, font=title_font)
             title_w = title_bbox[2] - title_bbox[0]
             title_h = title_bbox[3] - title_bbox[1]
 
         # Bar dimensions
-        pad_x = int(36 * self.scale)
         pad_y = int(16 * self.scale)
-        accent_w = int(6 * self.scale)
         content_w = max(name_w, title_w)
         bar_w = content_w + pad_x * 3 + accent_w
         # Extend gradient beyond text for fade-out effect
         gradient_w = min(bar_w + int(120 * self.scale), self.width - int(40 * self.scale))
         bar_h = name_h + title_h + pad_y * (3 if title else 2) + (int(10 * self.scale) if title else 0)
 
-        # Position: bottom-left with margin
+        # Position: bottom-left with margin, clamped to safe area
         margin_x = int(80 * self.scale)
         margin_y = int(100 * self.scale)
         bar_x = margin_x
         bar_y = self.height - margin_y - bar_h
+        bar_x, bar_y = self._clamp_position(bar_x, bar_y, gradient_w, bar_h)
 
         # Gradient background (fades right)
         gradient = self._create_gradient_bar_fast(
@@ -754,13 +833,19 @@ class TextOverlayEngine:
         draw = ImageDraw.Draw(overlay)
 
         font = self._get_font('slide_in', bold=True)
+
+        # Wrap text within half the screen width
+        pad_x = int(28 * self.scale)
+        accent_w = int(5 * self.scale)
+        max_card_text_w = self.width // 2 - pad_x * 2 - accent_w - int(94 * self.scale)
+        wrapped_lines = self._wrap_text(text, font, max_card_text_w, draw)
+        text = '\n'.join(wrapped_lines)
+
         text_bbox = draw.textbbox((0, 0), text, font=font)
         text_w = text_bbox[2] - text_bbox[0]
         text_h = text_bbox[3] - text_bbox[1]
 
-        pad_x = int(28 * self.scale)
         pad_y = int(14 * self.scale)
-        accent_w = int(5 * self.scale)
         card_w = text_w + pad_x * 2 + accent_w + int(14 * self.scale)
         card_h = text_h + pad_y * 2
         gradient_w = min(card_w + int(80 * self.scale), self.width // 2)

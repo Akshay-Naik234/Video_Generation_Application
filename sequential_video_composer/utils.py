@@ -23,6 +23,9 @@ def create_sequential_video(
     enable_text_overlays: bool = True,
     duration_config_path: Optional[Union[str, Path]] = None,
     enable_documentary_effects: bool = True,
+    aspect_mode: str = "fill",
+    preview_mode: bool = False,
+    fast_mode: bool = False,
 ) -> None:
     """Convenience function to create a sequential video from numbered images.
 
@@ -46,8 +49,15 @@ def create_sequential_video(
         duration_config_path: Optional path to JSON file with per-image durations
         enable_documentary_effects: Enable section-aware documentary effects
             (light leaks, film grain, dust particles, camera shake, etc.)
+        aspect_mode: How to fit images — 'fill' (crop), 'fit' (scale), 'letterbox' (black bars)
+        preview_mode: If True, render at 480p with faster settings for quick preview
+        fast_mode: If True, skip per-frame sharpening, use faster resize + encode settings
     """
     from .orchestrator import SequentialVideoOrchestrator
+
+    if preview_mode:
+        resolution = (854, 480)
+        fps = 24
 
     orchestrator = SequentialVideoOrchestrator(
         images_root=images_root,
@@ -68,6 +78,9 @@ def create_sequential_video(
         duration_config_path=duration_config_path,
         enable_documentary_effects=enable_documentary_effects,
     )
+    orchestrator.aspect_mode = aspect_mode
+    orchestrator.preview_mode = preview_mode
+    orchestrator.fast_mode = fast_mode
     orchestrator.create_video()
 
 

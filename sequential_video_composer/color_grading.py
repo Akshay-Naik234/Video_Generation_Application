@@ -45,70 +45,35 @@ class ColorGrading:
         return self.SECTION_GRADES.get(section, 'cinematic')
 
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
-        """Ensure no frame is excessively dark by lifting shadows.
+        """Lift deep shadows to preserve detail without altering overall brightness.
 
-        Uses a two-pass approach:
-        1. If >30% of pixels are below luminance 60, apply a strong global
-           brightness boost proportional to how dark the frame is.
-        2. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) on
-           dark frames for local contrast recovery.
-        3. Clamp minimum pixel value to 30 so nothing is crushed to black.
+        Only pixels below value 20 are gently lifted so pure-black areas
+        retain some visible detail. This is NOT brightness enforcement —
+        the overall image brightness is untouched.
         """
         img = image.astype(np.float64)
-        luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
-        dark_ratio = np.mean(luminance < 60)
-
-        if dark_ratio > 0.3:
-            boost = 40 + 30 * dark_ratio
-            img = img + boost
-
-        img = np.clip(img, 30, 255)
-        result = img.astype(np.uint8)
-
-        # CLAHE for local contrast on very dark frames
-        if dark_ratio > 0.5:
-            try:
-                import cv2
-                lab = cv2.cvtColor(result, cv2.COLOR_RGB2LAB)
-                l_channel = lab[:, :, 0]
-                clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-                lab[:, :, 0] = clahe.apply(l_channel)
-                result = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
-            except ImportError:
-                pass
-
-        return result
+        img = np.where(img < 20, img * 1.3 + 10, img)
+        return np.clip(img, 0, 255).astype(np.uint8)
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
-        """Apply color grading to an image then enforce minimum brightness."""
-        if grade_type == 'cinematic':
-            return self._cinematic_grade(image)
-        elif grade_type == 'documentary':
-            return self._documentary_grade(image)
-        elif grade_type == 'vintage':
-            return self._vintage_grade(image)
-        elif grade_type == 'modern':
-            return self._modern_grade(image)
-        elif grade_type == 'warm':
-            return self._warm_grade(image)
-        elif grade_type == 'cool':
-            return self._cool_grade(image)
-        elif grade_type == 'high_contrast':
-            return self._high_contrast_grade(image)
-        elif grade_type == 'soft':
-            return self._soft_grade(image)
-        elif grade_type == 'dramatic':
-            return self._dramatic_grade(image)
-        elif grade_type == 'natural':
-            return self._natural_grade(image)
-        elif grade_type == 'teal_orange':
-            return self._teal_orange_grade(image)
-        elif grade_type == 'noir':
-            return self._noir_grade(image)
-        elif grade_type == 'golden_hour':
-            return self._golden_hour_grade(image)
-        else:
-            return self._enforce_min_brightness(image)
+        """Apply color grading to an image."""
+        dispatch = {
+            'cinematic': self._cinematic_grade,
+            'documentary': self._documentary_grade,
+            'vintage': self._vintage_grade,
+            'modern': self._modern_grade,
+            'warm': self._warm_grade,
+            'cool': self._cool_grade,
+            'high_contrast': self._high_contrast_grade,
+            'soft': self._soft_grade,
+            'dramatic': self._dramatic_grade,
+            'natural': self._natural_grade,
+            'teal_orange': self._teal_orange_grade,
+            'noir': self._noir_grade,
+            'golden_hour': self._golden_hour_grade,
+        }
+        grader = dispatch.get(grade_type, self._enforce_min_brightness)
+        return grader(image)
 
     def _cinematic_grade(self, image: np.ndarray) -> np.ndarray:
         """Cinematic color grading with lifted shadows and gentle contrast."""

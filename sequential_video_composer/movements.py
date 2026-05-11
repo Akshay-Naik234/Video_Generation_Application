@@ -66,6 +66,13 @@ class MovementStyles:
         'map_pan',
         # Timeline / chronology
         'timeline_reveal',
+        # Cinematic camera movements
+        'truck_left',
+        'truck_right',
+        'static_motion',
+        'shoulder_drift',
+        'tracking_shot',
+        'cinematic_reveal',
     ]
 
     # Movements grouped by documentary section / emotional tone
@@ -108,6 +115,56 @@ class MovementStyles:
     def __init__(self, resolution: Tuple[int, int]):
         self.width, self.height = resolution
         self.resolution = resolution
+        self.aspect_mode = 'letterbox'
+        self.fast_mode = False
+        self._easing_map = {k: self._ease_in_out_sine for k in [
+            'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
+            'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
+            'dolly_zoom', 'spiral_zoom', 'orbit', 'float_up',
+            'reveal_left', 'reveal_right', 'map_zoom', 'map_pan',
+            'timeline_reveal', 'truck_left', 'truck_right',
+            'tracking_shot', 'cinematic_reveal', 'shoulder_drift',
+        ]}
+
+    def _fit_image(
+        self, img: PILImage.Image, target_w: int, target_h: int
+    ) -> PILImage.Image:
+        """Fit image to target dimensions using the configured aspect mode.
+
+        Modes:
+            fill — scale + center-crop (no black bars, slight edge crop)
+            fit — scale to fit inside, preserving aspect ratio (may leave bars)
+            letterbox — same as fit but with explicit black background
+        """
+        orig_w, orig_h = img.size
+        orig_aspect = orig_w / orig_h
+        target_aspect = target_w / target_h
+
+        if self.aspect_mode == 'fill':
+            if orig_aspect > target_aspect:
+                fill_h = target_h
+                fill_w = int(target_h * orig_aspect)
+            else:
+                fill_w = target_w
+                fill_h = int(target_w / orig_aspect)
+            resized = img.resize((fill_w, fill_h), PILImage.LANCZOS)
+            cx = (fill_w - target_w) // 2
+            cy = (fill_h - target_h) // 2
+            return resized.crop((cx, cy, cx + target_w, cy + target_h))
+
+        # fit / letterbox — scale to fit inside
+        if orig_aspect > target_aspect:
+            new_w = target_w
+            new_h = int(target_w / orig_aspect)
+        else:
+            new_h = target_h
+            new_w = int(target_h * orig_aspect)
+        resized = img.resize((new_w, new_h), PILImage.LANCZOS)
+        canvas = PILImage.new('RGB', (target_w, target_h), (0, 0, 0))
+        paste_x = (target_w - new_w) // 2
+        paste_y = (target_h - new_h) // 2
+        canvas.paste(resized, (paste_x, paste_y))
+        return canvas
 
     def create_animated_clip(
         self,
@@ -129,10 +186,12 @@ class MovementStyles:
         Accepts an optional *section* name so section-aware zoom multipliers
         can be applied automatically.
         """
-        # Apply section-aware zoom boost
+        # Apply section-aware zoom boost, capped to prevent excessive cropping
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
+        zoom_intensity = min(zoom_intensity, 1.15)  # hard cap
         base_img = PILImage.open(image_path)
+        base_img.load()
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
@@ -140,26 +199,7 @@ class MovementStyles:
         scaled_width = int(self.width * max_zoom * 1.4)
         scaled_height = int(self.height * max_zoom * 1.4)
 
-        orig_width, orig_height = base_img.size
-        orig_aspect = orig_width / orig_height
-        target_aspect = scaled_width / scaled_height
-
-        # Fill-crop: scale the image so it completely covers the canvas
-        # (no black bars, no blur borders). Minor edges may be cropped but
-        # a 10% safe margin is maintained during movements.
-        if orig_aspect > target_aspect:
-            fill_height = scaled_height
-            fill_width = int(scaled_height * orig_aspect)
-        else:
-            fill_width = scaled_width
-            fill_height = int(scaled_width / orig_aspect)
-
-        resized_img = base_img.resize((fill_width, fill_height), PILImage.LANCZOS)
-        crop_x = (fill_width - scaled_width) // 2
-        crop_y = (fill_height - scaled_height) // 2
-        canvas = resized_img.crop((crop_x, crop_y, crop_x + scaled_width, crop_y + scaled_height))
-
-        base_img = canvas
+        base_img = self._fit_image(base_img, scaled_width, scaled_height)
         base_array = np.array(base_img)
 
         if color_grader and color_grade:
@@ -192,31 +232,18 @@ class MovementStyles:
         except ImportError:
             _has_cv2 = False
 
-        # Use smooth sine easing for all movements — gives the most fluid,
-        # professional feel with no sudden acceleration or deceleration.
-        _easing_map = {
-            'dramatic_zoom': self._ease_in_out_sine,
-            'push_in': self._ease_in_out_sine,
-            'push_out': self._ease_in_out_sine,
-            'whip_pan': self._ease_in_out_sine,
-            'crane_up': self._ease_in_out_sine,
-            'crane_down': self._ease_in_out_sine,
-            'rack_focus': self._ease_in_out_sine,
-            'bounce_zoom': self._ease_in_out_sine,
-            'dolly_zoom': self._ease_in_out_sine,
-            'spiral_zoom': self._ease_in_out_sine,
-            'orbit': self._ease_in_out_sine,
-            'float_up': self._ease_in_out_sine,
-            'reveal_left': self._ease_in_out_sine,
-            'reveal_right': self._ease_in_out_sine,
-            'map_zoom': self._ease_in_out_sine,
-            'map_pan': self._ease_in_out_sine,
-            'timeline_reveal': self._ease_in_out_sine,
-        }
-        _ease_fn = _easing_map.get(movement_type, self._ease_in_out_sine)
+        _ease_fn = self._easing_map.get(movement_type, self._ease_in_out_sine)
+        _safe_duration = max(duration, 1e-6)
+        _fast = self.fast_mode
+
+        # In fast mode use INTER_AREA (3-5x faster, good for downscale)
+        # In normal mode use INTER_LANCZOS4 (highest quality)
+        if _has_cv2:
+            import cv2 as _cv2
+            _interp = _cv2.INTER_AREA if _fast else _cv2.INTER_LANCZOS4
 
         def make_frame(t):
-            progress = t / duration if duration > 0 else 0
+            progress = t / _safe_duration
             progress = max(0.0, min(1.0, progress))
             eased = _ease_fn(progress)
 
@@ -224,7 +251,6 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            # Safety cap: max 15% zoom to prevent content cropping
             zoom = min(zoom, 1.15)
 
             crop_w = self.width / zoom
@@ -252,12 +278,12 @@ class MovementStyles:
             cropped = src[t_i:b_i, l_i:r_i]
 
             if _has_cv2:
-                frame = cv2.resize(cropped, (out_w, out_h), interpolation=cv2.INTER_LANCZOS4)
+                frame = _cv2.resize(cropped, (out_w, out_h), interpolation=_interp)
             else:
                 pil_crop = PILImage.fromarray(cropped)
                 frame = np.array(pil_crop.resize((out_w, out_h), PILImage.LANCZOS))
 
-            if movement_type in ('whip_pan', 'push_in', 'dramatic_zoom', 'dolly_zoom'):
+            if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
 
             return frame
@@ -270,14 +296,11 @@ class MovementStyles:
     # ---- Visual effect helpers ----
 
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply an adaptive vignette that weakens on dark images."""
+        """Apply a very subtle vignette, skipped entirely on dark images."""
         avg_brightness = np.mean(image)
-        if avg_brightness < 80:
-            strength = 0.12
-        elif avg_brightness < 120:
-            strength = 0.20
-        else:
-            strength = 0.30
+        if avg_brightness < 100:
+            return image
+        strength = 0.10
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -320,17 +343,32 @@ class MovementStyles:
         mask = mask[:, :, np.newaxis]
         return sharp_arr * (1 - mask) + blur_arr * mask
 
-    def _apply_motion_blur(self, frame: np.ndarray, progress: float) -> np.ndarray:
-        """Apply directional motion blur during fast animation phases.
+    def _apply_output_sharpen(self, frame: np.ndarray) -> np.ndarray:
+        """Apply a gentle unsharp-mask to the final output frame.
 
-        Blur strength peaks in the middle 40% of the animation and scales
-        with resolution so the effect looks consistent at any output size.
+        Counteracts softness introduced by the crop→resize pipeline.
+        Uses a lightweight 3×3 kernel for speed.
         """
-        blur_strength = max(0, 1.0 - abs(progress - 0.5) * 4.0)
-        if blur_strength < 0.05:
+        try:
+            import cv2
+            blurred = cv2.GaussianBlur(frame, (0, 0), sigmaX=1.0)
+            return cv2.addWeighted(frame, 1.4, blurred, -0.4, 0)
+        except ImportError:
+            img = PILImage.fromarray(frame)
+            img = img.filter(ImageFilter.UnsharpMask(radius=1, percent=80, threshold=2))
+            return np.array(img)
+
+    def _apply_motion_blur(self, frame: np.ndarray, progress: float) -> np.ndarray:
+        """Apply subtle directional motion blur during the fastest phase.
+
+        Only activates in the narrow middle band of the animation and uses
+        a very small kernel so the frame stays sharp.
+        """
+        blur_strength = max(0, 1.0 - abs(progress - 0.5) * 5.0)
+        if blur_strength < 0.15:
             return frame
 
-        kernel_size = int(blur_strength * 3 * (self.width / 1920))
+        kernel_size = max(2, int(blur_strength * 2 * (self.width / 1920)))
         if kernel_size < 2:
             return frame
 
@@ -338,10 +376,12 @@ class MovementStyles:
             import cv2
             kernel = np.zeros((kernel_size, kernel_size))
             kernel[kernel_size // 2, :] = 1.0 / kernel_size
-            return cv2.filter2D(frame, -1, kernel)
+            blurred = cv2.filter2D(frame, -1, kernel)
+            # Blend: keep 60% sharp, 40% blurred for subtlety
+            return cv2.addWeighted(frame, 0.6, blurred, 0.4, 0)
         except ImportError:
             img = PILImage.fromarray(frame)
-            img = img.filter(ImageFilter.BoxBlur(kernel_size))
+            img = img.filter(ImageFilter.BoxBlur(max(1, kernel_size // 2)))
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
@@ -381,7 +421,16 @@ class MovementStyles:
     ) -> Tuple[float, float, float]:
         """Calculate zoom and pan values for the given movement type.
 
-        Returns (zoom, pan_x, pan_y) where pan values are normalized offsets.
+        Args:
+            movement_type: One of MOVEMENT_TYPES (e.g. 'zoom_in', 'orbit').
+            eased: Progress 0→1 after easing function is applied.
+            zoom_intensity: Base zoom multiplier (typically 1.08–1.15).
+            raw_progress: Linear 0→1 progress before easing (used for
+                some effects that need raw time, like sinusoidal drift).
+
+        Returns:
+            (zoom, pan_x, pan_y) where zoom is a scale factor (1.0 = no zoom)
+            and pan_x/pan_y are fractional offsets of the frame centre.
         """
         # Classic movements
         if movement_type == 'zoom_in':
@@ -564,6 +613,44 @@ class MovementStyles:
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
             pan_x = -0.22 * (1.0 - eased)
             return zoom, pan_x, 0
+
+        # ---- Cinematic camera movements (v5.0) ----
+
+        elif movement_type == 'truck_left':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = -0.22 * eased
+            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'truck_right':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.22 * eased
+            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'static_motion':
+            zoom = 1.0 + 0.02 * np.sin(raw_progress * np.pi * 2)
+            pan_x = 0.01 * np.sin(raw_progress * np.pi * 1.7)
+            pan_y = 0.01 * np.cos(raw_progress * np.pi * 1.3)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'shoulder_drift':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            pan_x = 0.12 * np.sin(raw_progress * np.pi * 0.8) + 0.06
+            pan_y = 0.04 * np.sin(raw_progress * np.pi * 1.2)
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'tracking_shot':
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
+            pan_x = 0.16 * eased
+            pan_y = -0.04 * eased
+            return zoom, pan_x, pan_y
+
+        elif movement_type == 'cinematic_reveal':
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * (1.0 - eased)
+            pan_y = -0.10 * (1.0 - eased)
+            pan_x = 0.06 * (1.0 - eased)
+            return zoom, pan_x, pan_y
 
         else:
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
