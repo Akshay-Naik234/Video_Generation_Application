@@ -3,6 +3,13 @@
 Includes section-aware grading that automatically applies the right colour
 tone for each documentary section — warm golden for nostalgia, cool
 desaturated for conflict, rich dramatic for climax, etc.
+
+Features (v2.0):
+- 13 color grades with section-aware mapping
+- Per-shot adaptive grading (histogram-aware intensity scaling)
+- Smooth cross-grade transitions between sections
+- Emotional tone → color science mapping
+- Split-toning (independent shadow/highlight color control)
 """
 
 import numpy as np
@@ -183,3 +190,116 @@ class ColorGrading:
         img = (img - 128) * 1.08 + 128
         img += 8
         return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
+
+    # ---- Per-shot adaptive color science (v2.0) ----
+
+    EMOTION_GRADE_MAP = {
+        'tension': 'teal_orange',
+        'nostalgia': 'warm',
+        'hope': 'golden_hour',
+        'darkness': 'noir',
+        'devastation': 'cool',
+        'triumph': 'high_contrast',
+        'bittersweet': 'vintage',
+    }
+
+    def grade_for_emotion(self, emotional_tone: str) -> str:
+        """Return the recommended grade for an emotional tone."""
+        return self.EMOTION_GRADE_MAP.get(emotional_tone, 'cinematic')
+
+    def apply_adaptive_grade(
+        self, image: np.ndarray, grade_type: str, emotional_tone: str = ''
+    ) -> np.ndarray:
+        """Apply histogram-adaptive color grading.
+
+        Analyzes the source image histogram before applying the grade and
+        scales intensity to prevent double-warming (warm grade on warm image)
+        or over-cooling (cool grade on cool image). This preserves the
+        natural feel of well-lit AI-generated images.
+        """
+        img_f = image.astype(np.float64)
+        mean_r = np.mean(img_f[:, :, 0])
+        mean_g = np.mean(img_f[:, :, 1])
+        mean_b = np.mean(img_f[:, :, 2])
+        mean_lum = 0.299 * mean_r + 0.587 * mean_g + 0.114 * mean_b
+
+        warmth = (mean_r - mean_b) / max(mean_lum, 1.0)
+
+        # Reduce warm grade intensity if image is already warm
+        warm_grades = {'warm', 'golden_hour', 'vintage'}
+        cool_grades = {'cool', 'teal_orange', 'noir'}
+
+        graded = self.apply_grade(image, grade_type)
+
+        if grade_type in warm_grades and warmth > 0.15:
+            blend = max(0.5, 1.0 - warmth)
+            graded = self._blend_images(image, graded, blend)
+        elif grade_type in cool_grades and warmth < -0.15:
+            blend = max(0.5, 1.0 - abs(warmth))
+            graded = self._blend_images(image, graded, blend)
+
+        return graded
+
+    def cross_grade(
+        self,
+        image: np.ndarray,
+        grade_from: str,
+        grade_to: str,
+        blend: float,
+    ) -> np.ndarray:
+        """Smoothly transition between two color grades.
+
+        Args:
+            image: Source image array.
+            grade_from: Starting grade name.
+            grade_to: Target grade name.
+            blend: 0.0 = fully grade_from, 1.0 = fully grade_to.
+
+        Used at section boundaries to create smooth 3-5 second color
+        transitions instead of abrupt grade switches.
+        """
+        blend = max(0.0, min(1.0, blend))
+        if blend <= 0.0:
+            return self.apply_grade(image, grade_from)
+        if blend >= 1.0:
+            return self.apply_grade(image, grade_to)
+
+        graded_from = self.apply_grade(image, grade_from)
+        graded_to = self.apply_grade(image, grade_to)
+        return self._blend_images(graded_from, graded_to, blend)
+
+    def apply_split_tone(
+        self,
+        image: np.ndarray,
+        shadow_color: tuple = (0, 10, 20),
+        highlight_color: tuple = (15, 5, -5),
+        strength: float = 0.5,
+    ) -> np.ndarray:
+        """Apply split-toning: independent shadow and highlight color shifts.
+
+        Args:
+            image: Source image.
+            shadow_color: (R, G, B) offset for shadow regions.
+            highlight_color: (R, G, B) offset for highlight regions.
+            strength: Overall intensity 0-1.
+        """
+        img = image.astype(np.float64)
+        luminance = np.dot(img[..., :3], [0.299, 0.587, 0.114])
+        shadow_mask = np.clip(1.0 - luminance / 128.0, 0, 1)[..., np.newaxis]
+        highlight_mask = np.clip((luminance - 128.0) / 128.0, 0, 1)[..., np.newaxis]
+
+        for ch in range(3):
+            img[:, :, ch] += shadow_mask[:, :, 0] * shadow_color[ch] * strength
+            img[:, :, ch] += highlight_mask[:, :, 0] * highlight_color[ch] * strength
+
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    @staticmethod
+    def _blend_images(
+        img_a: np.ndarray, img_b: np.ndarray, blend: float
+    ) -> np.ndarray:
+        """Blend two images with a scalar factor."""
+        a = img_a.astype(np.float64)
+        b = img_b.astype(np.float64)
+        result = a * (1.0 - blend) + b * blend
+        return np.clip(result, 0, 255).astype(np.uint8)

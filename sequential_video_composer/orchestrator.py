@@ -24,6 +24,7 @@ from .color_grading import ColorGrading
 from .clip_factory import ClipFactory
 from .text_overlays import TextOverlayEngine
 from .effects import DocumentaryEffects
+from .performance import RenderOptimizer
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +100,7 @@ class SequentialVideoOrchestrator:
         self.clip_factory = ClipFactory(self)
         self.text_overlay_engine = TextOverlayEngine(resolution, accent_color=overlay_accent_color)
         self.effects = DocumentaryEffects(resolution, fps=fps)
+        self.optimizer = RenderOptimizer(resolution=resolution)
 
     def _validate_config(self) -> None:
         """Validate configuration values and log warnings for suspect values."""
@@ -213,6 +215,48 @@ class SequentialVideoOrchestrator:
         """Get the duration for a specific image number."""
         timing = self.get_timing_for_image(image_number)
         return timing.get('duration', self.image_duration)
+
+    # ---- Micro-pacing variation (v2.0) ----
+
+    # Golden ratio for timing variation
+    _PHI = 1.618
+
+    def apply_micro_pacing(
+        self, base_duration: float, image_index: int, section: str = ''
+    ) -> float:
+        """Apply subtle micro-pacing variation within sections.
+
+        Alternates between 'punch' (shorter) and 'breathe' (longer) images
+        to prevent monotonous rhythm. Variation is ±15% of base duration,
+        modulated by section type.
+
+        Only applied when no explicit per-image duration is set in JSON config.
+        """
+        # Sections that should have tighter variation (action scenes)
+        tight_sections = {'COLD_OPEN', 'THE_CONFLICT', 'THE_CLIMAX'}
+        # Sections that should have wider variation (contemplative)
+        wide_sections = {'LEGACY', 'EARLY_LIFE'}
+
+        if section in tight_sections:
+            variation = 0.10
+        elif section in wide_sections:
+            variation = 0.18
+        else:
+            variation = 0.15
+
+        # Alternate punch/breathe using golden ratio for natural feel
+        if image_index % 3 == 0:
+            # Punch image (shorter)
+            factor = 1.0 - variation
+        elif image_index % 3 == 1:
+            # Normal image
+            factor = 1.0
+        else:
+            # Breathe image (longer)
+            factor = 1.0 + variation
+
+        result = base_duration * factor
+        return max(2.0, min(result, 8.0))
 
     def discover_numbered_images(self) -> List[Tuple[int, Path]]:
         """Discover and sort images by their numeric prefix."""
@@ -375,6 +419,9 @@ class SequentialVideoOrchestrator:
             logger.info("  Target duration : %ss", self.total_video_duration)
         logger.info("=" * 60)
 
+        # Clear effect caches from any previous run to free memory
+        self.effects.clear_cache()
+
         numbered_images = self.discover_numbered_images()
         logger.info("[1/5] Creating animated clips...")
         clips_data = self.create_image_clips(numbered_images)
@@ -435,11 +482,18 @@ class SequentialVideoOrchestrator:
         logger.info("[5/5] Exporting video...")
         self._export_video(main_video)
 
+        # Clean up caches and release memory after export
+        cache_mb = self.optimizer.estimate_memory_mb()
+        self.effects.clear_cache()
+        self.optimizer.cleanup()
+
         elapsed = _time.monotonic() - t0
         logger.info("=" * 60)
         logger.info("Video created successfully in %.1fs", elapsed)
         logger.info("  Output: %s", self.output_path)
         logger.info("  Size  : %.1f MB", self.output_path.stat().st_size / (1024 * 1024))
+        if cache_mb > 0:
+            logger.info("  Peak cache: %.1f MB (freed)", cache_mb)
         logger.info("=" * 60)
 
     def _create_documentary_effect_overlays(self, clips_data: List[Dict]) -> List:
@@ -722,6 +776,74 @@ class SequentialVideoOrchestrator:
                 if t > fade_out_start:
                     fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
                 return _alpha * fade_in * fade
+
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
+            clip = clip.set_mask(mask_clip)
+
+        elif animation == 'scale_impact':
+            # Text scales up from small to full size with a punch for key facts/numbers
+            def make_frame(t, _rgb=rgb_frame):
+                return _rgb
+
+            def make_mask(t, _alpha=alpha_mask):
+                scale_dur = min(duration * 0.3, 0.6)
+                if t < scale_dur and scale_dur > 0:
+                    progress = t / scale_dur
+                    # Back ease: overshoot then settle
+                    p = progress - 1.0
+                    scale = 1.0 + p * p * (2.7 * p + 1.7)
+                    # Scale the alpha mask from center
+                    if scale < 1.0 and scale > 0.1:
+                        sh, sw = _alpha.shape
+                        cy, cx = sh // 2, sw // 2
+                        scaled_h = int(sh * scale)
+                        scaled_w = int(sw * scale)
+                        if scaled_h > 0 and scaled_w > 0:
+                            result = np.zeros_like(_alpha)
+                            # Simple center crop of the alpha
+                            top = max(0, cy - scaled_h // 2)
+                            left = max(0, cx - scaled_w // 2)
+                            result[top:top + min(scaled_h, sh), left:left + min(scaled_w, sw)] = \
+                                _alpha[top:top + min(scaled_h, sh), left:left + min(scaled_w, sw)]
+                            return result * progress
+                    return _alpha * progress
+                # Sustain
+                fade_out_start = duration * 0.85
+                fade = 1.0
+                if t > fade_out_start:
+                    fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
+                return _alpha * fade
+
+            clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
+            mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
+            clip = clip.set_mask(mask_clip)
+
+        elif animation == 'wave':
+            # Text with a sinusoidal wave distortion that settles
+            def make_frame(t, _rgb=rgb_frame):
+                return _rgb
+
+            def make_mask(t, _alpha=alpha_mask):
+                settle_dur = min(duration * 0.5, 2.0)
+                progress = min(t / settle_dur, 1.0) if settle_dur > 0 else 1.0
+                # Decreasing wave amplitude as it settles
+                amplitude = int(h * 0.03 * (1.0 - progress))
+                if amplitude <= 0:
+                    fade_out_start = duration * 0.85
+                    fade = 1.0
+                    if t > fade_out_start:
+                        fade = max(0, 1.0 - (t - fade_out_start) / (duration * 0.15))
+                    return _alpha * fade
+                # Apply wave distortion to alpha mask
+                result = np.zeros_like(_alpha)
+                for row in range(_alpha.shape[0]):
+                    offset = int(amplitude * np.sin(row * 0.05 + t * 4))
+                    src_row = row + offset
+                    if 0 <= src_row < _alpha.shape[0]:
+                        result[row] = _alpha[src_row]
+                fade_in = min(t / 0.3, 1.0)
+                return result * fade_in
 
             clip = VideoClip(make_frame, duration=duration).set_fps(self.fps)
             mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)

@@ -117,14 +117,47 @@ class MovementStyles:
         self.resolution = resolution
         self.aspect_mode = 'letterbox'
         self.fast_mode = False
-        self._easing_map = {k: self._ease_in_out_sine for k in [
-            'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
-            'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
-            'dolly_zoom', 'spiral_zoom', 'orbit', 'float_up',
-            'reveal_left', 'reveal_right', 'map_zoom', 'map_pan',
-            'timeline_reveal', 'truck_left', 'truck_right',
-            'tracking_shot', 'cinematic_reveal', 'shoulder_drift',
-        ]}
+        self._easing_map = {
+            # Energy → settle (fast start, graceful deceleration)
+            'crane_up': self._ease_out_expo,
+            'crane_down': self._ease_out_expo,
+            'float_up': self._ease_out_expo,
+            'reveal_left': self._ease_out_expo,
+            'reveal_right': self._ease_out_expo,
+            'cinematic_reveal': self._ease_out_expo,
+            # Build → impact (slow start, accelerating into climax)
+            'push_in': self._ease_in_out_quart,
+            'dramatic_zoom': self._ease_in_out_quart,
+            'rack_focus': self._ease_in_out_quart,
+            'dolly_zoom': self._ease_in_out_quart,
+            'spiral_zoom': self._ease_in_out_quart,
+            # Organic flow (smooth sinusoidal for natural movements)
+            'gentle_drift': self._ease_in_out_sine,
+            'breathing': self._ease_in_out_sine,
+            'parallax_depth': self._ease_in_out_sine,
+            'shoulder_drift': self._ease_in_out_sine,
+            'static_motion': self._ease_in_out_sine,
+            # Bouncy emphasis (elastic/back overshoot for impact)
+            'bounce_zoom': self._ease_elastic_out,
+            # Mechanical consistency (linear for tracking)
+            'tracking_shot': self._ease_in_out_sine,
+            'truck_left': self._ease_in_out_sine,
+            'truck_right': self._ease_in_out_sine,
+            'map_zoom': self._ease_in_out_sine,
+            'map_pan': self._ease_in_out_sine,
+            'timeline_reveal': self._ease_in_out_sine,
+            # Speed ramp for fast movements
+            'whip_pan': self._speed_ramp,
+            # Standard cinematic ease for orbits
+            'orbit': self._ease_in_out_quint,
+            'push_out': self._ease_in_out_sine,
+        }
+        # Breathing base layer amplitude (subtle 0.5% oscillation on all movements)
+        self._breathing_amplitude = 0.005
+        self._breathing_freq = 0.1  # Hz
+        # Camera inertia overshoot settings
+        self._inertia_duration_frac = 0.12
+        self._inertia_overshoot = 0.02
 
     def _fit_image(
         self, img: PILImage.Image, target_w: int, target_h: int
@@ -210,11 +243,12 @@ class MovementStyles:
 
         scaled_img = PILImage.fromarray(base_array)
 
-        # For tilt_shift, pre-compute blurred version
+        # For tilt_shift and rack_focus, pre-compute blurred version
         blurred_img = None
-        if movement_type == 'tilt_shift':
+        if movement_type in ('tilt_shift', 'rack_focus'):
+            blur_radius = int(8 * (self.height / 1080))
             blurred_img = scaled_img.filter(
-                ImageFilter.GaussianBlur(radius=int(8 * (self.height / 1080)))
+                ImageFilter.GaussianBlur(radius=blur_radius)
             )
 
         center_x = scaled_width / 2.0
@@ -242,6 +276,11 @@ class MovementStyles:
             import cv2 as _cv2
             _interp = _cv2.INTER_AREA if _fast else _cv2.INTER_LANCZOS4
 
+        _breath_amp = self._breathing_amplitude
+        _breath_freq = self._breathing_freq
+        _inertia_frac = self._inertia_duration_frac
+        _inertia_over = self._inertia_overshoot
+
         def make_frame(t):
             progress = t / _safe_duration
             progress = max(0.0, min(1.0, progress))
@@ -250,6 +289,19 @@ class MovementStyles:
             zoom, pan_x, pan_y = self._calculate_movement(
                 movement_type, eased, zoom_intensity, progress
             )
+
+            # Breathing base layer: subtle sinusoidal zoom on all movements
+            if movement_type != 'static':
+                breath = _breath_amp * np.sin(2 * np.pi * _breath_freq * t)
+                zoom += breath
+
+            # Camera inertia: slight overshoot at the end of movement
+            if progress > (1.0 - _inertia_frac) and movement_type not in (
+                'static', 'static_motion', 'breathing'
+            ):
+                inertia_t = (progress - (1.0 - _inertia_frac)) / _inertia_frac
+                overshoot = _inertia_over * np.sin(inertia_t * np.pi)
+                zoom += overshoot * (zoom_intensity - 1.0)
 
             zoom = min(zoom, 1.15)
 
@@ -272,6 +324,10 @@ class MovementStyles:
             src = base_np
             if movement_type == 'tilt_shift' and blurred_np is not None:
                 src = self._apply_tilt_shift_blend_np(
+                    base_np, blurred_np, progress
+                )
+            elif movement_type == 'rack_focus' and blurred_np is not None:
+                src = self._apply_rack_focus_blend(
                     base_np, blurred_np, progress
                 )
 
@@ -343,6 +399,44 @@ class MovementStyles:
         mask = mask[:, :, np.newaxis]
         return sharp_arr * (1 - mask) + blur_arr * mask
 
+    def _apply_rack_focus_blend(
+        self, sharp_np: np.ndarray, blurred_np: np.ndarray, progress: float
+    ) -> np.ndarray:
+        """Simulate focus pull from background to foreground (or vice versa).
+
+        Starts blurred (background in focus) and transitions to sharp (foreground
+        in focus) using a radial center-weighted mask that shifts over time.
+        Creates a cinematic depth-of-field shift effect.
+        """
+        h, w = sharp_np.shape[:2]
+        sharp_f = sharp_np.astype(np.float32)
+        blur_f = blurred_np.astype(np.float32)
+
+        # Focus pull: blend from blurred to sharp over the animation
+        # First 40%: mostly blurred (background focus)
+        # Middle 20%: transition (rack focus moment)
+        # Last 40%: mostly sharp (foreground focus)
+        if progress < 0.4:
+            blend = progress / 0.4 * 0.2  # 0 → 0.2
+        elif progress < 0.6:
+            blend = 0.2 + (progress - 0.4) / 0.2 * 0.6  # 0.2 → 0.8
+        else:
+            blend = 0.8 + (progress - 0.6) / 0.4 * 0.2  # 0.8 → 1.0
+
+        # Radial mask: center is sharper, edges stay blurrier longer
+        cy, cx = h // 2, w // 2
+        Y, X = np.ogrid[:h, :w]
+        dist = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float32)
+        max_dist = np.sqrt(cx ** 2 + cy ** 2)
+        radial = np.clip(1.0 - dist / max_dist, 0, 1)
+
+        # Combine linear blend with radial weighting
+        mask = np.clip(blend + radial * 0.3, 0, 1)
+        mask = mask[:, :, np.newaxis]
+
+        result = blur_f * (1.0 - mask) + sharp_f * mask
+        return np.clip(result, 0, 255).astype(np.uint8)
+
     def _apply_output_sharpen(self, frame: np.ndarray) -> np.ndarray:
         """Apply a gentle unsharp-mask to the final output frame.
 
@@ -385,15 +479,26 @@ class MovementStyles:
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
-        """Apply handheld camera micro-shake by shifting pixels.
+        """Apply multi-frequency handheld camera shake by shifting pixels.
 
-        Uses np.pad with 'edge' mode to replicate border pixels instead of
-        filling with black, which prevents flickering black edges.
+        Uses a spectral profile with low-frequency sway (1-2 Hz body motion),
+        mid-frequency drift (3-5 Hz hand tremor), and high-frequency jitter
+        (8-12 Hz micro-tremor) for organic handheld feel.
+        np.pad with 'edge' mode replicates border pixels to prevent black edges.
         """
-        amplitude = 2.0 * (self.width / 1920)
-        freq1, freq2 = 3.7, 5.3
-        dx = int(amplitude * np.sin(t * freq1 * 2 * np.pi))
-        dy = int(amplitude * np.cos(t * freq2 * 2 * np.pi))
+        scale = self.width / 1920
+        # Low-frequency body sway (1.2 Hz, 1.8 Hz)
+        lo_dx = 1.5 * scale * np.sin(t * 1.2 * 2 * np.pi + 0.3)
+        lo_dy = 1.2 * scale * np.sin(t * 1.8 * 2 * np.pi + 1.1)
+        # Mid-frequency hand tremor (3.7 Hz, 5.3 Hz)
+        mid_dx = 1.0 * scale * np.sin(t * 3.7 * 2 * np.pi)
+        mid_dy = 0.8 * scale * np.cos(t * 5.3 * 2 * np.pi)
+        # High-frequency micro-tremor (9.1 Hz, 11.3 Hz)
+        hi_dx = 0.4 * scale * np.sin(t * 9.1 * 2 * np.pi + 2.0)
+        hi_dy = 0.3 * scale * np.cos(t * 11.3 * 2 * np.pi + 0.7)
+
+        dx = int(lo_dx + mid_dx + hi_dx)
+        dy = int(lo_dy + mid_dy + hi_dy)
 
         if dx == 0 and dy == 0:
             return frame

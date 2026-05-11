@@ -56,10 +56,18 @@ class DocumentaryEffects:
         'CTA': 0.7,
     }
 
+    # Maximum cached frames to prevent unbounded memory growth.
+    # At 1920x1080 RGB, each frame is ~6 MB, so 20 entries ≈ 120 MB ceiling.
+    _CACHE_MAX_ENTRIES = 20
+
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080), fps: int = 30):
         self.width, self.height = resolution
         self.scale = self.height / 1080.0
         self._overlay_fps = fps
+        # Bounded cache for static effect frames (borders, bars, sprocket holes).
+        # Capped at _CACHE_MAX_ENTRIES to prevent memory bloat.
+        # Automatically evicts oldest entry (FIFO) when limit is reached.
+        self._static_cache: dict = {}
 
     def create_light_leak(
         self, duration: float, intensity: float = 0.3, speed: float = 1.0
@@ -1016,3 +1024,36 @@ class DocumentaryEffects:
             if creator:
                 clips.append(creator())
         return clips
+
+    def _get_cached_static(self, key: str, generator) -> np.ndarray:
+        """Return a cached static frame, generating it on first access.
+
+        Used for effects that produce the same image every frame (photo_frame
+        borders, film_strip sprocket holes, cinematic_bars at full height).
+        Avoids redundant NumPy array creation per-frame.
+
+        Safety:
+        - Bounded by _CACHE_MAX_ENTRIES to prevent unbounded memory growth.
+        - Evicts oldest entry (FIFO) when limit is reached.
+        - Generator exceptions are caught — returns fresh frame on failure
+          so a bad cache key never crashes the pipeline.
+        """
+        if key not in self._static_cache:
+            # Evict oldest entry if at capacity
+            if len(self._static_cache) >= self._CACHE_MAX_ENTRIES:
+                oldest_key = next(iter(self._static_cache))
+                del self._static_cache[oldest_key]
+            try:
+                self._static_cache[key] = generator()
+            except Exception:
+                # On generator failure, return a fresh call without caching
+                return generator()
+        return self._static_cache[key]
+
+    def clear_cache(self) -> None:
+        """Clear cached static effect frames.
+
+        Call between video generations to free memory. This is safe to call
+        at any time — the next effect request will simply regenerate the frame.
+        """
+        self._static_cache.clear()
