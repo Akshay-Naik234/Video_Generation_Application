@@ -796,12 +796,17 @@ class MovementStyles:
         return -(np.cos(np.pi * t) - 1) / 2
 
     def _ease_elastic_out(self, t: float) -> float:
-        """Elastic easing for bouncy emphasis moments."""
+        """Elastic easing for bouncy emphasis moments.
+
+        Clamped to [-0.05, 1.1] to prevent extreme overshoot values from
+        causing visible artifacts in zoom or position calculations.
+        """
         if t <= 0:
             return 0.0
         if t >= 1.0:
             return 1.0
-        return 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
+        raw = 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
+        return float(np.clip(raw, -0.05, 1.1))
 
     def _ease_out_back(self, t: float, overshoot: float = 1.70158) -> float:
         """Back easing — overshoots then settles for punchy emphasis."""
