@@ -118,24 +118,16 @@ class DocumentaryEffects:
 
         from PIL import Image as _PILImage
 
-        # Pre-generate a pool of grain frames and cycle through them
-        _grain_pool_size = 60
-        _grain_pool = []
-        _rng = np.random.RandomState(77)
-        for _ in range(_grain_pool_size):
-            noise = _rng.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
+        def make_frame(t):
+            noise = np.random.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
             grain_img = _PILImage.fromarray(noise, 'L')
             grain_img = grain_img.resize((w, h), _PILImage.BILINEAR)
-            _grain_pool.append(np.array(grain_img).astype(np.float32))
-
-        def make_frame(t):
-            idx = int(t * self._overlay_fps) % _grain_pool_size
-            grain = _grain_pool[idx]
+            grain = np.array(grain_img).astype(np.float32)
 
             flicker = 1.0 + 0.03 * np.sin(t * 8.0) + 0.02 * np.sin(t * 13.0)
-            grain_out = grain * flicker * intensity
+            grain *= flicker * intensity
 
-            frame = np.stack([grain_out, grain_out, grain_out], axis=-1)
+            frame = np.stack([grain, grain, grain], axis=-1)
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)

@@ -14,7 +14,6 @@ Includes classic Ken Burns effects plus advanced documentary techniques:
 - Tilt shift (miniature effect)
 """
 
-from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 
@@ -23,14 +22,6 @@ from PIL import Image as PILImage, ImageFilter
 
 if TYPE_CHECKING:
     from .color_grading import ColorGrading
-
-
-@lru_cache(maxsize=32)
-def _cached_image_open(path_str: str) -> PILImage.Image:
-    """Cache recently loaded images to avoid repeated disk I/O."""
-    img = PILImage.open(path_str)
-    img.load()  # force pixel data into memory before returning
-    return img
 
 
 class MovementStyles:
@@ -199,7 +190,8 @@ class MovementStyles:
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
         zoom_intensity = min(zoom_intensity, 1.15)  # hard cap
-        base_img = _cached_image_open(str(image_path)).copy()
+        base_img = PILImage.open(image_path)
+        base_img.load()
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 

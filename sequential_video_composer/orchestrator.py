@@ -6,13 +6,11 @@ section (COLD_OPEN, EARLY_LIFE, …) and emotional_tone from the
 duration config JSON.
 """
 
-import atexit
 import logging
 import os
 import re
 import json
 import random
-import shutil
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
 
@@ -86,7 +84,6 @@ class SequentialVideoOrchestrator:
         self.image_map_labels: Dict[int, str] = {}
         self.image_text_animations: Dict[int, str] = {}
         self.total_video_duration: float = 0
-        self._brightness_tmp_dir: Optional[Path] = None
         self.preview_mode: bool = False
         self.fast_mode: bool = False
         self.aspect_mode: str = 'fill'
@@ -126,12 +123,6 @@ class SequentialVideoOrchestrator:
         if self.audio_path and not self.audio_path.exists():
             logger.warning("Audio file not found: %s — will be skipped", self.audio_path)
             self.audio_path = None
-
-    def cleanup(self) -> None:
-        """Remove temporary files created during rendering."""
-        if self._brightness_tmp_dir and self._brightness_tmp_dir.exists():
-            shutil.rmtree(self._brightness_tmp_dir, ignore_errors=True)
-            self._brightness_tmp_dir = None
 
     def _load_duration_config(self) -> None:
         """Load image durations, timing, sections, and tones from JSON config."""
@@ -345,74 +336,6 @@ class SequentialVideoOrchestrator:
         else:
             return self.transition_style if self.transition_style in TransitionEffects.TRANSITION_TYPES else 'crossfade'
 
-    def _normalize_image_brightness(self, numbered_images: List[Tuple[int, Path]]) -> None:
-        """Pre-process images to normalize brightness across the batch.
-
-        Calculates the average luminance of all images, picks a target
-        (default 120 on 0-255), and adjusts each image **as a temporary
-        copy** so the originals are never modified.  Only images that
-        deviate significantly (>25 units) from the target are touched.
-
-        Uses ThreadPoolExecutor to compute luminances and adjust images
-        in parallel for a significant speedup with many images.
-        """
-        import tempfile
-        from concurrent.futures import ThreadPoolExecutor
-        from PIL import Image as PILImage
-
-        TARGET_LUMINANCE = 125.0
-        DEVIATION_THRESHOLD = 20.0
-
-        def _compute_lum(img_path: Path) -> float:
-            try:
-                img = PILImage.open(img_path).convert('RGB')
-                arr = np.array(img, dtype=np.float64)
-                return float(np.dot(arr[..., :3], [0.299, 0.587, 0.114]).mean())
-            except Exception:
-                return TARGET_LUMINANCE
-
-        with ThreadPoolExecutor(max_workers=min(len(numbered_images), 8)) as pool:
-            luminances = list(pool.map(lambda t: _compute_lum(t[1]), numbered_images))
-
-        if not luminances:
-            return
-
-        avg_lum = float(np.mean(luminances))
-        target = min(max(avg_lum, TARGET_LUMINANCE), 160.0)
-
-        tmp_dir = Path(tempfile.mkdtemp(prefix='vid_bright_'))
-
-        def _adjust(idx_num_path):
-            idx, (_num, img_path) = idx_num_path
-            lum = luminances[idx]
-            diff = target - lum
-            if abs(diff) < DEVIATION_THRESHOLD:
-                return None
-            try:
-                img = PILImage.open(img_path).convert('RGB')
-                arr = np.array(img, dtype=np.float64)
-                arr = arr + diff * 0.6
-                arr = np.clip(arr, 0, 255).astype(np.uint8)
-                tmp_path = tmp_dir / img_path.name
-                PILImage.fromarray(arr).save(tmp_path)
-                return (idx, _num, tmp_path)
-            except Exception:
-                return None
-
-        with ThreadPoolExecutor(max_workers=min(len(numbered_images), 8)) as pool:
-            results = list(pool.map(_adjust, enumerate(numbered_images)))
-
-        adjusted = 0
-        for r in results:
-            if r is not None:
-                idx, _num, tmp_path = r
-                numbered_images[idx] = (_num, tmp_path)
-                adjusted += 1
-
-        if adjusted:
-            logger.info("  Brightness normalization: adjusted %d/%d images (target lum=%.0f)", adjusted, len(numbered_images), target)
-        self._brightness_tmp_dir = tmp_dir
-
     def create_image_clips(self, numbered_images: List[Tuple[int, Path]]) -> List[Dict]:
         """Create animated clips for each image with movement, effects, and timing info."""
         return self.clip_factory.create_image_clips(numbered_images)
@@ -425,9 +348,6 @@ class SequentialVideoOrchestrator:
         """Main method to create the sequential video with professional effects."""
         import time as _time
         t0 = _time.monotonic()
-
-        # Register cleanup so temp files are removed even on crash
-        atexit.register(self.cleanup)
 
         # Propagate rendering mode to movements engine
         self.movements.aspect_mode = self.aspect_mode
@@ -514,9 +434,6 @@ class SequentialVideoOrchestrator:
 
         logger.info("[5/5] Exporting video...")
         self._export_video(main_video)
-
-        # Clean up temp files after successful export
-        self.cleanup()
 
         elapsed = _time.monotonic() - t0
         logger.info("=" * 60)
@@ -958,25 +875,14 @@ class SequentialVideoOrchestrator:
         clip = clip.set_mask(mask_clip)
         return clip
 
-    @staticmethod
-    def _post_process_frame(frame: np.ndarray) -> np.ndarray:
-        """No-op: post-processing disabled to preserve original image quality."""
-        return frame
-
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.
 
-        Applies per-frame post-processing (brightness + sharpening) then
-        encodes with H.264 High profile and progressive-download flag so
+        Encodes with H.264 High profile and progressive-download flag so
         the file plays correctly in VS Code, web browsers, and QuickTime.
         Multi-threaded encoding with optimized settings for quality/speed.
         """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # In fast/preview mode skip per-frame post-processing entirely
-        if not (self.fast_mode or self.preview_mode):
-            logger.info("  Applying post-processing (brightness correction)...")
-            video = video.fl_image(self._post_process_frame)
 
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
         thread_count = min(os.cpu_count() or 4, 8)
