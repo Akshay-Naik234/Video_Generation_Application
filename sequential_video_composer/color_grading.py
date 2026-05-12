@@ -52,14 +52,18 @@ class ColorGrading:
         return self.SECTION_GRADES.get(section, 'cinematic')
 
     def _enforce_min_brightness(self, image: np.ndarray) -> np.ndarray:
-        """Lift deep shadows to preserve detail without altering overall brightness.
+        """Lift shadows to preserve detail and prevent over-darkening.
 
-        Only pixels below value 20 are gently lifted so pure-black areas
-        retain some visible detail. This is NOT brightness enforcement —
-        the overall image brightness is untouched.
+        Pixels below value 40 are gently lifted so dark areas retain
+        visible detail. Also applies a mild overall brightness boost
+        to counteract any darkening from color grading.
         """
         img = image.astype(np.float64)
-        img = np.where(img < 20, img * 1.3 + 10, img)
+        img = np.where(img < 40, img * 1.4 + 12, img)
+        mean_lum = np.mean(img)
+        if mean_lum < 100:
+            lift = min(15.0, (100 - mean_lum) * 0.3)
+            img += lift
         return np.clip(img, 0, 255).astype(np.uint8)
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
@@ -85,9 +89,9 @@ class ColorGrading:
     def _cinematic_grade(self, image: np.ndarray) -> np.ndarray:
         """Cinematic color grading with lifted shadows and gentle contrast."""
         img = image.astype(np.float64)
-        img = np.where(img < 40, img * 0.7 + 15, img)
-        highlights = np.where(img > 180, img * 0.96, img)
-        result = (highlights - 128) * 1.10 + 128
+        img = np.where(img < 40, img * 0.9 + 12, img)
+        highlights = np.where(img > 180, img * 0.97, img)
+        result = (highlights - 128) * 1.06 + 128
         return self._enforce_min_brightness(np.clip(result, 0, 255).astype(np.uint8))
 
     def _documentary_grade(self, image: np.ndarray) -> np.ndarray:
@@ -134,9 +138,9 @@ class ColorGrading:
     def _high_contrast_grade(self, image: np.ndarray) -> np.ndarray:
         """High contrast dramatic look — shadows lifted, not crushed."""
         img = image.astype(np.float64)
-        img = (img - 128) * 1.25 + 128
-        img = np.where(img < 40, img * 0.7 + 15, img)
-        img = np.where(img > 215, 215 + (img - 215) * 0.3, img)
+        img = (img - 128) * 1.15 + 128
+        img = np.where(img < 40, img * 0.9 + 12, img)
+        img = np.where(img > 215, 215 + (img - 215) * 0.4, img)
         return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _soft_grade(self, image: np.ndarray) -> np.ndarray:
@@ -148,8 +152,8 @@ class ColorGrading:
     def _dramatic_grade(self, image: np.ndarray) -> np.ndarray:
         """Dramatic, intense look — contrast reduced to prevent black crush."""
         img = image.astype(np.float64)
-        img = (img - 128) * 1.15 + 128
-        img[:, :, 0] *= 1.05
+        img = (img - 128) * 1.08 + 128
+        img[:, :, 0] *= 1.03
         return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _natural_grade(self, image: np.ndarray) -> np.ndarray:
@@ -177,8 +181,8 @@ class ColorGrading:
         """Near-monochrome with subtle color hint — shadows preserved."""
         img = image.astype(np.float64)
         gray = np.dot(img[..., :3], [0.299, 0.587, 0.114])[..., np.newaxis]
-        img = gray * 0.85 + img * 0.15
-        img = (img - 128) * 1.20 + 128
+        img = gray * 0.75 + img * 0.25
+        img = (img - 128) * 1.10 + 128
         return self._enforce_min_brightness(np.clip(img, 0, 255).astype(np.uint8))
 
     def _golden_hour_grade(self, image: np.ndarray) -> np.ndarray:
