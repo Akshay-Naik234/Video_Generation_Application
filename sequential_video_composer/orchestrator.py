@@ -998,7 +998,12 @@ class SequentialVideoOrchestrator:
         Brings mean volume to *target_db* (default -16 dB for YouTube/broadcast)
         and applies a soft limiter so peaks never exceed -3 dB.
         """
-        samples = audio_clip.to_soundarray(fps=44100)
+        try:
+            samples = audio_clip.to_soundarray(fps=44100)
+        except TypeError:
+            # numpy 2.x requires sequences for vstack; collect chunks manually
+            chunks = list(audio_clip.iter_chunks(fps=44100, quantize=True, chunksize=2000))
+            samples = np.vstack(chunks) if chunks else np.array([])
         if samples.size == 0:
             return audio_clip
 
