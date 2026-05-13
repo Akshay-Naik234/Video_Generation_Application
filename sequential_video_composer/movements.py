@@ -101,15 +101,15 @@ class MovementStyles:
     # Section-aware zoom intensity multipliers: kept conservative to prevent
     # content from being cropped out of frame.
     SECTION_ZOOM_MULTIPLIERS = {
-        'COLD_OPEN': 1.1,
-        'EARLY_LIFE': 0.85,
+        'COLD_OPEN': 1.05,
+        'EARLY_LIFE': 0.9,
         'THE_SPARK': 1.0,
-        'THE_RISE': 1.05,
-        'THE_CONFLICT': 1.1,
-        'THE_CLIMAX': 1.15,
-        'THE_FALL': 0.9,
-        'LEGACY': 0.8,
-        'CTA': 0.75,
+        'THE_RISE': 1.0,
+        'THE_CONFLICT': 1.05,
+        'THE_CLIMAX': 1.1,
+        'THE_FALL': 0.95,
+        'LEGACY': 0.85,
+        'CTA': 0.8,
     }
 
     def __init__(self, resolution: Tuple[int, int]):
@@ -117,14 +117,47 @@ class MovementStyles:
         self.resolution = resolution
         self.aspect_mode = 'letterbox'
         self.fast_mode = False
-        self._easing_map = {k: self._ease_in_out_sine for k in [
-            'dramatic_zoom', 'push_in', 'push_out', 'whip_pan',
-            'crane_up', 'crane_down', 'rack_focus', 'bounce_zoom',
-            'dolly_zoom', 'spiral_zoom', 'orbit', 'float_up',
-            'reveal_left', 'reveal_right', 'map_zoom', 'map_pan',
-            'timeline_reveal', 'truck_left', 'truck_right',
-            'tracking_shot', 'cinematic_reveal', 'shoulder_drift',
-        ]}
+        self._easing_map = {
+            # Energy → settle (fast start, graceful deceleration)
+            'crane_up': self._ease_out_expo,
+            'crane_down': self._ease_out_expo,
+            'float_up': self._ease_out_expo,
+            'reveal_left': self._ease_out_expo,
+            'reveal_right': self._ease_out_expo,
+            'cinematic_reveal': self._ease_out_expo,
+            # Build → impact (slow start, accelerating into climax)
+            'push_in': self._ease_in_out_quart,
+            'dramatic_zoom': self._ease_in_out_quart,
+            'rack_focus': self._ease_in_out_quart,
+            'dolly_zoom': self._ease_in_out_quart,
+            'spiral_zoom': self._ease_in_out_quart,
+            # Organic flow (smooth sinusoidal for natural movements)
+            'gentle_drift': self._ease_in_out_sine,
+            'breathing': self._ease_in_out_sine,
+            'parallax_depth': self._ease_in_out_sine,
+            'shoulder_drift': self._ease_in_out_sine,
+            'static_motion': self._ease_in_out_sine,
+            # Bouncy emphasis (elastic/back overshoot for impact)
+            'bounce_zoom': self._ease_elastic_out,
+            # Mechanical consistency (linear for tracking)
+            'tracking_shot': self._ease_in_out_sine,
+            'truck_left': self._ease_in_out_sine,
+            'truck_right': self._ease_in_out_sine,
+            'map_zoom': self._ease_in_out_sine,
+            'map_pan': self._ease_in_out_sine,
+            'timeline_reveal': self._ease_in_out_sine,
+            # Speed ramp for fast movements
+            'whip_pan': self._speed_ramp,
+            # Standard cinematic ease for orbits
+            'orbit': self._ease_in_out_quint,
+            'push_out': self._ease_in_out_sine,
+        }
+        # Breathing base layer amplitude (subtle 0.5% oscillation on all movements)
+        self._breathing_amplitude = 0.003
+        self._breathing_freq = 0.08  # Hz
+        # Camera inertia overshoot settings
+        self._inertia_duration_frac = 0.10
+        self._inertia_overshoot = 0.005
 
     def _fit_image(
         self, img: PILImage.Image, target_w: int, target_h: int
@@ -210,11 +243,12 @@ class MovementStyles:
 
         scaled_img = PILImage.fromarray(base_array)
 
-        # For tilt_shift, pre-compute blurred version
+        # For tilt_shift and rack_focus, pre-compute blurred version
         blurred_img = None
-        if movement_type == 'tilt_shift':
+        if movement_type in ('tilt_shift', 'rack_focus'):
+            blur_radius = int(8 * (self.height / 1080))
             blurred_img = scaled_img.filter(
-                ImageFilter.GaussianBlur(radius=int(8 * (self.height / 1080)))
+                ImageFilter.GaussianBlur(radius=blur_radius)
             )
 
         center_x = scaled_width / 2.0
@@ -242,6 +276,11 @@ class MovementStyles:
             import cv2 as _cv2
             _interp = _cv2.INTER_AREA if _fast else _cv2.INTER_LANCZOS4
 
+        _breath_amp = self._breathing_amplitude
+        _breath_freq = self._breathing_freq
+        _inertia_frac = self._inertia_duration_frac
+        _inertia_over = self._inertia_overshoot
+
         def make_frame(t):
             progress = t / _safe_duration
             progress = max(0.0, min(1.0, progress))
@@ -251,7 +290,20 @@ class MovementStyles:
                 movement_type, eased, zoom_intensity, progress
             )
 
-            zoom = min(zoom, 1.15)
+            # Breathing base layer: subtle sinusoidal zoom on all movements
+            if movement_type != 'static':
+                breath = _breath_amp * np.sin(2 * np.pi * _breath_freq * t)
+                zoom += breath
+
+            # Camera inertia: slight overshoot at the end of movement
+            if progress > (1.0 - _inertia_frac) and movement_type not in (
+                'static', 'static_motion', 'breathing'
+            ):
+                inertia_t = (progress - (1.0 - _inertia_frac)) / _inertia_frac
+                overshoot = _inertia_over * np.sin(inertia_t * np.pi)
+                zoom += overshoot * (zoom_intensity - 1.0)
+
+            zoom = min(zoom, 1.20)
 
             crop_w = self.width / zoom
             crop_h = self.height / zoom
@@ -272,6 +324,10 @@ class MovementStyles:
             src = base_np
             if movement_type == 'tilt_shift' and blurred_np is not None:
                 src = self._apply_tilt_shift_blend_np(
+                    base_np, blurred_np, progress
+                )
+            elif movement_type == 'rack_focus' and blurred_np is not None:
+                src = self._apply_rack_focus_blend(
                     base_np, blurred_np, progress
                 )
 
@@ -298,9 +354,9 @@ class MovementStyles:
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
         """Apply a very subtle vignette, skipped entirely on dark images."""
         avg_brightness = np.mean(image)
-        if avg_brightness < 100:
+        if avg_brightness < 120:
             return image
-        strength = 0.10
+        strength = 0.05
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -342,6 +398,44 @@ class MovementStyles:
         mask = np.clip((dist - band_width * 0.5) / (band_width * 0.3 + 1e-6), 0, 1)
         mask = mask[:, :, np.newaxis]
         return sharp_arr * (1 - mask) + blur_arr * mask
+
+    def _apply_rack_focus_blend(
+        self, sharp_np: np.ndarray, blurred_np: np.ndarray, progress: float
+    ) -> np.ndarray:
+        """Simulate focus pull from background to foreground (or vice versa).
+
+        Starts blurred (background in focus) and transitions to sharp (foreground
+        in focus) using a radial center-weighted mask that shifts over time.
+        Creates a cinematic depth-of-field shift effect.
+        """
+        h, w = sharp_np.shape[:2]
+        sharp_f = sharp_np.astype(np.float32)
+        blur_f = blurred_np.astype(np.float32)
+
+        # Focus pull: blend from blurred to sharp over the animation
+        # First 40%: mostly blurred (background focus)
+        # Middle 20%: transition (rack focus moment)
+        # Last 40%: mostly sharp (foreground focus)
+        if progress < 0.4:
+            blend = progress / 0.4 * 0.2  # 0 → 0.2
+        elif progress < 0.6:
+            blend = 0.2 + (progress - 0.4) / 0.2 * 0.6  # 0.2 → 0.8
+        else:
+            blend = 0.8 + (progress - 0.6) / 0.4 * 0.2  # 0.8 → 1.0
+
+        # Radial mask: center is sharper, edges stay blurrier longer
+        cy, cx = h // 2, w // 2
+        Y, X = np.ogrid[:h, :w]
+        dist = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2).astype(np.float32)
+        max_dist = np.sqrt(cx ** 2 + cy ** 2)
+        radial = np.clip(1.0 - dist / max_dist, 0, 1)
+
+        # Combine linear blend with radial weighting
+        mask = np.clip(blend + radial * 0.3, 0, 1)
+        mask = mask[:, :, np.newaxis]
+
+        result = blur_f * (1.0 - mask) + sharp_f * mask
+        return np.clip(result, 0, 255).astype(np.uint8)
 
     def _apply_output_sharpen(self, frame: np.ndarray) -> np.ndarray:
         """Apply a gentle unsharp-mask to the final output frame.
@@ -385,15 +479,26 @@ class MovementStyles:
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
-        """Apply handheld camera micro-shake by shifting pixels.
+        """Apply multi-frequency handheld camera shake by shifting pixels.
 
-        Uses np.pad with 'edge' mode to replicate border pixels instead of
-        filling with black, which prevents flickering black edges.
+        Uses a spectral profile with low-frequency sway (1-2 Hz body motion),
+        mid-frequency drift (3-5 Hz hand tremor), and high-frequency jitter
+        (8-12 Hz micro-tremor) for organic handheld feel.
+        np.pad with 'edge' mode replicates border pixels to prevent black edges.
         """
-        amplitude = 2.0 * (self.width / 1920)
-        freq1, freq2 = 3.7, 5.3
-        dx = int(amplitude * np.sin(t * freq1 * 2 * np.pi))
-        dy = int(amplitude * np.cos(t * freq2 * 2 * np.pi))
+        scale = self.width / 1920
+        # Low-frequency body sway (1.2 Hz, 1.8 Hz)
+        lo_dx = 1.5 * scale * np.sin(t * 1.2 * 2 * np.pi + 0.3)
+        lo_dy = 1.2 * scale * np.sin(t * 1.8 * 2 * np.pi + 1.1)
+        # Mid-frequency hand tremor (3.7 Hz, 5.3 Hz)
+        mid_dx = 1.0 * scale * np.sin(t * 3.7 * 2 * np.pi)
+        mid_dy = 0.8 * scale * np.cos(t * 5.3 * 2 * np.pi)
+        # High-frequency micro-tremor (9.1 Hz, 11.3 Hz)
+        hi_dx = 0.4 * scale * np.sin(t * 9.1 * 2 * np.pi + 2.0)
+        hi_dy = 0.3 * scale * np.cos(t * 11.3 * 2 * np.pi + 0.7)
+
+        dx = int(lo_dx + mid_dx + hi_dx)
+        dy = int(lo_dy + mid_dy + hi_dy)
 
         if dx == 0 and dy == 0:
             return frame
@@ -434,58 +539,58 @@ class MovementStyles:
         """
         # Classic movements
         if movement_type == 'zoom_in':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.4
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
             return zoom, 0, 0
 
         elif movement_type == 'zoom_out':
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * eased
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * eased * 0.8
             return zoom, 0, 0
 
         elif movement_type == 'pan_left':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = -0.20 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = -0.15 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.20 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.15 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_y = -0.20 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_y = -0.15 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_y = 0.20 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_y = 0.15 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
-            pan_x = 0.14 * eased
-            pan_y = 0.14 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            pan_x = 0.10 * eased
+            pan_y = 0.10 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'diagonal_tr_bl':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.0
-            pan_x = -0.14 * eased
-            pan_y = 0.14 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            pan_x = -0.10 * eased
+            pan_y = 0.10 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'breathing':
-            zoom = 1.0 + 0.07 * np.sin(raw_progress * np.pi)
-            pan_y = 0.015 * np.sin(raw_progress * np.pi * 0.5)
+            zoom = 1.0 + 0.04 * np.sin(raw_progress * np.pi)
+            pan_y = 0.01 * np.sin(raw_progress * np.pi * 0.5)
             return zoom, 0, pan_y
 
         elif movement_type == 'dramatic_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * eased
             return zoom, 0, 0
 
         elif movement_type == 'gentle_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.10 * np.sin(raw_progress * np.pi)
-            pan_y = 0.06 * np.cos(raw_progress * np.pi)
+            pan_x = 0.08 * np.sin(raw_progress * np.pi)
+            pan_y = 0.05 * np.cos(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'focus_center':
@@ -493,7 +598,7 @@ class MovementStyles:
             return zoom, 0, 0
 
         elif movement_type == 'minimal':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.6
             return zoom, 0, 0
 
         elif movement_type == 'static':
@@ -502,129 +607,129 @@ class MovementStyles:
         # ---- Documentary-style advanced movements ----
 
         elif movement_type == 'parallax_depth':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.1
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
             phase = raw_progress * np.pi
-            pan_x = 0.18 * np.sin(phase)
-            pan_y = 0.09 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.12 * np.sin(phase)
+            pan_y = 0.06 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * eased
-            pan_y = -0.08 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
+            pan_y = -0.06 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'push_out':
-            zoom = zoom_intensity - (zoom_intensity - 1.0) * eased
-            pan_y = 0.08 * eased
+            zoom = zoom_intensity - (zoom_intensity - 1.0) * eased * 0.8
+            pan_y = 0.06 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'orbit':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.85
-            angle = eased * np.pi * 1.4
-            pan_x = 0.16 * np.sin(angle)
-            pan_y = 0.08 * (1 - np.cos(angle))
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            angle = eased * np.pi * 1.0
+            pan_x = 0.12 * np.sin(angle)
+            pan_y = 0.06 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.22 * eased
+            pan_x = 0.20 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.1 * eased
-            pan_y = -0.06 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
+            pan_y = -0.05 * eased
             pan_x = 0.03 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.10 * np.sin(raw_progress * np.pi * 1.2)
-            pan_y = 0.06 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
+            pan_x = 0.08 * np.sin(raw_progress * np.pi * 1.2)
+            pan_y = 0.05 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
-            zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.2)
-            pan_y = -0.18 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.1)
+            pan_y = -0.15 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = 0.18 * eased
+            pan_y = 0.15 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.15 * eased
-            angle = eased * np.pi * 2.5
-            radius = 0.12 * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
+            angle = eased * np.pi * 2.0
+            radius = 0.08 * (1.0 - eased)
             pan_x = radius * np.cos(angle)
             pan_y = radius * np.sin(angle)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tilt_shift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.8
-            pan_x = 0.18 * eased
-            pan_y = -0.08 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
+            pan_x = 0.12 * eased
+            pan_y = -0.06 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
-            tilt = 0.10 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            tilt = 0.08 * eased
             pan_x = tilt
             pan_y = tilt * 0.5
             return zoom, pan_x, pan_y
 
         elif movement_type == 'rack_focus':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.3 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
             return zoom, 0, 0
 
         elif movement_type == 'bounce_zoom':
-            overshoot = 1.0 + 0.12 * np.sin(eased * np.pi * 3) * (1.0 - eased)
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 1.1 * overshoot
+            overshoot = 1.0 + 0.08 * np.sin(eased * np.pi * 3) * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9 * overshoot
             return zoom, 0, 0
 
         elif movement_type == 'float_up':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = -0.14 * eased
-            pan_x = 0.04 * np.sin(raw_progress * np.pi)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
+            pan_y = -0.12 * eased
+            pan_x = 0.03 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.18 * (1.0 - eased)
+            pan_x = 0.15 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.18 * (1.0 - eased)
+            pan_x = -0.15 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
-            pan_y = 0.06 * eased
+            pan_y = 0.05 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'map_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.20 * eased
-            pan_y = 0.05 * np.sin(eased * np.pi)
+            pan_x = 0.18 * eased
+            pan_y = 0.04 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.22 * (1.0 - eased)
+            pan_x = -0.18 * (1.0 - eased)
             return zoom, pan_x, 0
 
         # ---- Cinematic camera movements (v5.0) ----
 
         elif movement_type == 'truck_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.22 * eased
+            pan_x = -0.15 * eased
             pan_y = 0.02 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'truck_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.22 * eased
+            pan_x = 0.15 * eased
             pan_y = 0.02 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
@@ -635,25 +740,25 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'shoulder_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
-            pan_x = 0.12 * np.sin(raw_progress * np.pi * 0.8) + 0.06
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
+            pan_x = 0.08 * np.sin(raw_progress * np.pi * 0.8) + 0.04
             pan_y = 0.04 * np.sin(raw_progress * np.pi * 1.2)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tracking_shot':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
-            pan_x = 0.16 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
+            pan_x = 0.15 * eased
             pan_y = -0.04 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'cinematic_reveal':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 1.2 * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * (1.0 - eased)
             pan_y = -0.10 * (1.0 - eased)
-            pan_x = 0.06 * (1.0 - eased)
+            pan_x = 0.05 * (1.0 - eased)
             return zoom, pan_x, pan_y
 
         else:
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
             return zoom, 0, 0
 
     # ---- Easing functions ----
@@ -691,12 +796,17 @@ class MovementStyles:
         return -(np.cos(np.pi * t) - 1) / 2
 
     def _ease_elastic_out(self, t: float) -> float:
-        """Elastic easing for bouncy emphasis moments."""
+        """Elastic easing for bouncy emphasis moments.
+
+        Clamped to [-0.05, 1.1] to prevent extreme overshoot values from
+        causing visible artifacts in zoom or position calculations.
+        """
         if t <= 0:
             return 0.0
         if t >= 1.0:
             return 1.0
-        return 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
+        raw = 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
+        return float(np.clip(raw, -0.05, 1.1))
 
     def _ease_out_back(self, t: float, overshoot: float = 1.70158) -> float:
         """Back easing — overshoots then settles for punchy emphasis."""

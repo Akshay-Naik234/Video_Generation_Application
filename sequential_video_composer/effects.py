@@ -1016,3 +1016,5 @@ class DocumentaryEffects:
             if creator:
                 clips.append(creator())
         return clips
+
+
