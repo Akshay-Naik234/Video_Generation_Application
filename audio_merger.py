@@ -49,10 +49,11 @@ subprocess.run([
 ], check=True)
 '''
 
-# 3️⃣ Convert to MP3 (high-quality delivery)
+# 3️⃣ Normalize audio to -16 dB (broadcast standard) and convert to MP3
 subprocess.run([
     "ffmpeg", "-y",
     "-i", combined_mp3,
+    "-af", "loudnorm=I=-16:TP=-3:LRA=11,acompressor=threshold=-20dB:ratio=4:attack=5:release=50",
     "-c:a", "libmp3lame",
     "-b:a", "192k",
     final_mp3

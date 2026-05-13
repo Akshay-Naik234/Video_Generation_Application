@@ -105,33 +105,36 @@ class DocumentaryEffects:
         return clip
 
     def create_film_grain(
-        self, duration: float, intensity: float = 0.15
+        self, duration: float, intensity: float = 0.10
     ) -> VideoClip:
         """Animated film grain with subtle flicker.
 
         Generates per-frame noise that simulates photographic film grain
         with periodic brightness flicker for authentic film feel.
+        Intensity reduced by ~30% from original to avoid compounding
+        compression artifacts.
         """
         w, h = self.width, self.height
         grain_w = max(w // 2, 480)
         grain_h = max(h // 2, 270)
+        scaled_intensity = intensity * 0.75
 
         from PIL import Image as _PILImage
 
         def make_frame(t):
-            noise = np.random.randint(0, 50, (grain_h, grain_w), dtype=np.uint8)
+            noise = np.random.randint(0, 40, (grain_h, grain_w), dtype=np.uint8)
             grain_img = _PILImage.fromarray(noise, 'L')
             grain_img = grain_img.resize((w, h), _PILImage.BILINEAR)
             grain = np.array(grain_img).astype(np.float32)
 
-            flicker = 1.0 + 0.03 * np.sin(t * 8.0) + 0.02 * np.sin(t * 13.0)
-            grain *= flicker * intensity
+            flicker = 1.0 + 0.02 * np.sin(t * 8.0) + 0.015 * np.sin(t * 13.0)
+            grain *= flicker * scaled_intensity
 
             frame = np.stack([grain, grain, grain], axis=-1)
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 1.2, 0.7))
+        clip = clip.set_opacity(min(scaled_intensity * 1.0, 0.5))
         return clip
 
     def create_dust_particles(
@@ -990,7 +993,7 @@ class DocumentaryEffects:
             'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.35),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
-            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.5),
+            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.35),
             'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
             'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.3),
             'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),

@@ -474,6 +474,7 @@ class SequentialVideoOrchestrator:
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
+            audio_clip = self._normalize_audio(audio_clip)
             main_video = main_video.set_audio(audio_clip)
 
         logger.info("[5/5] Exporting video...")
@@ -989,6 +990,39 @@ class SequentialVideoOrchestrator:
         mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self.fps)
         clip = clip.set_mask(mask_clip)
         return clip
+
+    @staticmethod
+    def _normalize_audio(audio_clip: AudioFileClip, target_db: float = -16.0) -> AudioFileClip:
+        """Normalize audio to broadcast-standard loudness with peak limiting.
+
+        Brings mean volume to *target_db* (default -16 dB for YouTube/broadcast)
+        and applies a soft limiter so peaks never exceed -3 dB.
+        """
+        samples = audio_clip.to_soundarray(fps=44100)
+        if samples.size == 0:
+            return audio_clip
+
+        rms = np.sqrt(np.mean(samples ** 2))
+        if rms < 1e-10:
+            return audio_clip
+
+        current_db = 20 * np.log10(rms + 1e-10)
+        gain_db = target_db - current_db
+        gain = 10 ** (gain_db / 20.0)
+        samples = samples * gain
+
+        # Soft limiter: peaks above -3 dB (≈0.708) are compressed
+        peak_limit = 10 ** (-3.0 / 20.0)  # ~0.708
+        above = np.abs(samples) > peak_limit
+        if np.any(above):
+            samples[above] = np.sign(samples[above]) * (
+                peak_limit + (np.abs(samples[above]) - peak_limit) * 0.3
+            )
+
+        samples = np.clip(samples, -1.0, 1.0)
+
+        from moviepy.audio.AudioClip import AudioArrayClip
+        return AudioArrayClip(samples, fps=44100).set_duration(audio_clip.duration)
 
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.

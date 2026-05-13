@@ -230,14 +230,15 @@ class TextOverlayEngine:
         shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         shadow_offset: int = 10,
     ) -> None:
-        """Draw text with a drop shadow and outline stroke for readability."""
+        """Draw text with a multi-layer drop shadow and outline for readability."""
         x, y = position
-        offset = max(4, int(shadow_offset * self.scale))
-        sw = max(1, int(2 * self.scale))
-        sf = (0, 0, 0, 200)
-        # Shadow
-        draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
-        draw.text((x + offset + 1, y + offset + 1), text, font=font, fill=shadow_color)
+        offset = max(6, int(shadow_offset * self.scale))
+        sw = max(2, int(3 * self.scale))
+        sf = (0, 0, 0, 220)
+        # Multi-layer shadow for stronger depth on dark backgrounds
+        for dx, dy, alpha in [(offset + 2, offset + 2, 80), (offset + 1, offset + 1, 140), (offset, offset, 255)]:
+            sc = (shadow_color[0], shadow_color[1], shadow_color[2], alpha)
+            draw.text((x + dx, y + dy), text, font=font, fill=sc)
         # Main text with stroke
         try:
             draw.text((x, y), text, font=font, fill=fill,
@@ -253,7 +254,7 @@ class TextOverlayEngine:
         font: ImageFont.FreeTypeFont,
         fill: Tuple[int, int, int, int] = (255, 255, 255, 255),
         outline_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-        outline_width: int = 8,
+        outline_width: int = 10,
         shadow: bool = True,
         shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         shadow_offset: int = 10,
@@ -264,16 +265,15 @@ class TextOverlayEngine:
         rendering instead of an O(n²) multi-direction loop.
         """
         x, y = position
-        ow = max(2, int(outline_width * self.scale))
+        ow = max(3, int(outline_width * self.scale))
 
         if shadow:
-            so = max(4, int(shadow_offset * self.scale))
-            draw.text((x + so, y + so), text, font=font, fill=shadow_color)
-            draw.text((x + so + 1, y + so + 1), text, font=font, fill=shadow_color)
-            draw.text((x + so - 1, y + so - 1), text, font=font,
-                      fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 2))
-            draw.text((x + so + 2, y + so + 2), text, font=font,
-                      fill=(shadow_color[0], shadow_color[1], shadow_color[2], shadow_color[3] // 3))
+            so = max(6, int(shadow_offset * self.scale))
+            for dx, dy, alpha_div in [(so + 2, so + 2, 3), (so + 1, so + 1, 2),
+                                      (so - 1, so - 1, 2), (so, so, 1)]:
+                sc = (shadow_color[0], shadow_color[1], shadow_color[2],
+                      shadow_color[3] // max(alpha_div, 1))
+                draw.text((x + dx, y + dy), text, font=font, fill=sc)
 
         # Native stroke_width is orders of magnitude faster than the O(n²) loop
         try:
@@ -755,9 +755,9 @@ class TextOverlayEngine:
             self.width, bg_h,
             color=(0, 0, 0), alpha_start=10, alpha_end=10, direction='down'
         )
-        # Override with uniform semi-transparent black
+        # Override with uniform opaque black to prevent ghosting from layers below
         bg_arr = np.array(bg)
-        bg_arr[:, :, 3] = 240
+        bg_arr[:, :, 3] = 255
         bg = PILImage.fromarray(bg_arr, 'RGBA')
         overlay.paste(bg, (0, bg_y), bg)
 
@@ -770,8 +770,8 @@ class TextOverlayEngine:
         mark_y = bg_y + bg_pad - int(20 * self.scale)
         self._draw_text_with_shadow(
             draw, (mark_x, mark_y), open_mark, mark_font,
-            fill=(*accent_color, 120),
-            shadow_color=(0, 0, 0, 60), shadow_offset=3
+            fill=(*accent_color, 200),
+            shadow_color=(0, 0, 0, 120), shadow_offset=4
         )
 
         # Draw quote lines centered with outline

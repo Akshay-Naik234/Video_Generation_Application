@@ -352,11 +352,14 @@ class MovementStyles:
     # ---- Visual effect helpers ----
 
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply a very subtle vignette, skipped entirely on dark images."""
+        """Apply a cinematic vignette, attenuated on dark images."""
         avg_brightness = np.mean(image)
-        if avg_brightness < 120:
+        if avg_brightness < 80:
             return image
-        strength = 0.05
+        # Scale strength with brightness: full at 160+, reduced below
+        base_strength = 0.09
+        brightness_scale = min(1.0, max(0.3, (avg_brightness - 80) / 80.0))
+        strength = base_strength * brightness_scale
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
