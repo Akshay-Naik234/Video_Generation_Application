@@ -318,8 +318,14 @@ class SequentialVideoOrchestrator:
             if pool:
                 return random.choice(pool)
 
+        # Movements excluded from random selection: too aggressive for
+        # general use.  They remain available via explicit per-image config
+        # or section/tone pools where the editorial intent is clear.
+        _SHAKE_MOVEMENTS = {'handheld_drift', 'whip_pan', 'dutch_tilt', 'bounce_zoom'}
+
         if self.movement_style == "random":
-            return random.choice(MovementStyles.MOVEMENT_TYPES)
+            safe_pool = [m for m in MovementStyles.MOVEMENT_TYPES if m not in _SHAKE_MOVEMENTS]
+            return random.choice(safe_pool)
         elif self.movement_style == "sequential":
             movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
             return movements[index % len(movements)]
