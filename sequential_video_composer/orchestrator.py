@@ -1002,7 +1002,7 @@ class SequentialVideoOrchestrator:
             samples = audio_clip.to_soundarray(fps=44100)
         except TypeError:
             # numpy 2.x requires sequences for vstack; collect chunks manually
-            chunks = list(audio_clip.iter_chunks(fps=44100, quantize=True, chunksize=2000))
+            chunks = list(audio_clip.iter_chunks(fps=44100, quantize=False, chunksize=2000))
             samples = np.vstack(chunks) if chunks else np.array([])
         if samples.size == 0:
             return audio_clip
