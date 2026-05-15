@@ -58,34 +58,38 @@ class ColorGrading:
 
         Uses a smooth blending function based on luminance so all three
         channels are lifted proportionally — preventing color fringing.
+        Lift is kept minimal to avoid washing out shadow detail.
         """
         luminance = 0.299 * img[:, :, 0] + 0.587 * img[:, :, 1] + 0.114 * img[:, :, 2]
-        # Smooth blend factor: 1.0 for pure black, 0.0 for luminance >= 50
-        blend = np.clip(1.0 - luminance / 50.0, 0, 1)
+        # Smooth blend factor: 1.0 for pure black, 0.0 for luminance >= 35
+        blend = np.clip(1.0 - luminance / 35.0, 0, 1)
         blend = blend[:, :, np.newaxis]
-        # Lift proportionally: add a small amount to all channels equally
-        lift = blend * 8.0
+        # Lift proportionally: very small amount to prevent crushing blacks
+        lift = blend * 4.0
         return img + lift
 
     @staticmethod
     def _auto_brightness_correction(img: np.ndarray) -> np.ndarray:
-        """Per-scene adaptive brightness that normalizes overly dark or bright images.
+        """Per-scene adaptive brightness with conservative correction.
 
-        Targets a mean luminance around 120–160 so no scene looks blown-out
-        or lost in shadow.
+        Uses gentle adjustments to avoid washing out images. The boost is
+        capped so dark images are lifted only slightly, preserving the
+        original artistic mood rather than flattening contrast.
         """
         luminance = 0.299 * img[:, :, 0] + 0.587 * img[:, :, 1] + 0.114 * img[:, :, 2]
         mean_lum = np.mean(luminance)
 
-        if mean_lum < 60:
-            boost = (120 - mean_lum) / max(mean_lum, 1)
-            img = img * (1 + boost * 0.5)
-        elif mean_lum < 110:
-            boost = (120 - mean_lum) / max(mean_lum, 1)
-            img = img * (1 + boost * 0.3)
-        elif mean_lum > 180:
-            reduction = (mean_lum - 160) / max(mean_lum, 1)
-            img = img * (1 - reduction * 0.3)
+        if mean_lum < 40:
+            boost = (100 - mean_lum) / max(mean_lum, 1)
+            boost = min(boost, 0.6)
+            img = img * (1 + boost * 0.2)
+        elif mean_lum < 90:
+            boost = (100 - mean_lum) / max(mean_lum, 1)
+            boost = min(boost, 0.3)
+            img = img * (1 + boost * 0.15)
+        elif mean_lum > 200:
+            reduction = (mean_lum - 180) / max(mean_lum, 1)
+            img = img * (1 - reduction * 0.2)
 
         return img
 
@@ -232,10 +236,9 @@ class ColorGrading:
     def _golden_hour_grade(self, image: np.ndarray) -> np.ndarray:
         """Warm golden-hour glow."""
         img = image.astype(np.float64)
-        img[:, :, 0] *= 1.08
-        img[:, :, 1] *= 1.04
-        img[:, :, 2] *= 0.92
-        img += 5
+        img[:, :, 0] *= 1.05
+        img[:, :, 1] *= 1.02
+        img[:, :, 2] *= 0.94
         return self._finalize(img)
 
     # ---- Per-shot adaptive color science (v2.0) ----

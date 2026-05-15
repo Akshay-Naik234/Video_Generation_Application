@@ -123,8 +123,8 @@ Color Grades:
     parser.add_argument(
         '--effects',
         type=float,
-        default=0.7,
-        help='Effects intensity from 0.0 to 1.0 (default: 0.7)'
+        default=0.4,
+        help='Effects intensity from 0.0 to 1.0 (default: 0.4)'
     )
 
     parser.add_argument(
