@@ -995,7 +995,7 @@ class DocumentaryEffects:
             'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
             'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.35),
             'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.3),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.15),
             'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
             'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.2),
             'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),

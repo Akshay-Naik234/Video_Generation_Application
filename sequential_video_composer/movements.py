@@ -153,11 +153,11 @@ class MovementStyles:
             'push_out': self._ease_in_out_sine,
         }
         # Breathing base layer amplitude (subtle oscillation on all movements)
-        self._breathing_amplitude = 0.001
+        self._breathing_amplitude = 0.0
         self._breathing_freq = 0.06  # Hz
         # Camera inertia overshoot settings
         self._inertia_duration_frac = 0.08
-        self._inertia_overshoot = 0.002
+        self._inertia_overshoot = 0.0
 
     def _fit_image(
         self, img: PILImage.Image, target_w: int, target_h: int
@@ -357,7 +357,7 @@ class MovementStyles:
         if avg_brightness < 80:
             return image
         # Scale strength with brightness: full at 160+, reduced below
-        base_strength = 0.09
+        base_strength = 0.04
         brightness_scale = min(1.0, max(0.3, (avg_brightness - 80) / 80.0))
         strength = base_strength * brightness_scale
         rows, cols = image.shape[:2]
@@ -736,15 +736,15 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'static_motion':
-            zoom = 1.0 + 0.02 * np.sin(raw_progress * np.pi * 2)
-            pan_x = 0.01 * np.sin(raw_progress * np.pi * 1.7)
-            pan_y = 0.01 * np.cos(raw_progress * np.pi * 1.3)
+            zoom = 1.0 + 0.008 * np.sin(raw_progress * np.pi)
+            pan_x = 0.004 * np.sin(raw_progress * np.pi * 0.8)
+            pan_y = 0.004 * np.cos(raw_progress * np.pi * 0.6)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'shoulder_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.03 * np.sin(raw_progress * np.pi * 0.8) + 0.02
-            pan_y = 0.02 * np.sin(raw_progress * np.pi * 1.2)
+            pan_x = 0.02 * eased + 0.01
+            pan_y = 0.01 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tracking_shot':

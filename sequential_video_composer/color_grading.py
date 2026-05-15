@@ -77,9 +77,12 @@ class ColorGrading:
         luminance = 0.299 * img[:, :, 0] + 0.587 * img[:, :, 1] + 0.114 * img[:, :, 2]
         mean_lum = np.mean(luminance)
 
-        if mean_lum < 80:
+        if mean_lum < 60:
             boost = (120 - mean_lum) / max(mean_lum, 1)
-            img = img * (1 + boost * 0.4)
+            img = img * (1 + boost * 0.5)
+        elif mean_lum < 110:
+            boost = (120 - mean_lum) / max(mean_lum, 1)
+            img = img * (1 + boost * 0.3)
         elif mean_lum > 180:
             reduction = (mean_lum - 160) / max(mean_lum, 1)
             img = img * (1 - reduction * 0.3)
