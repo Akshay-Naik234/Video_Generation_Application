@@ -67,8 +67,51 @@ class ColorGrading:
         lift = blend * 8.0
         return img + lift
 
+    @staticmethod
+    def _auto_brightness_correction(img: np.ndarray) -> np.ndarray:
+        """Per-scene adaptive brightness that normalizes overly dark or bright images.
+
+        Targets a mean luminance around 120–160 so no scene looks blown-out
+        or lost in shadow.
+        """
+        luminance = 0.299 * img[:, :, 0] + 0.587 * img[:, :, 1] + 0.114 * img[:, :, 2]
+        mean_lum = np.mean(luminance)
+
+        if mean_lum < 60:
+            boost = (120 - mean_lum) / max(mean_lum, 1)
+            img = img * (1 + boost * 0.5)
+        elif mean_lum < 110:
+            boost = (120 - mean_lum) / max(mean_lum, 1)
+            img = img * (1 + boost * 0.3)
+        elif mean_lum > 180:
+            reduction = (mean_lum - 160) / max(mean_lum, 1)
+            img = img * (1 - reduction * 0.3)
+
+        return img
+
+    @staticmethod
+    def _reduce_overexposure(img: np.ndarray) -> np.ndarray:
+        """Recover detail from overexposed (washed-out) highlights.
+
+        Applies inverse shadow-lift on the bright end and increases
+        contrast for images whose mean luminance exceeds 180.
+        """
+        luminance = 0.299 * img[:, :, 0] + 0.587 * img[:, :, 1] + 0.114 * img[:, :, 2]
+        mean_lum = np.mean(luminance)
+
+        if mean_lum > 180:
+            # Pull highlights back
+            highlight_mask = np.clip((luminance - 160) / 95.0, 0, 1)[:, :, np.newaxis]
+            img = img - highlight_mask * 20
+            # Boost contrast slightly
+            img = (img - 128) * 1.08 + 128
+
+        return img
+
     def _finalize(self, img: np.ndarray) -> np.ndarray:
-        """Final pass: shadow lift + clip to valid range."""
+        """Final pass: brightness correction, shadow lift, highlight recovery, clip."""
+        img = self._auto_brightness_correction(img)
+        img = self._reduce_overexposure(img)
         img = self._smooth_shadow_lift(img)
         return np.clip(img, 0, 255).astype(np.uint8)
 

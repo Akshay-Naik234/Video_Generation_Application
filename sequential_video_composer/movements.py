@@ -152,12 +152,12 @@ class MovementStyles:
             'orbit': self._ease_in_out_quint,
             'push_out': self._ease_in_out_sine,
         }
-        # Breathing base layer amplitude (subtle 0.5% oscillation on all movements)
-        self._breathing_amplitude = 0.003
-        self._breathing_freq = 0.08  # Hz
+        # Breathing base layer amplitude (subtle oscillation on all movements)
+        self._breathing_amplitude = 0.0
+        self._breathing_freq = 0.06  # Hz
         # Camera inertia overshoot settings
-        self._inertia_duration_frac = 0.10
-        self._inertia_overshoot = 0.005
+        self._inertia_duration_frac = 0.08
+        self._inertia_overshoot = 0.0
 
     def _fit_image(
         self, img: PILImage.Image, target_w: int, target_h: int
@@ -352,11 +352,14 @@ class MovementStyles:
     # ---- Visual effect helpers ----
 
     def _apply_vignette(self, image: np.ndarray) -> np.ndarray:
-        """Apply a very subtle vignette, skipped entirely on dark images."""
+        """Apply a cinematic vignette, attenuated on dark images."""
         avg_brightness = np.mean(image)
-        if avg_brightness < 120:
+        if avg_brightness < 80:
             return image
-        strength = 0.05
+        # Scale strength with brightness: full at 160+, reduced below
+        base_strength = 0.04
+        brightness_scale = min(1.0, max(0.3, (avg_brightness - 80) / 80.0))
+        strength = base_strength * brightness_scale
         rows, cols = image.shape[:2]
         X = np.arange(0, cols)
         Y = np.arange(0, rows)
@@ -479,23 +482,22 @@ class MovementStyles:
             return np.array(img)
 
     def _apply_handheld_shake(self, frame: np.ndarray, t: float) -> np.ndarray:
-        """Apply multi-frequency handheld camera shake by shifting pixels.
+        """Apply subtle handheld camera shake by shifting pixels.
 
-        Uses a spectral profile with low-frequency sway (1-2 Hz body motion),
-        mid-frequency drift (3-5 Hz hand tremor), and high-frequency jitter
-        (8-12 Hz micro-tremor) for organic handheld feel.
+        Uses a spectral profile with low-frequency sway (1-2 Hz body motion)
+        and light mid-frequency drift (3-5 Hz hand tremor).
         np.pad with 'edge' mode replicates border pixels to prevent black edges.
         """
         scale = self.width / 1920
-        # Low-frequency body sway (1.2 Hz, 1.8 Hz)
-        lo_dx = 1.5 * scale * np.sin(t * 1.2 * 2 * np.pi + 0.3)
-        lo_dy = 1.2 * scale * np.sin(t * 1.8 * 2 * np.pi + 1.1)
-        # Mid-frequency hand tremor (3.7 Hz, 5.3 Hz)
-        mid_dx = 1.0 * scale * np.sin(t * 3.7 * 2 * np.pi)
-        mid_dy = 0.8 * scale * np.cos(t * 5.3 * 2 * np.pi)
-        # High-frequency micro-tremor (9.1 Hz, 11.3 Hz)
-        hi_dx = 0.4 * scale * np.sin(t * 9.1 * 2 * np.pi + 2.0)
-        hi_dy = 0.3 * scale * np.cos(t * 11.3 * 2 * np.pi + 0.7)
+        # Low-frequency body sway (1.2 Hz, 1.8 Hz) — reduced
+        lo_dx = 0.6 * scale * np.sin(t * 1.2 * 2 * np.pi + 0.3)
+        lo_dy = 0.5 * scale * np.sin(t * 1.8 * 2 * np.pi + 1.1)
+        # Mid-frequency hand tremor (3.7 Hz, 5.3 Hz) — reduced
+        mid_dx = 0.3 * scale * np.sin(t * 3.7 * 2 * np.pi)
+        mid_dy = 0.2 * scale * np.cos(t * 5.3 * 2 * np.pi)
+        # High-frequency micro-tremor removed (too jittery)
+        hi_dx = 0.0
+        hi_dy = 0.0
 
         dx = int(lo_dx + mid_dx + hi_dx)
         dy = int(lo_dy + mid_dy + hi_dy)
@@ -632,7 +634,7 @@ class MovementStyles:
 
         elif movement_type == 'whip_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.20 * eased
+            pan_x = 0.10 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'dolly_zoom':
@@ -643,8 +645,8 @@ class MovementStyles:
 
         elif movement_type == 'handheld_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.08 * np.sin(raw_progress * np.pi * 1.2)
-            pan_y = 0.05 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
+            pan_x = 0.03 * np.sin(raw_progress * np.pi * 1.2)
+            pan_y = 0.02 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
@@ -660,7 +662,7 @@ class MovementStyles:
         elif movement_type == 'spiral_zoom':
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
             angle = eased * np.pi * 2.0
-            radius = 0.08 * (1.0 - eased)
+            radius = 0.04 * (1.0 - eased)
             pan_x = radius * np.cos(angle)
             pan_y = radius * np.sin(angle)
             return zoom, pan_x, pan_y
@@ -673,7 +675,7 @@ class MovementStyles:
 
         elif movement_type == 'dutch_tilt':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            tilt = 0.08 * eased
+            tilt = 0.04 * eased
             pan_x = tilt
             pan_y = tilt * 0.5
             return zoom, pan_x, pan_y
@@ -683,7 +685,7 @@ class MovementStyles:
             return zoom, 0, 0
 
         elif movement_type == 'bounce_zoom':
-            overshoot = 1.0 + 0.08 * np.sin(eased * np.pi * 3) * (1.0 - eased)
+            overshoot = 1.0 + 0.03 * np.sin(eased * np.pi * 2) * (1.0 - eased)
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9 * overshoot
             return zoom, 0, 0
 
@@ -734,15 +736,15 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'static_motion':
-            zoom = 1.0 + 0.02 * np.sin(raw_progress * np.pi * 2)
-            pan_x = 0.01 * np.sin(raw_progress * np.pi * 1.7)
-            pan_y = 0.01 * np.cos(raw_progress * np.pi * 1.3)
+            zoom = 1.0 + 0.008 * np.sin(raw_progress * np.pi)
+            pan_x = 0.004 * np.sin(raw_progress * np.pi * 0.8)
+            pan_y = 0.004 * np.cos(raw_progress * np.pi * 0.6)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'shoulder_drift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.08 * np.sin(raw_progress * np.pi * 0.8) + 0.04
-            pan_y = 0.04 * np.sin(raw_progress * np.pi * 1.2)
+            pan_x = 0.02 * eased + 0.01
+            pan_y = 0.01 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tracking_shot':
@@ -796,17 +798,16 @@ class MovementStyles:
         return -(np.cos(np.pi * t) - 1) / 2
 
     def _ease_elastic_out(self, t: float) -> float:
-        """Elastic easing for bouncy emphasis moments.
+        """Elastic easing for subtle bouncy emphasis.
 
-        Clamped to [-0.05, 1.1] to prevent extreme overshoot values from
-        causing visible artifacts in zoom or position calculations.
+        Clamped to [0.0, 1.05] to keep overshoot barely perceptible.
         """
         if t <= 0:
             return 0.0
         if t >= 1.0:
             return 1.0
         raw = 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
-        return float(np.clip(raw, -0.05, 1.1))
+        return float(np.clip(raw, 0.0, 1.05))
 
     def _ease_out_back(self, t: float, overshoot: float = 1.70158) -> float:
         """Back easing — overshoots then settles for punchy emphasis."""

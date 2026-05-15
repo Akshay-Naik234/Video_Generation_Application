@@ -224,19 +224,53 @@ class ClipFactory:
             return self._concatenate_clips(clips_data)
 
     def _concatenate_clips(self, clips_data: List[Dict]) -> CompositeVideoClip:
-        """Fallback method to concatenate clips sequentially."""
-        clean_clips = []
+        """Concatenate clips with overlapping crossfades to avoid black frames.
+
+        Each consecutive pair of clips overlaps by ``fade_duration`` so that
+        clip *i* fading out and clip *i+1* fading in blend together instead
+        of revealing the black background.
+        """
+        if not clips_data:
+            return None
+
+        fade_duration = min(
+            self.orchestrator.crossfade_duration * 0.3,
+            clips_data[0]['duration'] * 0.15,
+        )
+        fade_duration = max(fade_duration, 0.2)
+
+        positioned = []
+        current_time = 0.0
+
         for i, data in enumerate(clips_data):
             clip = data['clip']
-            duration = data['duration']
-            fade_duration = min(self.orchestrator.crossfade_duration * 0.3, duration * 0.15)
-            if i == 0:
-                clean_clip = clip.fadeout(fade_duration)
-            else:
-                clean_clip = clip.fadein(fade_duration).fadeout(fade_duration)
-            clean_clips.append(clean_clip)
 
-        return concatenate_videoclips(clean_clips, method="compose")
+            if i == 0:
+                placed = clip.set_start(current_time).crossfadeout(fade_duration)
+            elif i == len(clips_data) - 1:
+                placed = clip.set_start(current_time).crossfadein(fade_duration)
+            else:
+                placed = (
+                    clip.set_start(current_time)
+                    .crossfadein(fade_duration)
+                    .crossfadeout(fade_duration)
+                )
+
+            positioned.append(placed)
+            current_time += data['duration'] - fade_duration
+
+        total_duration = current_time + fade_duration
+
+        background = ColorClip(
+            size=self.orchestrator.resolution,
+            color=(0, 0, 0),
+            duration=total_duration,
+        )
+
+        return CompositeVideoClip(
+            [background] + positioned,
+            size=self.orchestrator.resolution,
+        ).set_duration(total_duration)
 
     def _create_placeholder_clip(self, duration: float, label: str = '') -> 'VideoClip':
         """Create a black placeholder clip with optional warning text.

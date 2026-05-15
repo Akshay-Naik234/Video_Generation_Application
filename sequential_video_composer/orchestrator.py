@@ -318,8 +318,17 @@ class SequentialVideoOrchestrator:
             if pool:
                 return random.choice(pool)
 
+        # Movements excluded from random selection: too aggressive for
+        # general use.  They remain available via explicit per-image config
+        # or section/tone pools where the editorial intent is clear.
+        _SHAKE_MOVEMENTS = {
+            'handheld_drift', 'whip_pan', 'dutch_tilt', 'bounce_zoom',
+            'shoulder_drift', 'static_motion',
+        }
+
         if self.movement_style == "random":
-            return random.choice(MovementStyles.MOVEMENT_TYPES)
+            safe_pool = [m for m in MovementStyles.MOVEMENT_TYPES if m not in _SHAKE_MOVEMENTS]
+            return random.choice(safe_pool)
         elif self.movement_style == "sequential":
             movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
             return movements[index % len(movements)]
@@ -474,6 +483,7 @@ class SequentialVideoOrchestrator:
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
+            audio_clip = self._normalize_audio(audio_clip)
             main_video = main_video.set_audio(audio_clip)
 
         logger.info("[5/5] Exporting video...")
@@ -990,32 +1000,66 @@ class SequentialVideoOrchestrator:
         clip = clip.set_mask(mask_clip)
         return clip
 
+    @staticmethod
+    def _normalize_audio(audio_clip: AudioFileClip, target_db: float = -14.0) -> AudioFileClip:
+        """Normalize audio to web-video loudness with peak limiting.
+
+        Brings mean volume to *target_db* (default -14 dB for web video)
+        and applies a soft limiter so peaks never exceed -1.5 dB.
+        """
+        try:
+            samples = audio_clip.to_soundarray(fps=44100)
+        except TypeError:
+            # numpy 2.x requires sequences for vstack; collect chunks manually
+            chunks = list(audio_clip.iter_chunks(fps=44100, quantize=False, chunksize=2000))
+            samples = np.vstack(chunks) if chunks else np.array([])
+        if samples.size == 0:
+            return audio_clip
+
+        rms = np.sqrt(np.mean(samples ** 2))
+        if rms < 1e-10:
+            return audio_clip
+
+        current_db = 20 * np.log10(rms + 1e-10)
+        gain_db = target_db - current_db
+        gain = 10 ** (gain_db / 20.0)
+        samples = samples * gain
+
+        # Soft limiter: peaks above -1.5 dB (≈0.841) are compressed
+        peak_limit = 10 ** (-1.5 / 20.0)  # ~0.841
+        above = np.abs(samples) > peak_limit
+        if np.any(above):
+            samples[above] = np.sign(samples[above]) * (
+                peak_limit + (np.abs(samples[above]) - peak_limit) * 0.3
+            )
+
+        samples = np.clip(samples, -1.0, 1.0)
+
+        from moviepy.audio.AudioClip import AudioArrayClip
+        return AudioArrayClip(samples, fps=44100).set_duration(audio_clip.duration)
+
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.
 
-        Encodes with H.264 High profile and progressive-download flag so
-        the file plays correctly in VS Code, web browsers, and QuickTime.
-        Multi-threaded encoding with optimized settings for quality/speed.
+        Encodes with H.264 High profile, BT.709 color metadata, and
+        progressive-download flag.  Uses CRF-based encoding with VBV
+        rate-control to prevent bitrate spikes, and `-tune film` for
+        cinematic content with pan/zoom and transitions.
         """
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
         temp_audio = str(self.output_path.with_suffix('.temp-audio.m4a'))
         thread_count = min(os.cpu_count() or 4, 8)
 
-        # Encoding speed/quality trade-off:
-        #   fast_mode  → veryfast preset, CRF 23, skip per-frame sharpening
-        #   preview    → veryfast preset, CRF 28, 480p
-        #   normal     → medium preset, CRF 20 + -tune stillimage (optimised
-        #                for mostly-static content, ~30% smaller files)
         if self.preview_mode:
             preset = 'veryfast'
-            crf = '28'
+            crf = '26'
         elif getattr(self, 'fast_mode', False):
             preset = 'veryfast'
-            crf = '23'
+            crf = '22'
         else:
             preset = 'medium'
-            crf = '20'  # CRF 20 (was 18) — negligible quality loss, ~30% smaller files
+            crf = '18'
 
         try:
             video.write_videofile(
@@ -1023,16 +1067,25 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
+                audio_bitrate='192k',
                 temp_audiofile=temp_audio,
                 remove_temp=True,
                 threads=thread_count,
                 preset=preset,
                 ffmpeg_params=[
                     '-crf', crf,
-                    '-tune', 'stillimage',
+                    '-tune', 'film',
+                    '-maxrate', '8M',
+                    '-bufsize', '16M',
+                    '-g', '60',
+                    '-sc_threshold', '40',
                     '-pix_fmt', 'yuv420p',
                     '-profile:v', 'high',
                     '-level', '4.1',
+                    '-color_range', '1',
+                    '-colorspace', 'bt709',
+                    '-color_primaries', 'bt709',
+                    '-color_trc', 'bt709',
                     '-movflags', '+faststart',
                 ]
             )
@@ -1044,6 +1097,14 @@ class SequentialVideoOrchestrator:
                 fps=self.fps,
                 codec='libx264',
                 audio_codec='aac',
+                audio_bitrate='192k',
                 threads=thread_count,
-                ffmpeg_params=['-pix_fmt', 'yuv420p', '-movflags', '+faststart']
+                ffmpeg_params=[
+                    '-pix_fmt', 'yuv420p',
+                    '-color_range', '1',
+                    '-colorspace', 'bt709',
+                    '-color_primaries', 'bt709',
+                    '-color_trc', 'bt709',
+                    '-movflags', '+faststart',
+                ]
             )

@@ -157,17 +157,24 @@ class TransitionEffects:
         duration: float,
         color: Tuple[int, int, int]
     ) -> CompositeVideoClip:
-        """Fade through a solid color (black, white, or warm)."""
+        """Fade through a solid color (black, white, or warm).
+
+        Uses tight crossfade timing to minimize visible color-frame dwell.
+        The color layer sits behind both clips as a safety net rather than
+        an intentional hold — clip1 fades out while clip2 fades in with
+        enough overlap that the solid color is barely perceptible.
+        """
+        overlap_start = clip1.duration - duration
         color_clip = ColorClip(
             size=self.resolution,
             color=color,
-            duration=duration * 0.25
-        ).set_start(clip1.duration - duration * 0.45)
+            duration=duration,
+        ).set_start(overlap_start)
 
-        clip1_fade = clip1.fadeout(duration * 0.35)
-        clip2_fade = clip2.set_start(clip1.duration - duration * 0.4).fadein(duration * 0.35)
+        clip1_fade = clip1.fadeout(duration * 0.55)
+        clip2_fade = clip2.set_start(overlap_start + duration * 0.25).fadein(duration * 0.55)
 
-        return CompositeVideoClip([clip1_fade, color_clip, clip2_fade])
+        return CompositeVideoClip([color_clip, clip1_fade, clip2_fade])
 
     def _wipe(
         self, clip1: ImageClip, clip2: ImageClip, duration: float, direction: str
@@ -271,10 +278,10 @@ class TransitionEffects:
             return frame
 
         glitch_clip = VideoClip(glitch_frame, duration=duration).set_fps(30)
-        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.25)
+        glitch_clip = glitch_clip.set_start(overlap_start).set_opacity(0.18)
 
-        clip1_fade = clip1.fadeout(duration * 0.25)
-        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.25)
+        clip1_fade = clip1.fadeout(duration * 0.3)
+        clip2_fade = clip2.set_start(overlap_start).fadein(duration * 0.3)
 
         return CompositeVideoClip([clip1_fade, clip2_fade, glitch_clip])
 
