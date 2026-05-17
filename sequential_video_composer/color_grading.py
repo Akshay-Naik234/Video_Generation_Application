@@ -112,11 +112,44 @@ class ColorGrading:
 
         return img
 
+    @staticmethod
+    def _limit_color_cast(img: np.ndarray) -> np.ndarray:
+        """Prevent excessive warm or cool colour cast.
+
+        If the mean R/G ratio exceeds 1.35 the image is already very warm;
+        further grading amplifies it.  Pull the red channel gently toward
+        the green mean so R/G converges back to ~1.3.  The same logic
+        applies symmetrically for blue-heavy (cool) images.
+        """
+        mean_r = np.mean(img[:, :, 0])
+        mean_g = np.mean(img[:, :, 1])
+        mean_b = np.mean(img[:, :, 2])
+
+        # Warm cast limiter — trigger earlier and correct more aggressively
+        # so that local crop regions stay below perceptual warmth threshold.
+        if mean_g > 1:
+            rg = mean_r / mean_g
+            if rg > 1.30:
+                target_r = mean_g * 1.25
+                scale = target_r / max(mean_r, 1)
+                img[:, :, 0] = img[:, :, 0] * scale
+
+        # Cool cast limiter (symmetric)
+        if mean_g > 1:
+            bg = mean_b / mean_g
+            if bg > 1.30:
+                target_b = mean_g * 1.25
+                scale = target_b / max(mean_b, 1)
+                img[:, :, 2] = img[:, :, 2] * scale
+
+        return img
+
     def _finalize(self, img: np.ndarray) -> np.ndarray:
-        """Final pass: brightness correction, shadow lift, highlight recovery, clip."""
+        """Final pass: brightness correction, shadow lift, highlight recovery, colour balance, clip."""
         img = self._auto_brightness_correction(img)
         img = self._reduce_overexposure(img)
         img = self._smooth_shadow_lift(img)
+        img = self._limit_color_cast(img)
         return np.clip(img, 0, 255).astype(np.uint8)
 
     def apply_grade(self, image: np.ndarray, grade_type: str) -> np.ndarray:
