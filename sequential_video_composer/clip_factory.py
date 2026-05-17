@@ -21,11 +21,11 @@ class ClipFactory:
     """Factory for creating and composing video clips."""
 
     # Crossfade / overlap tuning constants
-    MAX_FADE_DURATION = 0.8       # seconds
-    FADE_DURATION_RATIO = 0.18    # fraction of clip duration used as base fade
-    MIN_FADE_DURATION = 0.25      # seconds (floor)
-    MAX_FADE_RATIO = 0.35         # fade may not exceed this fraction of clip duration
-    MAX_OVERLAP_RATIO = 0.25      # overlap may not exceed this fraction of clip duration
+    MAX_FADE_DURATION = 1.2       # seconds — allow longer, smoother crossfades
+    FADE_DURATION_RATIO = 0.25    # fraction of clip duration used as base fade
+    MIN_FADE_DURATION = 0.4       # seconds (floor) — prevent abrupt cuts
+    MAX_FADE_RATIO = 0.40         # fade may not exceed this fraction of clip duration
+    MAX_OVERLAP_RATIO = 0.35      # overlap may not exceed this fraction of clip duration
     LAST_CLIP_FADE_MULT = 1.5     # last clip gets a longer fade-out
     LAST_CLIP_MAX_FADE = 0.4      # max fraction of duration for last clip fade
 
@@ -234,10 +234,10 @@ class ClipFactory:
             return None
 
         fade_duration = min(
-            self.orchestrator.crossfade_duration * 0.3,
-            clips_data[0]['duration'] * 0.15,
+            self.orchestrator.crossfade_duration * 0.75,
+            clips_data[0]['duration'] * 0.30,
         )
-        fade_duration = max(fade_duration, 0.2)
+        fade_duration = max(fade_duration, 0.4)
 
         positioned = []
         current_time = 0.0

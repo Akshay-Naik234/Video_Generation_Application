@@ -1,7 +1,44 @@
 ====================================================================
-MASTER PROMPT v8 — BIOGRAPHY SCRIPT GENERATION
+MASTER PROMPT v9.1 — BIOGRAPHY SCRIPT GENERATION
 (Latest Prompts — synced with sequential_video_composer v5.1)
 ====================================================================
+
+╔══════════════════════════════════════════════════════════════════╗
+║          QUICK-REFERENCE CHEAT SHEET (read this first)          ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  10 STORYTELLING TECHNIQUES — every script MUST use ALL 10:      ║
+║                                                                  ║
+║  1. THE DANCE: Use BUT/THEREFORE between beats, never AND THEN   ║
+║  2. RHYTHM: Vary sentence lengths like music — 3 words then 30   ║
+║  3. TONE: Talk to ONE close friend, not a crowd                  ║
+║  4. DIRECTION: Write the last line FIRST, reverse-engineer story ║
+║  5. STORY LENS: Define ONE unique angle before writing anything  ║
+║  6. THE HOOK: First line hints at FULL PLOT, not vague tease     ║
+║  7. BURNING Q: Plant question in hook, answer ONLY in climax    ║
+║  8. HERO/VILLAIN: Name the hero AND the antagonist clearly       ║
+║  9. PSYCHOLOGY: Deliver patterns + resolution + meaning          ║
+║  10. EXCLUSIVITY: 3+ lesser-known facts, re-engage every 90s    ║
+║                                                                  ║
+║  STRUCTURE: Cold Open → Early Life → Spark → Rise → Conflict    ║
+║             → Climax → Fall → Legacy → CTA  (~1800 words/12min) ║
+║                                                                  ║
+║  TONE CALIBRATION (adjust per biography type):                   ║
+║   Crime/Dark → 🔴 raw, visceral, tense, cold observations       ║
+║   Business/Tech → 🟠 sharp, witty, awe + ambition               ║
+║   Tragedy/Human → 🟡 warm, intimate, empathetic, gentle rage    ║
+║   Sports/Achievement → 🟢 high-energy, physical, triumphant     ║
+║   Science/Innovation → 🔵 curious, wonder-filled, cerebral      ║
+║   Politics/Power → 🟣 measured, strategic, morally complex      ║
+║                                                                  ║
+║  GOLDEN RULES:                                                   ║
+║   • Title promises something → script DELIVERS 100%             ║
+║   • Every fact wrapped in a cinematic moment, never listed dry   ║
+║   • Personality in narration — reactions, opinions, emotions     ║
+║   • End Legacy on LIGHTER/HOPEFUL note, not pure despair         ║
+║   • When storytelling ≠ facts → facts win. Flag w/ [VERIFY]     ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
 
 Generate a COMPLETE end-to-end YouTube biography video production package for: **[PERSON NAME]**
 
@@ -59,6 +96,275 @@ movements, transitions, color grading, and visual effects.
 - Strategic pauses (1-2s breaks) at section transitions allow the engine to apply
   dramatic transition effects (ink_splash, film_burn, flash_cut) without cutting
   into narration.
+
+============================================================
+STORYTELLING MASTERY FRAMEWORK (v9 — CORE PHILOSOPHY)
+============================================================
+
+**"People don't remember facts. They remember how you made them feel."**
+
+This is the single most important principle. Every line, every beat, every pause in the script
+exists to create an emotional response — not to dump information. Facts are the raw material.
+Storytelling is the art of packaging those facts into a narrative so compelling that the viewer
+cannot look away. You are not writing an essay. You are making them FEEL something.
+
+The following 10 techniques form the backbone of world-class storytelling. They are derived
+from the methods of the South Park creators (Trey Parker & Matt Stone), Gary Provost,
+Steve Jobs, Casey Neistat, Christopher Nolan, Taylor Swift, and the top 1% of biography
+YouTube channels (MagnatesMedia, Mighty Monk, Newsthink). EVERY script you write MUST
+demonstrate ALL 10 techniques. If even one is missing, the script is incomplete.
+
+---
+
+### TECHNIQUE 1: THE DANCE (But / Therefore — NEVER "And Then")
+
+**Source: Trey Parker & Matt Stone (South Park creators)**
+
+Good stories are a DANCE between context and conflict. Every story beat must be connected
+by "BUT" (introduces conflict/opposition) or "THEREFORE" (shows consequence/result).
+NEVER use "AND THEN" to connect beats — that creates a flat, linear, boring list of events.
+
+**THE RULE: Between every two story beats, you must be able to insert either "BUT" or
+"THEREFORE." If you can only insert "AND THEN," rewrite until you can't.**
+
+BAD (And Then — flat, boring, no tension):
+"Tesla moved to New York. And then he got a job with Edison. And then he worked on the
+generators. And then Edison didn't pay him. And then Tesla left."
+
+GOOD (But/Therefore — dynamic, tension-filled, engaging):
+"Tesla arrived in New York with four cents in his pocket and a letter of recommendation.
+THEREFORE Edison hired him on the spot. BUT Edison's promise of $50,000 turned out to be
+a joke — 'You don't understand American humor.' THEREFORE Tesla walked out, penniless,
+betrayed. BUT that betrayal lit a fire that would eventually burn Edison's entire empire
+to the ground."
+
+**OPEN LOOPS & CLOSED LOOPS:**
+- Create OPEN LOOPS by introducing conflicts and unanswered questions: "He walked into
+  that meeting with a plan. But what he didn't know was that someone in that room had
+  already decided to destroy him." (Open loop — WHO? HOW?)
+- CLOSE LOOPS later by resolving them — but only after building tension.
+- Have 2-3 open loops running simultaneously at any given point in the script.
+- The main BURNING QUESTION loop opens in the COLD OPEN and closes in THE CLIMAX.
+- Secondary loops open and close within 2-3 sections.
+
+---
+
+### TECHNIQUE 2: RHYTHM — THE MUSICALITY OF SENTENCES
+
+**Source: Gary Provost ("This sentence has five words...")**
+
+THE RULE: Mix 3+ sentence lengths per paragraph. Never 3 same-length sentences in a row.
+
+"He was broke. Completely, utterly broke. The kind of broke where you stand outside a
+diner at midnight, watching other people eat through the glass. Let alone the meal.
+Let alone the life you were promised. But here's the thing about rock bottom — it has
+a sound. And in that silence? He heard something. An idea. Just one. But it was enough."
+(3 words → 4 → 30 → 5 → 11 → bridge → staccato → reflective. Writing that SINGS.)
+
+---
+
+### TECHNIQUE 3: TONE — TALKING TO ONE CLOSE FRIEND
+
+**Source: Steve Jobs, Casey Neistat, Emma Chamberlain**
+
+THE RULE: If it sounds like a lecture or Wikipedia — rewrite. If it sounds like
+something you'd say at 2AM to a friend who asked "So what happened next?" — nailed it.
+Confide in the viewer. Pull them aside. "Look, between you and me..."
+
+Examples: "Okay, here's the part I love." / "And I'm not gonna lie — this next part?
+It hits different." / "So picture this. You're him. You've got nothing."
+
+---
+
+### TECHNIQUE 4: DIRECTION — START WITH THE ENDING
+
+**Source: Christopher Nolan (Memento, Dunkirk, Tenet)**
+
+THE RULE: Write the killer last line FIRST. Then reverse-engineer the entire story
+to build toward it. The ending is the destination. Everything else is the road.
+
+**BACKWARD PLANNING:** 1) Write the final Legacy line → 2) Map the emotional journey
+needed (hope→betrayal→devastation→redemption?) → 3) Build the Cold Open as a flash
+forward → 4) Write forward, knowing exactly where every beat is heading.
+
+---
+
+### TECHNIQUE 5: STORY LENSES — YOUR UNIQUE ANGLE
+
+**Source: Taylor Swift's cultural impact analysis approach**
+
+Every biography has been told before. The LENS is what makes YOUR version different.
+A "lens" is a unique angle or perspective you apply to filter the raw facts through.
+
+THE RULE: Before writing, define the ONE LENS for this biography. State it in one
+sentence: "This video tells the story of [PERSON] through the lens of [UNIQUE ANGLE]."
+
+**LENS EXAMPLES:**
+- Instead of "The life of Elon Musk" → "How one man's obsession with not dying on Earth
+  accidentally made him the richest person alive" (OBSESSION lens)
+- Instead of "Steve Jobs biography" → "The man who got fired from his own company and
+  used that humiliation as rocket fuel" (REVENGE/REDEMPTION lens)
+- Instead of "Nikola Tesla story" → "The greatest inventor in history died with nothing
+  — this is the story of who stole everything from him" (INJUSTICE lens)
+- Instead of "Taylor Swift at the Super Bowl" → "How a pop star accidentally generated
+  $330 million in revenue for the NFL" (BUSINESS IMPACT lens)
+
+The lens becomes the throughline. Every section should reinforce this angle. The Cold
+Open establishes it. The Conflict is where it's tested. The Climax is where it breaks
+or triumphs. The Legacy is where the viewer sees the world through this lens forever.
+
+---
+
+### TECHNIQUE 6: THE HOOK — VISUAL + PLOT IN THE FIRST SECOND
+
+**Source: Epic Gardening channel (viral hook analysis)**
+
+The hook is NOT a vague teaser. It is a SPECIFIC, PLOT-REVEALING statement that tells
+the viewer WHAT this story is about while creating a burning need to know HOW or WHY.
+
+THE RULE: The first line MUST hint at the full plot arc — not tease vaguely. "Wait
+till you see what happens" = BAD. "A man who invented the future died alone in a hotel
+room with nothing but pigeons for company" = GOOD.
+
+**HOOK STRUCTURE (use this formula):**
+1. OPEN with the most SHOCKING or EMOTIONAL single fact of their life (Cold Open)
+2. This fact must be a QUESTION (explicit or implicit) — the Burning Question
+3. The visual in the first 1-3 seconds must SHOW something arresting (not just tell)
+4. The hook must make the viewer arrive at a question IN THEIR OWN HEAD
+
+**VISUAL + AUDIO HOOK SYNERGY:**
+People process visuals faster than audio. The image must hook BEFORE the narration does.
+Example: SHOW a close-up of a trembling hand signing a document WHILE the narrator says
+"On that Tuesday morning, he signed away everything." The visual creates instant intrigue,
+the audio provides context. Together, they're 10x more powerful than either alone.
+
+---
+
+### TECHNIQUE 7: THE BURNING QUESTION — RETENTION ARCHITECTURE
+
+**Source: Narrative psychology + top YouTube creator analysis**
+
+Every biography video must have ONE central BURNING QUESTION that is planted in the
+COLD OPEN and ONLY answered in THE CLIMAX. This question is the ENGINE that keeps
+viewers watching. It works on the brain's need for CLOSURE — rarity and exclusivity
+make the question even more powerful.
+
+THE RULE: Define ONE burning question before writing. Plant it in the first 15 seconds.
+Reference it (directly or indirectly) at least 3 times throughout the middle sections.
+Answer it ONLY in The Climax — and the answer must be SATISFYING.
+
+**BURNING QUESTION EXAMPLES BY BIOGRAPHY TYPE:**
+- 🔴 Crime: "Did she actually steal the formula, or was she framed?"
+- 🟠 Business: "Was this the deal that made him a billionaire — or the one that destroyed him?"
+- 🟢 Sports: "Will this injury end his career forever?"
+- 🔵 Science: "Did she know the radiation was killing her — and did she keep going anyway?"
+- 🟣 Politics: "Was he the reformer he claimed to be — or was it all a cover?"
+- 🎬 Entertainment: "Did he win the Oscar — or was he robbed?"
+
+**MULTI-QUESTION ARCHITECTURE (for longer scripts):**
+If your script has multiple burning questions (recommended):
+- PRIMARY burning question: Planted in Cold Open, answered in THE CLIMAX
+- SECONDARY burning question: Planted in THE SPARK or THE RISE, answered around the midpoint
+  This secondary answer gives the viewer a "reward" that sustains them until the primary payoff.
+- The secondary question should be smaller in stakes but still satisfying
+- Example: Primary = "Did Tesla die penniless?" / Secondary = "Did Edison ever apologize?"
+
+**CLIP HANDLER TECHNIQUE:**
+In the HOOK, ask the question explicitly. Throughout THE RISE and THE CONFLICT, build
+context ("He did this, then that, then THIS — and each step brought him closer to the
+answer"). In THE CLIMAX, deliver the answer. The viewer must feel that the answer was
+EARNED — not just stated, but BUILT UP TO.
+
+---
+
+### TECHNIQUE 8: HERO & VILLAIN — EMOTIONAL POLARITY
+
+**Source: Universal narrative psychology**
+
+Every great story has a HERO and a VILLAIN. Even in a biography. Even if the subject
+is both. The viewer needs someone to root for and someone to root against. Without
+this polarity, the story has no emotional charge.
+
+THE RULE: Identify the HERO and the VILLAIN before writing. They can be:
+- Person vs. Person (Tesla vs. Edison)
+- Person vs. System (individual vs. corrupt institution)
+- Person vs. Self (their own demons, addiction, ego)
+- Person vs. Fate (unfair circumstances, illness, timing)
+
+**HERO-BUILDING TECHNIQUES:**
+- Show vulnerability early (struggle, poverty, rejection)
+- Show a specific moment of courage or defiance
+- Give the hero a CLEAR want/need that the audience can empathize with
+- Make the viewer FEEL the injustice done to the hero
+
+**VILLAIN-BUILDING:** Name them. Show their power. Include specific betrayals/quotes.
+They must THREATEN what the hero cares about most.
+
+---
+
+### TECHNIQUE 9: PSYCHOLOGY OF STORYTELLING — PATTERNS, RESOLUTION & MEANING
+
+**Source: Cognitive neuroscience of narrative**
+
+The human brain is WIRED for stories. It craves three things: PATTERNS (recognizable
+structures), RESOLUTION (closure and answers), and MEANING (takeaways and lessons).
+
+THE RULE: Every section must deliver at least one of these three elements:
+- PATTERN: Recognizable cause-and-effect chains ("he took a risk → it paid off → he
+  took a bigger risk → it didn't")
+- RESOLUTION: An answer to a question, a conflict resolved, a mystery solved
+- MEANING: A lesson, insight, or moral that the viewer can apply to their own life
+
+**AUDIENCE EXPECTATION ALIGNMENT:**
+Title promises X → script DELIVERS X 100%. "DARK Truth" → genuinely dark. "DESTROYED" →
+specific destruction. Misalignment = angry comments + click-away. Show clever decisions
+with RISK — stakes, sacrifice, why most people wouldn't, then the consequence.
+
+---
+
+### TECHNIQUE 10: EXCLUSIVITY & VIEWER SATISFACTION
+
+**Source: Top YouTube retention analytics**
+
+The viewer must feel like they are getting EXCLUSIVE information — facts, perspectives,
+and details they cannot easily find elsewhere. The fewer videos on this topic on YouTube,
+the more exclusive your content feels. Even if the topic is well-covered, your LENS
+(Technique 5) creates exclusivity.
+
+THE RULE: Include at least 3 pieces of information in the script that most viewers
+will NOT have heard before — lesser-known facts, uncovered details, rare quotes, obscure
+documents, or unique interpretations. Flag these with excitement: "Now here's something
+almost nobody knows..." or "And this detail? Most biographies skip right over it."
+
+**SATISFACTION ARCHITECTURE:**
+- Every 60-90s, deliver a "micro-satisfaction" (fact, resolved mystery, emotional payoff)
+- Final satisfaction = Burning Question answer in Climax
+- End Legacy on LIGHTER/HOPEFUL note — meaning, not just despair
+
+**RE-ENGAGEMENT TRIGGERS (every 90-120s, introduce one of):**
+A NEW question, character, REAL quote, shocking statistic, or contradiction.
+
+**RESEARCH DEPTH:** Cite biographies, interviews, court records, letters, contemporary
+news. Reference naturally: "According to a 1929 letter to...", "In a 2019 NYT interview..."
+
+---
+
+### MANDATORY STORYTELLING CHECKLIST (verify EVERY item before delivering):
+
+[ ] THE DANCE: Script uses BUT/THEREFORE connections, never AND THEN. At least 2-3 open loops running.
+[ ] RHYTHM: Sentence lengths vary dramatically within every paragraph. Script reads like music.
+[ ] TONE: Every paragraph sounds like telling a friend at 2AM, not lecturing. Personal, intimate, raw.
+[ ] DIRECTION: The last line of Legacy was written FIRST and the story builds toward it.
+[ ] STORY LENS: One unique angle is defined and reinforced throughout every section.
+[ ] THE HOOK: First line hints at the full plot. Visual + audio hook synergy described.
+[ ] BURNING QUESTION: One primary BQ planted in Cold Open, answered in Climax. One secondary BQ resolved mid-script.
+[ ] HERO & VILLAIN: Clear hero and antagonist identified. Viewer roots for someone and against someone.
+[ ] PSYCHOLOGY: Patterns, resolution, and meaning present. Title promise delivered 100%.
+[ ] EXCLUSIVITY: At least 3 lesser-known facts included. Viewer feels rewarded with exclusive knowledge.
+[ ] PERSONAL TOUCH: Script has personality, opinions, emotional reactions — not just facts.
+[ ] CONTROVERSY/DRAMA IN FIRST 30 SECONDS: Questions relevant to masses, emotionality, strong emotions.
+[ ] END ON LIGHTER NOTE: Legacy section ends with hope, meaning, or beauty — not just despair.
+[ ] FACTS PACKAGED AS STORY: No dry fact dumps. Every fact is woven into a cinematic, sensory moment.
 
 ---
 
@@ -215,71 +521,60 @@ The script MUST alternate between these three pacing modes. This is what separat
 - Example:
 "On January 7th, 1943... <break time="1s"/> a maid at the New Yorker Hotel opened the door to Room 3327. <break time="0.5s"/> And there he was. <break time="1s"/> Nikola Tesla. <break time="0.5s"/> Alone. <break time="1.5s"/> The man who lit up the world... had gone dark."
 
+**TONE CALIBRATION SCALE (adjust intensity per biography type — CRITICAL):**
+
+Before writing, identify the biography type and calibrate your tone:
+
+| TYPE | TONE SETTING | INTENSITY | EXAMPLE LANGUAGE |
+|------|-------------|-----------|------------------|
+| 🔴 Crime/Dark | Raw, visceral, cold observations | HIGH — unflinching, tense, no hand-holding | "He didn't just kill them. He cataloged them." |
+| 🟠 Business/Tech | Sharp, witty, awe + ambition | MEDIUM-HIGH — admiration mixed with skepticism | "He bet the company on a hunch. And it worked. Until it didn't." |
+| 🟡 Tragedy/Human | Warm, intimate, empathetic, gentle rage | HIGH — emotional, personal, gut-punch moments | "She just wanted to go home. That's all. Just... home." |
+| 🟢 Sports/Achievement | High-energy, physical, triumphant | HIGH — visceral body language, crowd electricity | "The crowd is on their feet. 80,000 people screaming." |
+| 🔵 Science/Innovation | Curious, wonder-filled, cerebral | MEDIUM — awe at ideas, not just people | "She saw something nobody else could see. Not yet." |
+| 🟣 Politics/Power | Measured, strategic, morally complex | MEDIUM — restrained tension, let viewer judge | "He smiled at the cameras. Behind that smile? A different story." |
+
+**KEY RULE**: Don't apply crime-level intensity to a scientist bio, or sports-energy to a tragedy. Match the tone to the subject. The cheat sheet at top has the quick version.
+
+**STORYTELLING vs. FACTUAL ACCURACY (NON-NEGOTIABLE):**
+When storytelling techniques conflict with verified facts, FACTS WIN. Every time.
+- Never dramatize a quote you can't source. Write "No one recorded what he said — but we know what he did next" instead.
+- If the hero/villain framing oversimplifies a nuanced situation, add a line: "Now, the real story? It's more complicated than that."
+- Flag uncertain dramatizations with [VERIFY] so the user can fact-check.
+- Cinematic presentation ≠ fabrication. You can set a scene vividly while keeping every fact accurate.
+
 **Writing Style Rules (CRITICAL — must feel human, NOT AI):**
-- Write like you're telling this story to a friend at 2am who is hanging on every word
+- Write like you're telling this story to ONE CLOSE FRIEND at 2am who is hanging on every word (Technique 3 — TONE). Not a crowd. One person. Leaning in. This is intimate. This is personal.
 - Use incomplete sentences sometimes. Fragments. Like real speech.
 - Use casual transitions: "Here's the thing.", "And this... this is where it gets dark.", "But wait.", "Nobody saw this coming."
 - Use visceral, sensory language — don't say "he was sad", say "his hands were shaking, his chest felt hollow, and for the first time in his life, he had nothing left to say"
 - Include micro-stories and specific details (dates, names, places, exact quotes when available)
+- ADD PERSONALITY AND PERSONAL TOUCH: Include your own reactions, opinions, and emotional responses. "And I'm not gonna lie — this part gets me every time." "Now, here's the thing I love about this story." The viewer should feel the narrator's genuine emotions, not just facts.
+- CONNECT BEATS WITH BUT/THEREFORE (Technique 1 — THE DANCE): Every paragraph must advance through conflict and consequence, never flat chronology. If you catch yourself writing "and then," stop and rewrite.
+- SENTENCE RHYTHM IS MUSICALITY (Technique 2 — RHYTHM): Within every paragraph, vary sentence lengths dramatically. Three words. Then twenty. Then six. Then forty. Short. Punchy. Real. Then a longer flowing sentence that lets the viewer breathe before the next punch hits. This is what separates human writing from AI monotone.
 - NEVER use these AI phrases (COMPLETE BANNED LIST — scan every sentence against this before delivering):
   "In a world where...", "Little did he know...", "It's important to note...", "This would prove to be...", "It is worth mentioning...", "fast forward to...", "dive into...", "A testament to...", "It's worth noting...", "Needless to say...", "Let's delve into...", "Tapestry of...", "Sent shockwaves...", "A beacon of...", "Landscape of...", "Resonated with...", "Pivotal moment...", "Paradigm shift...", "Groundbreaking...", "Trailblazer...", "Iconic...", "Game-changer...", "Embark on...", "Culminated in...", "Spearheaded...", "Catapulted...", "Ushered in...", "Heralded as...", "Set the stage for...", "Paved the way...", "Shed light on...", "Navigated the complexities...", "A journey of...", "In the annals of...", "Etched in history...", "Left an indelible mark...", "Stands as a testament...", "Rose to prominence...", "Captured the imagination...", "Carved a niche...", "Blazed a trail...", "Emerged as...", "Garnered attention...", "Played a crucial role...", "It goes without saying...", "At the end of the day...", "In no uncertain terms...", "By all accounts...", "For all intents and purposes...", "In the grand scheme of...", "A force to be reckoned with...", "The rest is history..."
 - Write with CONTRAST: whisper moments followed by loud moments, humor followed by tragedy, hope followed by crushing defeat
 - Every 60-90 seconds, include a "retention hook" — a question, a teaser about what's coming next, or a shocking micro-reveal that makes the viewer NEED to keep watching
 - The opening 15 seconds MUST start with the most shocking/emotional moment of their life (cold open), NOT with their birth or childhood
 
-**VIRAL RETENTION HOOK LIBRARY (use these exact phrases throughout the script, rotating every 60-90 seconds):**
-- "But here's what nobody expected..."
-- "And this... this is where things take a DARK turn."
-- "What he did next would change everything."
-- "But we'll get to that in a moment. First..."
-- "Now, what would YOU do in this situation?"
-- "And if you think THAT was bad... just wait."
-- "Here's the part that still gives me chills."
-- "But the real story? It's way darker than you think."
-- "Nobody — and I mean NOBODY — saw this coming."
-- "And that's when everything fell apart."
-- "But here's the twist nobody talks about..."
-- "Stop and think about that for a second."
-- "This next part... it changes everything you thought you knew."
-- "Remember this moment. It's going to matter later."
+**RETENTION TOOLKIT (use 8+ per script, spaced 60-90 seconds apart, NEVER back-to-back):**
 
-**ADVANCED RETENTION TECHNIQUES (from top 1% creators — weave these throughout):**
+Pick from these categories — rotate and vary, never repeat the same hook twice:
 
-1. **SUBCONSCIOUS LOOP TECHNIQUE**: End sentences with incomplete thoughts that force the viewer's brain to stay for closure:
-   - "He walked in with a plan. But what he didn't know was—" (then pivot to context before revealing)
-   - "Three people knew the truth. And one of them was about to—" (cut to next beat)
-   - Use 2-3 of these per script, spaced at key tension points.
+- **Tease forward**: "But here's what nobody expected...", "What he did next would change everything.", "But we'll get to that in a moment."
+- **Emotional spike**: "Here's the part that still gives me chills.", "And this... this is where things take a DARK turn."
+- **Direct address**: "Now, what would YOU do?", "Stop and think about that for a second.", "Okay, real talk—"
+- **Open loops** (at EVERY section transition): End with an unanswered question that the next section resolves. "And that's when a letter arrived that would change everything." / "But success? It was about to become his worst enemy."
+- **Subconscious loops** (2-3 per script): End a sentence mid-thought, pivot to context, then return. "Three people knew the truth. And one of them was about to—"
+- **Phantom completion** (once per script): Start a list, delay the last item. "He made three promises. The first? Never speak to Edison. The second? Build something bigger. The third... we'll get to that."
+- **Pattern-interrupt micro-stories** (every 90s): Insert a 2-3 sentence tangential but fascinating detail. "Side note — same night, same hotel, a young Sinatra was performing downstairs. Two geniuses. Neither knew."
+- **Direct-address confessions** (2-3 per script): "I need you to really picture this.", "If I told you this next part without context, you wouldn't believe me."
 
-2. **PHANTOM COMPLETION HACK**: Start a numbered list or sequence, then delay the payoff:
-   - "He made three promises that day. The first? He'd never speak to Edison again. The second? He'd build something that would make Edison's work look like a toy. The third... well, we'll get to that."
-   - Use once per script, ideally in THE_RISE or THE_CONFLICT section.
+**HOOK PLACEMENT RULE**: Hooks must be EARNED. Place them AFTER building tension — never at section starts, never after low-stakes facts. 3-4 story sentences minimum between hooks.
 
-3. **OPEN LOOP AT EVERY SECTION TRANSITION**: The last sentence of each section must create an open loop that the next section answers. The viewer should feel physically unable to click away because a question is unanswered.
-   - End of EARLY_LIFE: "And that's when a letter arrived that would change everything."
-   - End of THE_SPARK: "He had no idea what was waiting for him on the other side of that door."
-   - End of THE_RISE: "But success? Success was about to become his worst enemy."
-
-4. **PATTERN INTERRUPT MICRO-STORIES**: Every 90 seconds, insert a 2-3 sentence micro-story that's tangential but fascinating — a weird detail, a coincidence, a human moment. This resets the viewer's attention clock.
-   - "Side note — and this is wild — that same night, in the same hotel, a young Frank Sinatra was performing downstairs. Two geniuses. Same building. Neither knew the other was there."
-
-5. **DIRECT ADDRESS MOMENTS**: 2-3 times per script, break the fourth wall and speak directly to the viewer as if confiding a secret:
-   - "Okay, real talk for a second. If I told you this next part without context, you literally wouldn't believe me."
-   - "I need you to stop and really picture this. Close your eyes for a second — actually, don't, keep watching — but imagine..."
-
-**HOW TO USE RETENTION HOOKS NATURALLY (CRITICAL — hooks must NOT feel forced):**
-- NEVER place two hooks back-to-back. There must be at least 3-4 sentences of genuine story between each hook.
-- Each hook must come at a NATURAL story transition point — at the end of a mini-story, before a new revelation, or at a cliffhanger moment.
-- The hook must be EARNED by the content before it. If the reader doesn't care about what happened yet, the hook will feel cheap.
-- Vary the hooks — don't use the same one twice. Rotate through the library.
-- NEVER start a section with a hook. Start with story content, build tension, THEN drop the hook.
-
-BAD hook placement (forced, random):
-"He was born in 1856 in Croatia. But here's what nobody expected... his mother was the daughter of a priest."
-(The hook is unearned — "nobody expected" a normal family detail? Feels fake.)
-
-GOOD hook placement (earned, natural):
-"Edison laughed in his face. Fifty thousand dollars — gone. No apology. No explanation. Just 'you don't understand American humor.' Tesla walked out of that office with nothing. And this... this is where things take a DARK turn."
-(The hook is earned — we've just witnessed a gut-punch betrayal. The viewer NEEDS to know what happens next.)
+BAD: "He was born in 1856 in Croatia. But here's what nobody expected... his mother was the daughter of a priest." (Unearned — boring detail hyped up.)
+GOOD: "Edison laughed in his face. Fifty thousand dollars — gone. 'You don't understand American humor.' And this... this is where things take a DARK turn." (Earned after gut-punch betrayal.)
 
 **HOW TO WEAVE SPECIFIC DETAILS NATURALLY (with full examples):**
 Do NOT just list facts. Weave them into the narrative as sensory, cinematic moments. Study these BAD vs GOOD examples carefully — EVERY paragraph in your script must match the GOOD style:
@@ -336,13 +631,10 @@ Every 2-3 paragraphs MUST contain at least ONE of the following:
 - For LIVING subjects: Be careful with legal sensitivity. Avoid stating opinions as facts. Use phrases like "allegedly", "reportedly", "according to [source]" when discussing controversies. DO NOT describe imagined future events. End with their current status and an open question about their future rather than a "legacy" section. Replace the "Fall/Final Chapter" section with "The Controversy" or "The Turning Point" — whatever is most dramatic about their CURRENT situation.
 
 **HANDLING SCARCE BIOGRAPHICAL INFORMATION:**
-If the person's biography has limited documented information:
-- Focus on the FEW dramatic moments that ARE documented — go deeper, not wider
-- Use "we don't know" as a storytelling tool: "Here's the thing — nobody knows exactly what happened that night. The records were destroyed. The witnesses disappeared. All we have is a single letter..."
-- Fill gaps with era context: "We don't know what [person] was doing in the summer of 1942, but we know what the WORLD was doing..." — then paint the historical context vividly
-- Use phrases like "historians believe...", "the most likely explanation...", "based on letters found in..."
-- Flag genuinely uncertain claims with [VERIFY] so the user can fact-check
-- NEVER fabricate quotes, dates, or events to fill gaps. It's better to say "No one recorded what he said that day — but we know what he did next" than to make up a quote.
+- Go deeper, not wider — focus on the FEW dramatic moments that ARE documented
+- Use mystery as a tool: "Nobody knows what happened that night. The records were destroyed."
+- Fill gaps with era context: "We don't know what he was doing — but we know what the WORLD was doing..."
+- Use "historians believe...", flag uncertain claims with [VERIFY]. NEVER fabricate quotes or events.
 
 **COLD OPEN EXAMPLES (your cold open MUST match this energy level — study ALL of these):**
 
@@ -363,53 +655,30 @@ Example 5 (SPORTS — for athletic figures):
 
 **Script Structure (follow this exactly — optimized for 12-minute video):**
 
-[0:00 - 0:30] COLD OPEN (~75 words) — Start at the most dramatic moment. Drop the viewer into the peak of emotion. Use PRESENT TENSE for immediacy. End with a transition like "But to understand how we got here... we need to go back." This must feel like the opening scene of a Netflix documentary. USE FAST PACING.
+[0:00 - 0:30] COLD OPEN (~75 words) — Start at the most dramatic moment. Drop the viewer into the peak of emotion. Use PRESENT TENSE for immediacy. End with a transition like "But to understand how we got here... we need to go back." This must feel like the opening scene of a Netflix documentary. USE FAST PACING. **STORYTELLING v9**: Plant the BURNING QUESTION here — the one question that drives the viewer through the entire video. The first line must HINT AT THE FULL PLOT (Technique 6). Establish the STORY LENS angle. Create the first OPEN LOOP. In the first 30 seconds, hit the viewer with questions relevant to the masses, controversy, emotionality, or other strong emotions that make them NEED to stay.
 
-[0:30 - 2:00] EARLY LIFE (~225 words) — Focus on ONE or TWO defining childhood moments, not a boring chronology. Make it vivid and cinematic. Include the family's financial situation, the neighborhood, the era. Paint a picture. What did the world look like when they were growing up? What was their ONE childhood obsession or trauma that foreshadowed everything? End with a retention hook that bridges to The Spark. USE MEDIUM PACING.
+[0:30 - 2:00] EARLY LIFE (~225 words) — Focus on ONE or TWO defining childhood moments, not a boring chronology. Make it vivid and cinematic. Include the family's financial situation, the neighborhood, the era. Paint a picture. What did the world look like when they were growing up? What was their ONE childhood obsession or trauma that foreshadowed everything? End with a retention hook that bridges to The Spark. USE MEDIUM PACING. **STORYTELLING v9**: Use BUT/THEREFORE to connect childhood beats (not "and then he grew up"). Introduce the HERO's vulnerability and the first seeds of the burning question. Vary sentence rhythm (short punchy childhood details, then a longer reflective observation). End with an OPEN LOOP that pulls the viewer into The Spark.
 
-[2:00 - 3:30] THE SPARK (~225 words) — The moment everything changed. The event, person, or realization that set them on their path. This must feel like a movie's "inciting incident." Include the exact date/year, who was involved, and what specifically happened. Make the viewer feel the electricity of this moment. End with a forward-looking tease. USE MEDIUM-FAST PACING.
+[2:00 - 3:30] THE SPARK (~225 words) — The moment everything changed. The event, person, or realization that set them on their path. This must feel like a movie's "inciting incident." Include the exact date/year, who was involved, and what specifically happened. Make the viewer feel the electricity of this moment. End with a forward-looking tease. USE MEDIUM-FAST PACING. **STORYTELLING v9**: This is where the STORY LENS becomes visible — show what makes THIS telling of the spark different from any other biography. Plant the SECONDARY burning question here if using multi-question architecture. Include at least one lesser-known fact (Technique 10) that makes the viewer feel they're getting exclusive knowledge.
 
-[3:30 - 5:30] THE RISE (~300 words) — Their journey upward. Include SPECIFIC struggles: rejected how many times? By whom? What did they sacrifice? What was their daily routine during the grind years? Include at least 2 named people who helped or opposed them. Show the COST of their ambition — what relationships suffered? What health problems emerged? This section must feel EARNED, not like a highlight reel. End with a hook that teases the coming conflict. USE MEDIUM PACING.
+[3:30 - 5:30] THE RISE (~300 words) — Their journey upward. Include SPECIFIC struggles: rejected how many times? By whom? What did they sacrifice? What was their daily routine during the grind years? Include at least 2 named people who helped or opposed them. Show the COST of their ambition — what relationships suffered? What health problems emerged? This section must feel EARNED, not like a highlight reel. End with a hook that teases the coming conflict. USE MEDIUM PACING. **STORYTELLING v9**: Show clever decisions and RISKS (Technique 9 — the brain loves watching clever people make bold moves). Use the DANCE aggressively here: "He risked everything. THEREFORE success came. BUT it came with a price." Introduce the VILLAIN or antagonist force (Technique 8). Answer the SECONDARY burning question in the second half of this section to give the viewer a satisfying micro-payoff.
 
-[5:30 - 7:30] THE CONFLICT (~300 words) — The enemy, the betrayal, the obstacle. THIS IS THE MOST IMPORTANT SECTION. This is where the story gets dark. Name the antagonist. Describe the betrayal in specific detail. Include correspondence, legal battles, public humiliation. Use contrast: show what they had at their peak, then show it being stripped away piece by piece. This section drives the highest retention — make it DEVASTATING. USE FAST PACING during escalation, SLOW PACING during emotional gut-punches.
+[5:30 - 7:30] THE CONFLICT (~300 words) — The enemy, the betrayal, the obstacle. THIS IS THE MOST IMPORTANT SECTION. This is where the story gets dark. Name the antagonist. Describe the betrayal in specific detail. Include correspondence, legal battles, public humiliation. Use contrast: show what they had at their peak, then show it being stripped away piece by piece. This section drives the highest retention — make it DEVASTATING. USE FAST PACING during escalation, SLOW PACING during emotional gut-punches. **STORYTELLING v9**: This is where HERO vs VILLAIN (Technique 8) reaches maximum intensity. The DANCE (Technique 1) should be at its most aggressive: "He fought back. BUT they had already prepared. THEREFORE he was cornered. BUT he refused to surrender." Include RE-ENGAGEMENT TRIGGERS — newer facts, newer figures, real interview quotes that the viewer hasn't heard before. Reference the BURNING QUESTION indirectly: make the viewer feel the answer could go either way.
 
-[7:30 - 9:00] THE CLIMAX (~225 words) — The peak moment: their greatest triumph OR their most devastating defeat (or both in quick succession). Make the viewer FEEL the victory or the devastation. Include the crowd reaction, the newspaper headlines, the specific award/achievement. If triumph: plant the seed of doubt. If defeat: show the human cost. USE SLOW PACING — let the moment breathe.
+[7:30 - 9:00] THE CLIMAX (~225 words) — The peak moment: their greatest triumph OR their most devastating defeat (or both in quick succession). Make the viewer FEEL the victory or the devastation. Include the crowd reaction, the newspaper headlines, the specific award/achievement. If triumph: plant the seed of doubt. If defeat: show the human cost. USE SLOW PACING — let the moment breathe. **STORYTELLING v9**: THIS IS WHERE THE BURNING QUESTION IS ANSWERED (Technique 7). The answer must feel EARNED — built up through 7+ minutes of context, conflict, and suspense. Use RHYTHM (Technique 2) at its most dramatic: short staccato sentences for impact, then one long flowing sentence for the emotional release. The HERO's arc reaches its peak. The STORY LENS is validated or shattered. The audience expectation from the title is DELIVERED here.
 
 [9:00 - 10:30] THE FALL / FINAL CHAPTER (~225 words) — Everything collapses OR their final days/years. Make this deeply personal — not just facts, but emotions. What did they lose? Who abandoned them? Where were they living at the end? What were their last words or final act? Include the exact date and circumstances. This section must make the viewer feel something real. USE SLOW PACING with occasional FAST beats for contrast.
 
-[10:30 - 11:30] LEGACY (~150 words) — What they left behind. Their impact on the world today. End with a powerful one-liner that reframes the entire story. Leave an OPEN LOOP: "What if he had made a different choice that night?" The last line before CTA should be quotable — something viewers will paste in the comments. USE SLOW, REFLECTIVE PACING.
+[10:30 - 11:30] LEGACY (~150 words) — What they left behind. Their impact on the world today. End with a powerful one-liner that reframes the entire story. Leave an OPEN LOOP: "What if he had made a different choice that night?" The last line before CTA should be quotable — something viewers will paste in the comments. USE SLOW, REFLECTIVE PACING. **STORYTELLING v9**: This is where DIRECTION (Technique 4) pays off — the last line was written FIRST, and the entire story has been building toward this moment. End on a LIGHTER or HOPEFUL note even in dark stories (Technique 10) — give the viewer meaning, beauty, or a reason to believe. The STORY LENS should be reinforced one final time in the closing line. Add personality and personal touch — let the narrator's genuine emotion come through.
 
 [11:30 - 12:00] CTA (~75 words) — This must flow ORGANICALLY from the legacy section. Do NOT say "thanks for watching" or any generic YouTube CTA. Instead, connect the CTA to the story's emotion: "If that story moved you, hit subscribe — we tell stories like this every week. And drop a comment: what was the moment that hit you the hardest?" Then tease the next video: "Next week... [one-line tease of next biography]." USE MEDIUM, WARM PACING.
 
-**IMPORTANT — VIDEO SYSTEM INTEGRATION NOTES (v5.1):**
-The sequential_video_composer engine automatically adds these visual elements based on the
-script structure and section labels:
-- **Hook overlay** in the first 5 seconds (dramatic text over the opening image)
-- **Chapter title cards** at each section transition ("The Early Years", "The Turning Point", etc.)
-- **Progress indicator** showing story position at section boundaries
-- **Cinematic letterbox bars** during CLIMAX, CONFLICT, and FALL sections (auto cinematic_bars effect)
-- **CTA end screen** in the last 15 seconds with subscribe prompt
-- **Flash transitions** at high-impact section entries (flash_cut, zoom_burst effects)
-- **Light leaks** at section boundaries (light_leak transition + warm_wash overlay)
-- **Section-aware color grading**: COLD_OPEN = dramatic, EARLY_LIFE = warm, THE_SPARK = golden_hour,
-  THE_RISE = cinematic, THE_CONFLICT = teal_orange, THE_CLIMAX = high_contrast, THE_FALL = cool,
-  LEGACY = warm, CTA = modern
-- **Section-aware effects**: CONFLICT gets chromatic_aberration + film_grain, EARLY_LIFE gets
-  bokeh_orbs + film_strip, CLIMAX gets zoom_burst + god_rays + cinematic_bars, etc.
-- **Emotional tone → camera movement**: tension = handheld_drift/dutch_tilt/push_in,
-  nostalgia = gentle_drift/parallax_depth/float_up, hope = crane_up/reveal_left,
-  darkness = dutch_tilt/handheld_drift, triumph = crane_up/dolly_zoom/orbit,
-  devastation = zoom_out/crane_down, bittersweet = parallax_depth/gentle_drift
-
-These are all automatic — your script just needs strong section labels, clear emotional beats,
-and strategic pauses for these effects to land with maximum cinematic impact.
-
-**PACING → CUT FREQUENCY MAPPING:**
-Your pacing directives translate directly to image display durations:
-- FAST pacing sections → 3-4 second images, 0.7x crossfade overlap, snappy transitions
-- MEDIUM pacing sections → 4-5 second images, 1.0x crossfade overlap, balanced transitions
-- SLOW pacing sections → 5-7 second images, 1.2-1.5x crossfade overlap, gentle dissolves
-The image prompt generator reads your pacing cues and adjusts image count per section accordingly.
+**VIDEO SYSTEM NOTES (auto-applied — your script just needs strong sections + emotional beats):**
+The engine auto-adds: hook overlay (first 5s), chapter cards, cinematic letterbox bars
+(CLIMAX/CONFLICT/FALL), CTA end screen (last 15s), section-aware color grading + effects.
+- Emotional tone → camera: tension=handheld_drift, nostalgia=gentle_drift, hope=crane_up,
+  triumph=dolly_zoom, devastation=zoom_out, bittersweet=parallax_depth
+- Pacing → cuts: FAST=3-4s images, MEDIUM=4-5s, SLOW=5-7s with gentle dissolves.
 
 ---
 
@@ -570,18 +839,35 @@ If ANY check fails, FIX IT before delivering. Do not deliver an incomplete or fl
 ---
 
 ## FINAL RULES:
-- EVERYTHING must be in American English — spelling, grammar, idioms, cultural references
-- Include REAL historical facts, real quotes (with attribution), real dates, real names
-- If unsure about a fact, flag it with [VERIFY] — never fabricate quotes or events
-- The emotional arc must feel like a movie: hope -> struggle -> triumph -> tragedy -> bittersweet legacy
-- Every sentence must earn its place. If it doesn't move the story or create emotion, cut it.
-- The channel name is "LifeSpark Chronicles"
-- Total output should be comprehensive — do NOT truncate or summarize any section
-- The script must sound like a native American English speaker wrote it — no British phrases, no formal academic tone, no ESL patterns
-- SCRIPT MUST BE ~1800 WORDS (12 minutes when narrated). Do NOT write a significantly shorter or longer script.
-- Every retention hook must feel NATURAL, not forced — weave them into the narrative flow
-- The script must make the viewer feel like they're watching a movie, not reading a Wikipedia article
-- Alternate between FAST, MEDIUM, and SLOW pacing as specified in each script section
-- Every specific detail (date, quote, dollar amount) must be woven into a cinematic moment, NOT listed as a dry fact
+- American English ONLY — spelling, grammar, idioms. Channel: "LifeSpark Chronicles"
+- REAL facts, quotes (attributed), dates, names. Flag uncertain with [VERIFY]. Never fabricate.
+- ~1800 words / 12 minutes. Every sentence earns its place. Facts wrapped in cinematic moments.
+- Arc: hope → struggle → triumph → tragedy → bittersweet legacy. Alternate FAST/MEDIUM/SLOW pacing.
+- Hooks feel NATURAL, not forced. Script = movie, not Wikipedia.
+
+## FINAL VALIDATION (v9 — DO THIS LAST, fix ANY failures before delivering):
+
+**STORYTELLING TECHNIQUES (all 10 MUST be present):**
+[ ] 1. DANCE: 15+ BUT/THEREFORE transitions. No "AND THEN" anywhere.
+[ ] 2. RHYTHM: Sentence lengths vary dramatically in every paragraph.
+[ ] 3. TONE: Sounds like confiding in a friend, not a lecture. Personal reactions included.
+[ ] 4. DIRECTION: Last Legacy line written FIRST. Entire arc builds toward it.
+[ ] 5. STORY LENS: ONE unique angle, reinforced in 4+ sections.
+[ ] 6. HOOK: First line hints at FULL PLOT. Visual hooks before audio.
+[ ] 7. BURNING Q: Planted in first 15s, referenced 3× in middle, answered ONLY in Climax.
+[ ] 8. HERO/VILLAIN: Both NAMED. Clear who to root for/against by end of Rise.
+[ ] 9. PSYCHOLOGY: Pattern + resolution + meaning in every section. Title promise delivered 100%.
+[ ] 10. EXCLUSIVITY: 3+ lesser-known facts. Re-engagement triggers every 90-120s.
+
+**QUALITY CHECKS:**
+[ ] ~1800 words total, each section within ±25 words of target
+[ ] Cold Open: most dramatic moment, PRESENT TENSE, 8+ retention hooks spaced 60-90s
+[ ] Every 2-3 paragraphs has a specific detail (date, quote, $, name, location)
+[ ] All $ include modern equivalents. US measurements. American English spelling.
+[ ] No banned AI phrases. Pacing alternates per section. 2+ named characters. 3+ sourced quotes.
+[ ] Narrator shows personality 3+ times. Legacy ends LIGHTER. Facts = story, never dry dumps.
+[ ] Titles: 5 options, <50 chars, viral formula A-E, ONE caps power word each
+[ ] Description: curiosity gap, 3-4× full name, catchy chapters, polarizing Q, 5 hashtags
+[ ] Tags: exactly 30, broad+specific+long-tail mix, American English
 
 NOW GENERATE THE COMPLETE PACKAGE.

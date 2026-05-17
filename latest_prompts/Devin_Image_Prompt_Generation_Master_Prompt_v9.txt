@@ -1,7 +1,41 @@
 ============================================================
-BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v8
-(synced with sequential_video_composer v5.1 + retention v2)
+BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.1
+(synced with sequential_video_composer v5.1 + retention v2 + storytelling mastery)
 ============================================================
+
+╔══════════════════════════════════════════════════════════════════╗
+║     QUICK-REFERENCE CARD: Top 15 Rules (80% of quality)        ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  TIMING:                                                         ║
+║  1. Target 4-5s per image, max 7s, min 3s — avg ~4.5s           ║
+║  2. 150-170 total images for a 12-min video                      ║
+║  3. Cold Open: 3-4s rapid cuts | Conflict: fastest | Legacy: 5-6s║
+║                                                                  ║
+║  ANIMATION FIELDS (every image MUST have all three):             ║
+║  4. movement_type — match emotion (push_in=suspense,             ║
+║     gentle_drift=nostalgia, crane_up=triumph, dutch_tilt=unease) ║
+║  5. transition_type — match mood (light_leak=warm, glitch=tense, ║
+║     flash_cut=shock, crossfade=smooth)                           ║
+║  6. effects — film_grain on 60%+, add 1-2 mood effects on top   ║
+║  7. Never repeat same movement or transition 3× in a row        ║
+║                                                                  ║
+║  CONTENT & VARIETY:                                              ║
+║  8. Person's FULL NAME in every prompt                           ║
+║  9. Never same shot_type 2× in a row (close→wide→detail→medium) ║
+║  10. Pattern interrupt every 15-20s (scale shift, map, overlay)  ║
+║  11. 3-5 map images spread throughout (map_zoom + map_label)     ║
+║  12. parallax_depth prompts MUST describe foreground/mid/back    ║
+║                                                                  ║
+║  STORYTELLING (v9):                                              ║
+║  13. First image hooks BEFORE audio — visually arresting         ║
+║  14. Burning Question bookend: Cold Open motif echoes in Climax  ║
+║  15. Hero=warm/low-angle/god_rays, Villain=cold/dutch/chromatic  ║
+║                                                                  ║
+║  COLOR FLOW: cool(open)→warm(early)→bold(rise)→cold(conflict)   ║
+║              →gold/blue(climax)→muted(fall)→golden(legacy)       ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
 
 You are a visual director for a YouTube biography video. Your job is to generate a complete set of sequential image prompts with precise timing that sync to a narration audio track.
 
@@ -70,42 +104,13 @@ DOCUMENTARY ANIMATION SYSTEM (v3.0) — COMPLETE REFERENCE
 The video system supports 40 movement styles, 28 transition types, and 24 cinematic effect overlays.
 You MUST select the appropriate ones for each image based on the scene content and emotional tone.
 
-**ENGINE IMPROVEMENTS (v5.1 — quality-preserving pipeline):**
-- All movements use smooth sine easing (ease_in_out_sine) for the most fluid, professional feel
-  with no sudden acceleration or deceleration.
-- Effects intensity is now SECTION-AWARE: dramatic sections (THE_CLIMAX ×1.4, THE_CONFLICT ×1.25,
-  COLD_OPEN ×1.3) automatically get stronger effects, while calm sections (LEGACY ×0.75, CTA ×0.7)
-  get subtler effects. You no longer need to worry about effects overpowering quiet scenes.
-- All frames use LANCZOS interpolation for sharper, smoother zoom/pan animations (INTER_AREA in
-  --fast mode for 3-5x faster resize with minimal quality loss).
-- Motion blur is now applied ONLY to whip_pan (the genuinely fast movement), keeping all other
-  movements sharp. Even whip_pan blur is subtle (blended 60% sharp / 40% blurred).
-- **Quality-preserving philosophy**: The engine preserves source image quality as-is. NO automatic
-  brightness enforcement, NO per-frame sharpening, NO post-processing brightness lifts. The source
-  image is the ground truth — if the AI-generated image is well-lit, the video frame will be too.
-  This means YOUR IMAGE PROMPTS must specify proper lighting. Do NOT rely on the engine to fix
-  dark images — generate bright, well-lit images in the first place.
-- **Effects are limited to 2 per image** by the engine. If you specify 3, only the first 2 are
-  applied. This prevents darkening from overlay stacking (vignette + fog + dust = too dark).
-- **Vignette is very subtle** (10% strength) and skipped entirely on dark images (avg brightness < 100).
-- **Fog/dust are very light**: fog intensity ×0.15, dust 12 particles at ×0.25 intensity.
-  These add atmosphere without washing out or darkening the image.
-- Clips overlap with section-aware crossfade durations — there are NEVER black gaps between images.
-- The first clip does NOT fade in from black — it starts immediately visible.
-- All overlay effects run at 18-24 FPS for buttery-smooth animation.
-- Text overlays have stroke outlines (2px stroke_width + dark stroke_fill) and drop shadows
-  for readability over any background.
-- Video exports with H.264 High profile level 4.1 + CRF 18 (pure quality-controlled encoding,
-  no bitrate cap) + progressive download for universal playback.
-- **Rendering speed tiers**:
-  * Default: medium preset, CRF 18, full quality
-  * --fast: INTER_AREA resize, veryfast encoding, CRF 23 (~2-4x faster)
-  * --preview: 480p output, CRF 28, maximum speed (~5-8x faster)
-- **Aspect ratio modes**: --aspect-mode fill (crop to fill, default), fit (scale down), or
-  letterbox (black bars) for non-16:9 source images.
-- **Config validation**: fps, duration, zoom intensity, effects intensity, and resolution are
-  validated at initialization with automatic fallbacks for out-of-range values.
-- **Logging**: Full structured logging replaces print statements (-v for INFO, -vv for DEBUG).
+**ENGINE BEHAVIOR (v5.1 — what affects your prompts):**
+- Smooth sine easing on all movements. Effects intensity is SECTION-AWARE (CLIMAX ×1.4, LEGACY ×0.75).
+- Motion blur ONLY on whip_pan — all others stay sharp.
+- Effects limited to 2 per image (engine applies first 2 if you list 3). Vignette/fog/dust are subtle.
+- YOUR PROMPTS must specify proper lighting — engine preserves source brightness as-is.
+- Clips overlap with section-aware crossfade — NEVER black gaps between images.
+- Text overlays have stroke outlines + drop shadows — readable on any background.
 
 ------------------------------------------------------------
 MOVEMENT TYPES (40 available) — set via "movement_type" field
@@ -305,15 +310,9 @@ The engine automatically scales effect intensity per section:
   CTA: ×0.7 (minimal distraction)
 This means you can use the SAME effects across sections and the engine adapts intensity.
 
-**EFFECT RENDERING BEHAVIOR (how effects actually appear in the video):**
-All effects are designed to ENHANCE the image, never obscure it. Key behavior notes:
-- **spotlight**: Creates a gentle circular focus on the center subject with slightly dimmed surroundings. NOT heavy darkness — the image remains clearly visible.
-- **photo_frame**: Adds a thin, subtle border effect around the image (like a physical photo). NOT a heavy dark block — only the thin border edges are visible, the image interior is untouched.
-- **flash_strobe**: Creates a brief bright flash at specific moments, then returns to normal. NOT a sustained darkening effect. Use sparingly.
-- **vignette_pulse**: Gentle breathing dark edges that subtly pulse. Very subtle — draws focus to center without obscuring content.
-- **warm_wash**: A gentle amber tint overlay. Very light — adds warmth without washing out colors.
-- **chromatic_aberration**: Subtle RGB color split at the edges only. Creates slight unease without being distracting.
-- **camera_shake**: Subtle micro-jitter. Creates handheld feel without making the image hard to see.
+**EFFECT RENDERING:** All effects are subtle and ENHANCE, never obscure. spotlight = gentle focus,
+photo_frame = thin border, vignette_pulse = gentle breathing edges, warm_wash = light amber tint.
+All designed to add cinematic texture without overwhelming the source image.
 
 ------------------------------------------------------------
 SPECIAL ANIMATION SCENARIOS — COMPLETE REFERENCE (CRITICAL)
@@ -404,80 +403,12 @@ cannot produce the effect. Read each carefully.
    - Use on at least 15-20% of images — this is the SIGNATURE documentary look
    - Best for: landscapes, establishing shots, street scenes, architectural shots
 
-5. SPOTLIGHT ANIMATION (focused illumination)
-   ───────────────────────────────────────────
-   When drawing dramatic attention to the subject:
-
-   REQUIRED JSON FIELDS:
-   - effects: include "spotlight" in the effects array
-     (e.g., effects: ["spotlight", "film_grain"])
-
-   The code renders a circular spotlight that moves across the image, illuminating
-   only the center subject while the rest stays in shadow. Creates dramatic focus.
-
-   WHEN TO USE:
-   - Character introduction moments ("And then appeared...")
-   - Dramatic reveals of key information
-   - Hero moments in THE_RISE or THE_CLIMAX sections
-   - Use 3-5 times per video maximum
-
-6. PHOTO FRAME / DOCUMENT ANIMATION (3D border effect)
-   ────────────────────────────────────────────────────
-   When showing a historical document, photograph, newspaper, or artifact:
-
-   REQUIRED JSON FIELDS:
-   - effects: include "photo_frame" in the effects array
-     (e.g., effects: ["photo_frame", "film_grain", "dust_particles"])
-
-   The code adds a 3D-style photo frame border with drop shadow, giving the image
-   the look of a physical photograph or document being held/displayed.
-
-   WHEN TO USE:
-   - Historical photographs (old portraits, group photos)
-   - Documents (letters, patents, contracts, newspaper clippings)
-   - Artifacts (awards, medals, certificates)
-   - Use for 5-10% of images — mostly in EARLY_LIFE and LEGACY sections
-
-7. GRAPH / CHART REVEAL ANIMATION
-   ────────────────────────────────
-   When showing data, statistics, growth, or decline:
-
-   REQUIRED JSON FIELDS:
-   - shot_type: "graph" or "detail"
-   - movement_type: "reveal_left" (reveals graph left to right) or "timeline_reveal"
-   - effects: ["film_grain"]
-
-   PROMPT RULES:
-   - Describe a clean data visualization (bar chart, line graph, infographic)
-   - Example: "Clean infographic on dark background showing Tesla's patent count by year,
-     golden bar chart rising from 1887 to 1901, elegant serif labels..."
-   - Use for financial data, growth metrics, historical statistics
-
-8. INK SPLASH TRANSITION
-   ──────────────────────
-   For dramatic artistic reveals between scenes:
-
-   REQUIRED JSON FIELDS:
-   - transition_type: "ink_splash"
-
-   Black ink spreads across the frame obscuring the current image, then clears to
-   reveal the next image. Creates a dramatic, artistic transition.
-
-   WHEN TO USE:
-   - Major section transitions (COLD_OPEN → EARLY_LIFE, etc.)
-   - After shocking revelations or death scenes
-   - Use 2-4 times per video maximum — it's very dramatic
-
-9. BOUNCING TEXT FOR SECTION TITLES
-   ─────────────────────────────────
-   REQUIRED JSON FIELDS:
-   - overlay_text: The section title or key text
-   - text_animation: "bounce"
-
-   Each word bounces in from below with overshoot animation. Perfect for:
-   - Section title cards ("THE RISE", "THE FALL")
-   - Big numbers or statistics ("$2,300,000")
-   - Name introductions
+5. OTHER SPECIAL EFFECTS (already covered in effects/transitions reference above):
+   - **spotlight**: effects: ["spotlight", "film_grain"] — 3-5× per video for character intros and reveals
+   - **photo_frame**: effects: ["photo_frame", "film_grain"] — for historical photos/documents (5-10% of images)
+   - **graphs/charts**: shot_type: "graph", movement_type: "reveal_left" — for data visualizations
+   - **ink_splash**: transition_type: "ink_splash" — 2-4× per video for major section transitions
+   - **bounce text**: text_animation: "bounce" — for section titles, big numbers, name introductions
 
 SUMMARY — WHAT EACH FIELD CONTROLS:
   movement_type  → Camera movement on the image (zoom, pan, parallax, map_zoom, etc.)
@@ -678,11 +609,142 @@ Below is a PARTIAL example showing the first 8 images for a Nikola Tesla biograp
       "overlay_text": "1866",
       "text_animation": "bounce",
       "prompt": "Wide shot of a young Nikola Tesla at age 10 standing alone in a green field outside Smiljan, Croatia, 1866, foreground: tall grass swaying in wind, midground: the boy watching a thunderstorm on the distant horizon with fascination rather than fear wearing simple peasant clothing wild dark hair skinny frame slightly silhouetted, background: rolling green hills and farmland stretching behind him with dark purple storm clouds ahead, warm golden late-afternoon light on the field. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading, film grain texture"
+    },
+    {
+      "image": 9,
+      "start_time": 34.5,
+      "duration": 4.5,
+      "end_time": 39.0,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": ["film_grain", "bokeh_orbs"],
+      "overlay_text": "",
+      "prompt": "Medium shot of young Nikola Tesla at age 14 sitting at a wooden desk in a candlelit room in Gospic, Croatia, 1870, intensely focused on a small hand-built motor made of wire and wood, his thin fingers carefully adjusting a tiny component, stacks of his father's Serbian Orthodox religious books visible behind him, warm amber candlelight casting long shadows. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading, film grain texture"
+    },
+    {
+      "image": 10,
+      "start_time": 39.0,
+      "duration": 4.0,
+      "end_time": 43.0,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "morph_dissolve",
+      "effects": ["film_grain", "dust_particles", "warm_wash"],
+      "overlay_text": "His mother's words: 'He will be a child of light.'",
+      "text_animation": "highlight",
+      "prompt": "Extreme close-up of a small hand-built electric motor made of wire and wood scraps on a rough-hewn wooden table, candlelight reflecting off the copper wire coils, a child's handwritten notes in Serbian script scattered around it, 1870s Croatian interior, intimate warm amber tones suggesting the birth of genius in modest surroundings. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber color grading, film grain texture"
+    },
+    {
+      "image": 11,
+      "start_time": 43.0,
+      "duration": 4.5,
+      "end_time": 47.5,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "crane_up",
+      "transition_type": "fade_through_warm",
+      "effects": ["film_grain", "light_leak"],
+      "overlay_text": "",
+      "prompt": "Wide aerial view of the small village of Gospic, Croatia in 1870, foreground: rooftops of stone buildings with red clay tiles, midground: a modest schoolhouse where young Tesla studied, background: rolling Lika highlands stretching to distant mountains, warm late-afternoon golden light bathing the rural landscape, a single road leading away from the village toward the horizon suggesting escape and destiny. Cinematic photorealistic photograph, 8K resolution, warm Kodachrome color grading, film grain texture"
+    },
+    {
+      "image": 12,
+      "start_time": 47.5,
+      "duration": 4.0,
+      "end_time": 51.5,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "ink_splash",
+      "effects": ["film_grain", "spotlight"],
+      "overlay_text": "1875 | Graz, Austria",
+      "text_animation": "typewriter",
+      "prompt": "Medium shot of Nikola Tesla at age 19 standing in the grand entrance hall of the Graz University of Technology in Austria, 1875, wearing a modest dark student suit, looking up at the ornate ceiling with awe and determination, other students passing by in period clothing, the lighting transitioning from warm amber behind him to cooler institutional blue-white ahead of him, symbolizing the shift from childhood warmth to the cold intellectual world. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, color grading shifting from warm to cool, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 13,
+      "start_time": 51.5,
+      "duration": 4.5,
+      "end_time": 56.0,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "neutral",
+      "movement_type": "push_in",
+      "transition_type": "light_leak",
+      "effects": ["film_grain", "edge_bloom"],
+      "overlay_text": "",
+      "prompt": "Close-up of a Gramme dynamo electrical machine in a university laboratory, 1875, copper coils and metal frame gleaming under harsh gas lamp light, sparks arcing between contacts, Nikola Tesla's young face partially visible reflected in the polished metal surface, his eyes wide with the realization that this machine could work in reverse — the moment that would change the world. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral-cool color grading with warm highlight on the sparks, film grain texture"
+    },
+    {
+      "image": 14,
+      "start_time": 56.0,
+      "duration": 5.0,
+      "end_time": 61.0,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "warm",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": ["film_grain", "god_rays"],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of Nikola Tesla's eyes at age 25 in 1881, wide with the electric intensity of a vision — he is visualizing the rotating magnetic field in his mind, faint blue-white light reflecting in his pupils as if the invention is literally forming inside his eyes, shallow depth of field with everything except his eyes softly blurred, dramatic Rembrandt lighting from the left, warm golden-amber with cool blue highlights, the face of a man who just saw the future. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 15,
+      "start_time": 61.0,
+      "duration": 4.0,
+      "end_time": 65.0,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "map",
+      "color_temperature": "neutral",
+      "movement_type": "map_pan",
+      "transition_type": "crossfade",
+      "effects": ["film_grain", "dust_particles"],
+      "overlay_text": "",
+      "map_label": "Graz → Budapest → Paris → New York | 1875-1884",
+      "prompt": "Vintage sepia-toned map of Europe and the Atlantic Ocean circa 1880, showing a dotted red line tracing a journey from Graz Austria through Budapest and Paris to a ship crossing the Atlantic to New York City, ornate Victorian cartographic style with compass rose and decorative borders, aged parchment texture, each city marked with a small golden star, the route of a young inventor chasing his destiny across the world. Cinematic photorealistic photograph, 8K resolution, warm vintage sepia tones, film grain texture"
+    },
+    {
+      "image": 16,
+      "start_time": 65.0,
+      "duration": 4.5,
+      "end_time": 69.5,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": ["film_grain", "dust_particles", "vignette_pulse"],
+      "overlay_text": "4 cents in his pocket. A letter in his hand.",
+      "text_animation": "typewriter",
+      "prompt": "Wide shot of New York Harbor in 1884, foreground: the wooden railing of an immigrant ship with Nikola Tesla's thin hand gripping it tightly, midground: the Statue of Liberty under construction with scaffolding still visible, background: the Manhattan skyline of 1884 with low brick buildings and church spires, grey overcast sky with a single shaft of light breaking through clouds onto the city, cool blue-grey tones with a hint of warm gold in the light break, the moment a penniless immigrant arrived to change the world. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool desaturated tones with warm highlight, film grain texture"
     }
   ]
 }
 
-NOTE: This is only 8 of ~158 images. Your actual output must contain 150-170 images (4-5 seconds each) covering the FULL 12-minute video. MORE IMAGES = MORE ENGAGEMENT.
+NOTE: This shows 16 of ~158 images covering Cold Open → Early Life → The Spark transition. Your actual output must contain 150-170 images (4-5 seconds each) covering the FULL 12-minute video. MORE IMAGES = MORE ENGAGEMENT.
+
+**STUDY THE SECTION TRANSITION (images 11→12) — this is a STORYTELLING TRANSITION:**
+- Image 11 (Early Life ending): crane_up movement + fade_through_warm transition (rising away from childhood)
+- Image 12 (The Spark beginning): cinematic_reveal movement + ink_splash transition (dramatic new chapter entry)
+- Color shifts: warm→neutral (childhood warmth fading into institutional reality)
+- Shot type shifts: wide→medium (world view narrowing to personal focus)
+- This is the PATTERN INTERRUPT at the section boundary that prevents predictable pacing.
 
 **STUDY THESE ANIMATION PATTERNS in the example above:**
 - Image 1: push_in movement (slowly pushing into the door detail) + flash_cut transition (sharp cut to next scene) + [film_grain, vignette_pulse] effects (cinematic dark edges focus)
@@ -706,49 +768,15 @@ Every pair of consecutive images should have a clear visual transition logic.
 RULES (FOLLOW ALL — NO EXCEPTIONS)
 ============================================================
 
-TIMING RULES (CRITICAL FOR VIEWER ENGAGEMENT):
-The #1 rule for keeping viewers engaged: CONSTANT VISUAL CHANGE.
-YouTube analytics show viewers drop off when images stay on screen too long.
-Every 4-5 seconds, viewers need something NEW to look at — a new image, a new angle, a new effect.
+TIMING RULES:
+- 3-7s per image (target 4-5s, avg ~4.5s). NEVER exceed 7s. Min 3s.
+- CONTINUOUS — no gaps. First = 0.0, last = exact total_duration. Sum MUST match exactly.
+- Pacing by section: Cold Open 3-4s (RAPID) | Early Life 4-5s | Spark 4-5s | Rise 4-5s |
+  Conflict 3-4s (FASTEST) | Climax 5-6s | Fall 4-5s | Legacy 5-6s | CTA 4-5s
 
-- **ABSOLUTE MAXIMUM duration per image: 7 seconds** (NEVER exceed this)
-- **Target duration per image: 4-5 seconds** (this is the sweet spot for engagement)
-- **Average duration should be ~4.5-5 seconds** (total_duration / image_count)
-- **Minimum duration: 3 seconds** (anything shorter is too jarring)
-- Images must be CONTINUOUS — no gaps between end_time of one image and start_time of the next
-- First image starts at 0.0, last image ends at exact total_duration from timestamps
-- Total duration of all images must equal the total narration duration exactly
-- Vary durations naturally (3-7 seconds) — faster cuts for intense moments, slightly longer for emotional peaks
-- MORE IMAGES = MORE ENGAGEMENT. When in doubt, add more images with shorter durations.
-
-- PACING BY SECTION (for 12-minute video):
-  - Cold Open (0:00-0:30): RAPID cuts, 3-4 seconds per image (hook viewers FAST, create urgency)
-  - Early Life (0:30-2:00): MEDIUM pace, 4-5 seconds per image (nostalgia, warmth)
-  - The Spark (2:00-3:30): MEDIUM-FAST, 4-5 seconds (building energy, momentum)
-  - The Rise (3:30-5:30): MEDIUM, 4-5 seconds (steady momentum, visual variety)
-  - The Conflict (5:30-7:30): FAST cuts, 3-4 seconds (chaos, tension, urgency — MOST images here)
-  - The Climax (7:30-9:00): MEDIUM-SLOW, 5-6 seconds (let the peak breathe, but don't linger)
-  - The Fall / Final Chapter (9:00-10:30): MEDIUM to FAST, 4-5 seconds (accelerating collapse)
-  - Legacy (10:30-11:30): MEDIUM, 5-6 seconds (reflection, but keep moving)
-  - CTA (11:30-12:00): MEDIUM, 4-5 seconds (closing with energy)
-
-IMAGE COUNT PER SECTION (target for 12-minute video):
-- Cold Open (30s): 8-10 images (PACK this section — hook viewers immediately)
-- Early Life (90s): 18-22 images
-- The Spark (90s): 18-22 images
-- The Rise (120s): 24-28 images
-- The Conflict (120s): 30-36 images (MOST images — rapid visual change drives tension)
-- The Climax (90s): 15-18 images
-- The Fall (90s): 18-22 images
-- Legacy (60s): 10-12 images
-- CTA (30s): 6-8 images
-- TOTAL: 147-178 images (aim for 150-170)
-
-IMAGE COUNT FORMULA:
-- Calculate: total_duration_seconds / 4.5 = approximate image count
-- For 12-minute video (~720s): aim for 150-170 images
-- For shorter videos (under 480s): aim for 95-110 images
-- For longer videos (over 900s): aim for 190-220 images
+IMAGE COUNT (12-min video): Cold Open 8-10 | Early 18-22 | Spark 18-22 | Rise 24-28 |
+Conflict 30-36 (MOST) | Climax 15-18 | Fall 18-22 | Legacy 10-12 | CTA 6-8 | TOTAL: 150-170
+Formula: total_duration / 4.5 = image count. Shorter (<480s): 95-110. Longer (>900s): 190-220.
 
 OVERLAY TEXT RULES:
 - overlay_text is OPTIONAL — use it for ~15-25% of images (key biographical moments only)
@@ -799,12 +827,9 @@ PROMPT RULES:
 - CRITICAL: Each prompt must end with a CONSISTENT style suffix for visual coherence:
   "Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and slightly desaturated tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
 
-**NEGATIVE PROMPT GUIDANCE (for AI image generators that support it):**
-If the AI image tool supports negative prompts, include this negative prompt for EVERY image:
-"cartoon, anime, illustration, painting, watercolor, sketch, drawing, digital art, 3D render, CGI, plastic skin, smooth skin, airbrushed, overly saturated, neon colors, fantasy, surreal, abstract, text, watermark, logo, border, frame, collage"
-
-For the THUMBNAIL specifically, also add to negative prompt:
-"text, words, letters, title, watermark, border, multiple people, cluttered background, busy composition"
+**NEGATIVE PROMPT (if supported):** "cartoon, anime, illustration, painting, digital art, 3D render,
+CGI, plastic skin, airbrushed, overly saturated, neon, fantasy, surreal, text, watermark, logo"
+Thumbnail extra: "text, words, letters, multiple people, cluttered background"
 
 CONTENT RULES:
 - Read the script carefully and match EACH image to what the narration is describing at that exact timestamp
@@ -815,87 +840,203 @@ CONTENT RULES:
 - For emotional peaks (death, betrayal, triumph), slow down with more images and tighter framing
 - For exposition (dates, facts, context), use establishing shots and wider compositions
 
-VISUAL TRANSITION RULES (CRITICAL — prevents jarring cuts):
-Every consecutive pair of images must have a clear visual transition logic. Use these transition types:
-
-- **ZOOM IN**: Wide → Medium → Close-up → Extreme close-up (progressively tighter framing)
-- **ZOOM OUT**: Extreme close-up → Close-up → Medium → Wide (progressively wider framing)
-- **LOCATION SHIFT**: Same framing type but different location (interior→exterior, room→street, city→countryside)
-- **TIME SHIFT**: Same location but different time period (young→old, day→night, past→present)
-- **SCALE SHIFT**: Dramatic jump between intimate and epic scale (hands→aerial, face→crowd)
-- **COLOR SHIFT**: Same scene type but shifting color temperature (warm→cool at section transitions)
-- **SUBJECT SHIFT**: Shift from the subject to someone else (protagonist→antagonist, person→crowd)
-- **OBJECT BRIDGE**: A significant object appears in consecutive images from different angles/contexts (a letter being written → the same letter being read)
-
-RULES:
-- NEVER place two images with the same framing AND the same location back-to-back
-- At SECTION TRANSITIONS (e.g., Early Life → The Spark), use a dramatic transition: color shift + location shift
-- Within a section, alternate between at least 3 different transition types
-- Every 10 images, include at least ONE dramatic scale shift (intimate → epic or vice versa)
+VISUAL TRANSITION RULES:
+Every consecutive image pair needs a clear visual logic. Use: ZOOM (wide→close), LOCATION SHIFT,
+TIME SHIFT, SCALE SHIFT (intimate→epic every 10 images), COLOR SHIFT (warm→cool at section
+transitions), SUBJECT SHIFT, OBJECT BRIDGE (same object, different angle/context).
+Never same framing + location back-to-back. Section transitions = dramatic color + location shift.
 
 ============================================================
-AUDIENCE ENGAGEMENT & RETENTION TECHNIQUES (CRITICAL)
+RETENTION TECHNIQUES (condensed — see quick-reference card for priorities)
 ============================================================
 
-**WHY THIS MATTERS:** YouTube's algorithm rewards watch time. Every extra 10 seconds of retention
-can mean thousands more views. The animation and pacing are your tools to keep viewers glued.
+- **3-Second Rule**: Something must CHANGE every 3-5s. If image > 5s, needs strong movement.
+- **Pattern Interrupt**: Every 15-20s, break the pattern (scale shift, flash_cut, map, spotlight).
+- **Hook Sequence**: First 5s = dramatic push_in + overlay. 5-15s = rapid cuts. 15-30s = tension.
+- **Visual Contrast**: Alternate warm/cool every 3-4 images. Alternate close/wide shots.
+- **Emotional Peaks**: Slow before → dramatic hit (dolly_zoom + effect) → hold after.
+- **Maps/Timelines**: 3-5 maps + 1-2 timelines as progress markers and pattern breaks.
+- **Text Overlays**: 20-25% of images. Every 20-30s. Alternate animation styles.
+- **Transitions**: Never same 2× in a row. ink_splash at narrative shifts, light_leak for nostalgia.
+- **End Retention**: Legacy 5-6s max, warm. CTA 4-5s, breathing movement. End visually strong.
+  v9: Legacy = LIGHTER/HOPEFUL. Last image = meaningful, not just fade to black.
 
-**1. VISUAL RHYTHM — The "3-Second Rule"**
-   - Something must CHANGE visually every 3-5 seconds: a new image, a new text overlay, a new effect
-   - If an image lasts 5+ seconds, it MUST have strong movement (parallax, crane, orbit) to keep it dynamic
-   - Never let a static-feeling image sit for more than 4 seconds without movement or overlay action
+============================================================
+STORYTELLING-DRIVEN VISUAL DIRECTION (v9 — NEW)
+============================================================
 
-**2. PATTERN INTERRUPT — Break Viewer Autopilot**
-   - Every 15-20 seconds, include a "pattern interrupt" — something unexpected:
-     * A dramatic scale shift (extreme close-up of eyes → aerial wide shot)
-     * A flash_cut or glitch transition (breaks the smooth flow momentarily)
-     * A spotlight effect on a character's face
-     * A bold overlay text with bounce animation
-     * A map_zoom to a geographic location
-   - These interrupts prevent the "zoning out" that kills retention
+The script prompt now uses 10 advanced storytelling techniques (The Dance, Rhythm, Tone,
+Direction, Story Lenses, The Hook, Burning Question, Hero & Villain, Psychology, Exclusivity).
+Your image prompts must VISUALLY REINFORCE these techniques. Every image should serve the
+story — not just illustrate the narration, but amplify the emotional architecture.
 
-**3. THE HOOK SEQUENCE (First 30 seconds)**
-   - First 5 seconds: DRAMATIC image + bold overlay text + push_in movement (immediately grab attention)
-   - Seconds 5-15: 2-3 rapid cuts with flash_cut/glitch transitions (create urgency)
-   - Seconds 15-30: Establish the stakes — use handheld_drift + camera_shake for tension
-   - Use 8-10 images in the first 30 seconds (3-4 seconds each)
-   - The Cold Open should feel like a movie trailer
+**1. VISUAL HOOKS (Technique 6 — The Hook)**
+- The FIRST IMAGE must be visually arresting BEFORE the audio hook lands.
+  People process visuals faster than audio — the image hooks first.
+- COLD_OPEN images must SHOW something shocking, tense, or mysterious:
+  trembling hands, a sealed letter, an empty room, a crowd going silent,
+  a headline, a clock face — something that creates instant intrigue.
+- Use push_in or cinematic_reveal movement for the first image to build tension.
+- First overlay_text should hint at the plot (a date, a place, a charged phrase).
 
-**4. VISUAL CONTRAST CUTS**
-   - Alternate between WARM and COOL images every 3-4 images for visual energy
-   - Alternate between CLOSE-UP and WIDE shots — never put 2 similar scales back-to-back
-   - After a dark/tense image, follow with a lighter one (creates breathing room)
-   - After 3-4 calm images, inject one high-energy image (flash_strobe, dutch_tilt, whip_pan)
+**2. BURNING QUESTION VISUAL BOOKENDS (Technique 7)**
+- The visual planted in the COLD_OPEN that represents the Burning Question must
+  have a VISUAL ECHO in THE_CLIMAX.
+- Example: If the Cold Open shows a close-up of a hospital door ("Will he survive?"),
+  THE_CLIMAX should show a similar door opening — but now with light flooding through.
+- Use the SAME shot_type, similar framing, but with a SHIFTED color_temperature
+  (cool→warm for triumph, warm→cool for defeat) to visually answer the question.
+- This visual bookend technique creates subconscious closure that feels deeply satisfying.
 
-**5. EMOTIONAL PEAKS — Make Them Hit Hard**
-   - Before an emotional peak: slow down slightly (5-6 second images, gentle movements)
-   - AT the peak: sudden fast cut + dramatic movement (dolly_zoom, dramatic_zoom) + strong effect (spotlight, flash_strobe)
-   - After the peak: hold slightly longer (let it breathe) then resume normal pace
-   - This creates the cinematic "build → hit → release" rhythm that keeps viewers hooked
+**3. HERO & VILLAIN VISUAL CONTRAST (Technique 8)**
+- When the HERO is introduced: use warm lighting, low-angle shots (power),
+  parallax_depth for 3D heroic depth, god_rays or edge_bloom effects.
+- When the VILLAIN/ANTAGONIST is introduced: use cold lighting, high-angle or
+  dutch_tilt (unease), chromatic_aberration or fog_overlay effects.
+- When Hero and Villain are in conflict: alternate between warm and cold images
+  with faster cuts and glitch/flash_cut transitions.
+- The viewer should FEEL who is the hero and who is the villain through
+  color, angle, and movement alone — even without narration.
 
-**6. MAP & TIMELINE BREAKS**
-   - Include 3-5 map images throughout the video — they break up the visual monotony
-   - Place map images at geographic transitions (person moves, travels, or flees)
-   - Include 1-2 timeline images for chronological perspective (especially in THE_RISE)
-   - These "information graphics" feel like progress markers and keep viewers oriented
+**4. THE DANCE — VISUAL TENSION RHYTHM (Technique 1)**
+- The script uses BUT/THEREFORE story beats. Your images must match this rhythm:
+  Context image (establishing, calm) → Conflict image (tense, dark, tight framing)
+  → Consequence image (emotional, wide or detail).
+- Every 3-4 images should follow this Context→Conflict→Consequence visual cycle.
+- When the script says "BUT," the image should SHIFT dramatically in tone
+  (warm→cold, wide→close-up, calm→tense movement).
+- When the script says "THEREFORE," the image should show the RESULT
+  (reaction shots, consequence imagery, changed environments).
 
-**7. TEXT OVERLAY ENGAGEMENT**
-   - Use text overlays on ~20-25% of images (too many = cluttered, too few = missed opportunity)
-   - Alternate text_animation styles: typewriter for dates → bounce for big numbers → highlight for quotes → slide_up for names
-   - Place a text overlay every 20-30 seconds to give viewers something to READ (dual engagement: visual + textual)
-   - Bold statistics and numbers with bounce animation are extremely engaging ("$2.3 MILLION", "1,000,000 Volts")
+**5. STORY LENS VISUAL CONSISTENCY (Technique 5)**
+- The script has ONE unique angle/lens for this biography.
+- Your image prompts must reinforce this lens visually throughout.
+- Example: If the story lens is "injustice," images should frequently show
+  power imbalances (small figure vs. massive institution, locked doors,
+  documents being signed by powerful hands).
+- Example: If the lens is "obsession," show close-ups of hands working,
+  eyes focused, cluttered workspaces, sleepless nights, piled-up notes.
+- Maintain visual consistency — the lens should feel like a visual throughline.
 
-**8. TRANSITION VARIETY**
-   - Never use the same transition more than 2x in a row
-   - Pair dramatic transitions with section changes: ink_splash at major narrative shifts, light_leak for nostalgia, glitch for conflict
-   - Use crossfade as the "default" but never more than 3x consecutively — mix in zoom_blur, luma_fade, film_burn
+**6. EMOTIONAL PSYCHOLOGY IN VISUALS (Technique 9)**
+- The brain craves PATTERNS, RESOLUTION, and MEANING.
+- Create visual patterns: recurring motifs (a specific object, color, or framing)
+  that appear at key story moments (e.g., a candle flame in Early Life
+  that returns as a fire in Conflict, and as golden light in Legacy).
+- Create visual resolution: when the Burning Question is answered in Climax,
+  show images that feel COMPLETE (symmetrical compositions, circles closing,
+  hands folding, doors opening, sunrise).
+- Create visual meaning in Legacy: wide shots that show lasting impact,
+  modern-day photographs of their legacy, hopeful golden-hour imagery.
 
-**9. END-OF-VIDEO RETENTION**
-   - The last 60 seconds (Legacy + CTA) should NOT slow down too much
-   - Keep Legacy images at 5-6 seconds max — use warm_wash + parallax_depth for beauty
-   - CTA images should be 4-5 seconds with breathing/gentle_drift movement
-   - Include an overlay_text hook in the last image: "Subscribe for more stories like this" or similar
-   - End on a visually strong image — not a fade to black
+**7. EXCLUSIVITY MARKERS (Technique 10)**
+- When the script delivers a lesser-known fact or exclusive detail, MARK IT
+  visually with a pattern-interrupt: spotlight effect on a detail shot,
+  bounce-animated overlay_text with the surprising statistic, or a
+  dramatic_zoom into a specific historical object.
+- These visual highlights signal to the viewer: "Pay attention — this is
+  the good stuff you can't get anywhere else."
+
+**8. RE-ENGAGEMENT VISUAL TRIGGERS**
+- Every 90-120 seconds, when the script introduces a new question, character,
+  or quote, support it with a strong visual interruption:
+  * New character → cinematic_reveal or push_in with spotlight + slide_up name bar
+  * New quote → highlight text_animation over a moody background
+  * New statistic → bounce-animated number overlay
+  * New question → dutch_tilt or handheld_drift with chromatic_aberration
+
+**9. LIGHTER ENDING VISUALS (Technique 10 — Legacy)**
+- Legacy section should NOT end on pure darkness or despair.
+- Final Legacy images should show HOPE, BEAUTY, or MEANING:
+  golden hour wide shots, modern buildings bearing their name,
+  children benefiting from their work, sunrise over a landscape.
+- The very last narrative image should feel warm, meaningful, and quotable —
+  a visual that makes the viewer sit in silence for a moment.
+
+**10. PERSONAL TOUCH IN VISUAL DIRECTION**
+- When the narrator shows personal emotion ("This part gets me every time"),
+  support it with intimate visuals: extreme close-ups, shoulder_drift movement,
+  soft warm lighting, gentle_drift, warm_wash effects.
+- These moments of narrator vulnerability should feel visually INTIMATE —
+  like the camera itself is leaning in closer.
+
+============================================================
+BEFORE/AFTER EXAMPLES — Storytelling Visual Techniques in Action
+============================================================
+
+These examples show how storytelling techniques transform generic image prompts
+into story-driven visuals. Study the difference carefully.
+
+**EXAMPLE 1: BURNING QUESTION BOOKEND (Cold Open → Climax echo)**
+
+BEFORE (generic — no storytelling connection):
+Cold Open image: "Wide shot of a hospital building at night, ambulance parked outside."
+Climax image: "Man standing at a podium giving a speech to a large audience."
+
+AFTER (storytelling-driven — visual bookend creates subconscious closure):
+Cold Open image (BURNING QUESTION planted — "Will he survive?"):
+  section: COLD_OPEN, color_temperature: "cool", movement_type: "push_in",
+  effects: ["film_grain", "vignette_pulse"]
+  prompt: "Extreme close-up of a hospital room door, harsh fluorescent light
+  bleeding through the crack, a doctor's silhouette visible through frosted glass,
+  a hand reaching for the door handle, cold blue-grey sterile hallway, tension..."
+
+Climax image (BURNING QUESTION answered — same door, but now with hope):
+  section: THE_CLIMAX, color_temperature: "warm", movement_type: "push_in",
+  effects: ["film_grain", "god_rays"]
+  prompt: "Same hospital door from a similar angle, but now OPEN, warm golden
+  sunlight flooding through, the man walking OUT under his own power, a nurse
+  smiling in the background, morning light casting long hopeful shadows..."
+
+WHY IT WORKS: Same framing (door), same movement (push_in), but color shifts
+cool→warm. The viewer's brain feels closure without consciously knowing why.
+
+**EXAMPLE 2: HERO vs. VILLAIN VISUAL CONTRAST**
+
+BEFORE (generic — both characters look the same):
+Hero intro: "Portrait of a man in a suit in an office."
+Villain intro: "Portrait of another man in a suit in an office."
+
+AFTER (storytelling-driven — viewer FEELS who is hero, who is villain):
+Hero intro:
+  movement_type: "parallax_depth", effects: ["film_grain", "god_rays"],
+  color_temperature: "warm"
+  prompt: "Low-angle portrait of Nikola Tesla at age 30, foreground: scattered
+  blueprints and tools, midground: Tesla standing tall with sleeves rolled up,
+  eyes alight with intensity, warm golden workshop light behind him, background:
+  electrical equipment humming with faint sparks, warm amber tones..."
+
+Villain intro:
+  movement_type: "dutch_tilt", effects: ["film_grain", "chromatic_aberration", "fog_overlay"],
+  color_temperature: "cool"
+  prompt: "High-angle portrait of Thomas Edison at age 40 sitting behind a
+  massive mahogany desk, harsh overhead lighting casting deep shadows under his
+  eyes, cold fluorescent blue-white office, cigar smoke curling upward, fingers
+  steepled, a stack of patent documents beside him, slightly desaturated..."
+
+WHY IT WORKS: Warm/low-angle/god_rays = hero. Cold/high-angle/chromatic = villain.
+The viewer roots for Tesla before narration even explains why.
+
+**EXAMPLE 3: STORY LENS VISUAL THROUGHLINE (3 images across sections)**
+
+Story lens: "INJUSTICE — the story of who stole everything from him"
+
+Early Life: "Close-up of young Tesla's small hands carefully building a tiny
+  wooden waterwheel in a sunlit Croatian field, warm golden light, innocence
+  and promise, the hands of a future genius..."
+
+Conflict: "Close-up of Edison's large hands signing a patent document that was
+  originally Tesla's work, cold harsh desk lamp, fountain pen scratching across
+  paper, Tesla's name crossed out on a draft visible underneath..."
+
+Legacy: "Close-up of a modern engineer's hands adjusting an AC power transformer,
+  warm sunrise light through a window, Tesla's name engraved on the equipment
+  nameplate, the hands of a stranger carrying forward his stolen legacy..."
+
+WHY IT WORKS: The recurring "hands" motif (innocent→stealing→carrying forward)
+creates a visual throughline that reinforces the INJUSTICE lens across 3 sections.
+
+============================================================
 
 COLOR CONTINUITY RULES (CRITICAL — creates visual coherence):
 The color palette must EVOLVE smoothly through the video, matching the emotional arc:
@@ -978,74 +1119,23 @@ STYLE GUIDELINES BY ERA:
 - 1970-2000s: Kodak Gold, natural color film photography, photojournalism, neon lights for night scenes
 - 2000s-present: Contemporary digital photography, clean modern aesthetic, natural light, shallow depth of field
 
-EMOTIONAL PACING (VISUAL MOOD BY SECTION):
-- Cold Open/Hook (first 30s):
-  * Dramatic, cinematic, high contrast, extreme tension
-  * Harsh directional lighting, deep shadows
-  * Tight framing, close-ups of faces and hands
-  * Color palette: desaturated with one dominant color (red for danger, blue for cold)
+EMOTIONAL PACING (VISUAL MOOD BY SECTION — condensed):
+- Cold Open: dramatic, harsh lighting, desaturated, tight close-ups, one dominant color
+- Early Life: warm amber/Kodachrome, soft golden light, wide shots of childhood locations
+- Spark: transitional dawn/dusk lighting, warm→cool shift, determination close-ups
+- Rise: bold saturated, low-angle power shots, strong directional light
+- Conflict: cold blues, fluorescent, Dutch angles, visual metaphors (closed doors, turned backs)
+- Climax: spotlight/stage lighting, crowd wides → intimate close-ups, gold(triumph)/blue(defeat)
+- Fall: muted monochrome, overhead shots, empty spaces, candlelight, visual isolation
+- Legacy: golden hour, modern legacy shots, direct eye contact portrait, amber→darkness
+- CTA: clean, 3-4 images, system auto-adds subscribe overlay in last 15s
 
-- Early Life/Childhood (0:30-2:00):
-  * Warm, nostalgic, soft golden light, intimate
-  * Wide establishing shots of childhood locations
-  * Warm color palette: ambers, golds, soft greens
-  * Kodachrome or vintage film aesthetic
-
-- The Spark (2:00-3:30):
-  * Transitional lighting — dawn/dusk, changing conditions
-  * Mix of close-ups (determination) and wide shots (new world opening up)
-  * Color shifting from warm childhood tones to cooler, more energetic tones
-
-- The Rise (3:30-5:30):
-  * Bright, energetic, dynamic compositions
-  * Low-angle shots (power, looking up at the subject)
-  * Strong directional light, confident poses
-  * Color palette: bold, saturated, warm
-
-- The Conflict (5:30-7:30):
-  * Dark, harsh institutional lighting, fluorescent green/white
-  * Tight claustrophobic framing, Dutch angles for tension
-  * Shadows obscuring parts of faces
-  * Color palette: cold blues, sickly greens, desaturated
-  * Include visual metaphors: closed doors, empty chairs, turned backs
-
-- The Climax (7:30-9:00):
-  * Dramatic spotlight lighting, stage/podium imagery
-  * Wide shots showing crowds, then intimate close-ups of the subject
-  * Color palette: warm gold for triumph, cold blue for defeat
-  * Plant visual seeds of doubt if triumph: a shadow in the corner, someone watching
-
-- The Fall / Final Chapter (9:00-10:30):
-  * Muted, nearly monochrome color palette
-  * Rain, grey skies, empty streets, abandoned spaces
-  * Overhead shots looking down (vulnerability, smallness)
-  * Extreme close-ups of weathered hands, tired eyes
-  * Visual isolation: the subject alone in large empty spaces
-  * Candlelight or window light — gentle, fading
-
-- Legacy (10:30-11:30):
-  * Golden hour light, wide hopeful shots
-  * Modern photographs of their legacy (buildings, inventions, monuments)
-  * Final image: direct eye contact portrait, then slow fade to black
-  * Color palette: warm but bittersweet, amber fading to darkness
-
-- CTA (11:30-12:00):
-  * Clean, channel-branded feel
-  * Final portrait or symbolic image that encapsulates the whole story
-  * The video system automatically adds a subscribe CTA overlay in the last 15 seconds
-  * Use 3-4 images: a final powerful portrait, a symbolic legacy image, and a clean closing shot
-  * Keep overlay_text minimal in CTA — the system handles the subscribe prompt
-
-AMERICAN AUDIENCE VISUAL ANCHORS (for USA-targeted channels):
-- Include American cultural touchpoints where the script references them:
-  * Depression-era: Dust Bowl landscapes, breadlines, wooden farmhouses, Model T Fords, Works Progress Administration posters
-  * WWII home front: Victory gardens, ration cards, war bond posters, factory assembly lines, Rosie the Riveter imagery
-  * 1950s: Suburban houses with white picket fences, Chevrolets with chrome fins, chrome diners, television sets with rabbit ears, poodle skirts
-  * 1960s-70s: Protest marches, hippie culture, moon landing, Woodstock, Vietnam-era imagery, muscle cars, bell-bottoms
-  * 1980s-90s: Neon signs, Wall Street trading floors, early Macintosh computers, shopping malls, boomboxes, VHS tapes, arcade machines
-  * Modern: Silicon Valley glass offices, smartphone screens, social media feeds, co-working spaces, Tesla cars, drone footage
-- Use Americana visual language where appropriate (screen doors, porch swings, Western Union telegrams, drive-in movies, Little League fields, Fourth of July fireworks, Thanksgiving tables, highway motels, yellow school buses, diner booths, pickup trucks, baseball diamonds, state fair Ferris wheels)
-- For non-American subjects: include shots that CONTRAST their world with American landmarks viewers recognize
+AMERICAN AUDIENCE VISUAL ANCHORS:
+- Use era-appropriate US cultural touchpoints: Depression (breadlines, Model T), WWII (ration cards,
+  Victory gardens), 1950s (chrome diners, white picket fences), 1960s-70s (protest marches, moon landing),
+  1980s-90s (Wall Street, Macintosh, VHS), Modern (Silicon Valley, smartphones, drone footage)
+- Americana language: screen doors, porch swings, diner booths, Little League, state fairs
+- Non-American subjects: contrast their world with recognizable American landmarks
 
 THUMBNAIL GENERATION RULES (CRITICAL — based on viral channel analysis):
 The thumbnail prompt MUST follow these exact specifications:
@@ -1068,222 +1158,46 @@ The thumbnail prompt MUST follow these exact specifications:
 - For unknown/ancient faces: Use a dramatic silhouette, historical statue, or symbolic object instead (see HANDLING UNKNOWN FACES section above)
 
 ============================================================
-VERIFICATION CHECKLIST (RUN BEFORE DELIVERING — FIX ANY FAILURES)
+VERIFICATION CHECKLIST (fix ANY failures before delivering)
 ============================================================
 
-Before delivering the final JSON, verify ALL of the following. If any check FAILS, go back and fix it:
+**TIMING:** 150-170 images, 3-7s each (target 4-5s, avg 4.5-5s). No gaps. Starts at 0.0,
+ends at exact total_duration. Sum of durations = total_duration (off by 0.1s = failure).
 
-**TIMING CHECKS:**
-[ ] Total image count is between 150-170 for 12-min video (or adjusted for video length)
-[ ] Every image duration is between 3 and 7 seconds (target 4-5 seconds)
-[ ] Average image duration is ~4.5-5 seconds (NOT 7+ seconds)
-[ ] No image exceeds 7 seconds (ABSOLUTE MAXIMUM)
-[ ] No gaps between consecutive images (image N end_time = image N+1 start_time EXACTLY)
-[ ] First image starts at 0.0
-[ ] Last image ends at exact total_duration from narration_timestamps.json
-[ ] Sum of all durations equals total_duration (calculate this — off by even 0.1s is a failure)
+**IMAGE COUNT:** Cold Open 8-10 | Early Life 18-22 | Spark 18-22 | Rise 24-28 |
+Conflict 30-36 (MOST) | Climax 15-18 | Fall 18-22 | Legacy 10-12 | CTA 6-8
 
-**IMAGE COUNT PER SECTION:**
-[ ] Cold Open has 8-10 images (PACKED tight — hook viewers immediately)
-[ ] Early Life has 18-22 images
-[ ] The Spark has 18-22 images
-[ ] The Rise has 24-28 images
-[ ] The Conflict has 30-36 images (MOST images of any section — rapid visual change)
-[ ] The Climax has 15-18 images
-[ ] The Fall has 18-22 images
-[ ] Legacy has 10-12 images
-[ ] CTA has 6-8 images
+**CONTENT:** Full name in EVERY prompt. No AI-art language. Photography terminology + style
+suffix on every prompt. Period-accurate details. Prompts match narration timestamps.
 
-**CONTENT CHECKS:**
-[ ] Person's full name appears in EVERY image prompt
-[ ] No AI-art language in any prompt (no "ethereal," "surreal," "rendered," "dreamy," etc.)
-[ ] Photography terminology used in every prompt (film grain, depth of field, lens type, etc.)
-[ ] Every prompt ends with the consistent style suffix
-[ ] Prompts match narration content at their timestamps (not generic stock photos)
-[ ] Emotional tone of prompts matches narration tone and section guidelines
-[ ] Period-accurate details for all historical scenes (clothing, architecture, technology)
+**VARIETY:** No 2 consecutive same shot_type. High-impact shot every 5 images. Pattern
+interrupt every 15-20s. No 3+ consecutive same transition or shot scale.
 
-**VISUAL VARIETY CHECKS:**
-[ ] NO two consecutive images have the same shot_type
-[ ] High-impact shot types (extreme close-up, silhouette, aerial) appear at least every 5 images
-[ ] Pacing matches section guidelines (fast cuts for tension, slow holds for emotion)
-[ ] Every consecutive pair of images has a clear visual transition logic
+**COLOR:** Cool(open)→warm(early)→neutral(spark)→bold(rise)→cold(conflict)→gold/blue(climax)
+→muted(fall)→golden(legacy). No random jumps within a section.
 
-**COLOR CONTINUITY CHECKS:**
-[ ] Cold Open images are cool/desaturated
-[ ] Early Life images are warm/amber
-[ ] Color temperature SHIFTS at section transitions (verified via color_temperature field)
-[ ] The Conflict images are cold/desaturated
-[ ] The Fall images are muted/grey
-[ ] Legacy images are warm/golden
-[ ] No random color jumps within a section
+**ANIMATION FIELDS (every image MUST have all three):**
+[ ] movement_type — valid, never same 2× in a row, parallax_depth on 15%+, dolly_zoom max 2×
+[ ] transition_type — valid, never same 3× in a row, map/timeline use correct types
+[ ] effects — 2 max, film_grain on 60%+, no 2 darkening effects stacked, handheld/shake NEVER on calm sections
+[ ] map_label on ALL maps, text_animation on ALL overlay_text, parallax prompts have foreground/mid/back
 
-**ANIMATION FIELD CHECKS:**
-[ ] EVERY image has a movement_type field with a valid value from the MOVEMENT TYPES reference
-[ ] EVERY image has a transition_type field with a valid value from the TRANSITION TYPES reference
-[ ] EVERY image has an effects field (array) with 1-3 valid values from the EFFECTS reference
-[ ] movement_type is NOT the same on consecutive images (alternate movements)
-[ ] transition_type is NOT the same more than 2 times in a row
-[ ] film_grain appears in effects on at least 60% of images
-[ ] handheld_drift and camera_shake are ONLY used on tension/conflict/chaos scenes (NEVER on LEGACY, CTA, EARLY_LIFE)
-[ ] dolly_zoom is used maximum 1-2 times in the entire video
-[ ] map_zoom or map_pan is used for ALL map/geography images (shot_type: "map")
-[ ] timeline_reveal is used for ALL timeline/chronology images (shot_type: "timeline")
-[ ] parallax_depth is used on at least 15% of images
-[ ] At least 3-5 map images are included for geographic transitions
-[ ] flash_strobe effect is used maximum 2-3 times in the entire video
-[ ] Images with parallax_depth movement have prompts describing foreground/midground/background layers
-[ ] EVERY map image has map_label field set (format: "Location Name | Year")
-[ ] EVERY image with overlay_text has text_animation field set (bounce|typewriter|highlight|slide_up|fade_in)
-[ ] text_animation "highlight" is used for 2-3 powerful quotes
-[ ] text_animation "typewriter" is used for dates and location labels
-[ ] text_animation "bounce" is used for section titles and big numbers
-[ ] text_animation "slide_up" is used for name introductions (lower-third style)
-[ ] spotlight effect is used 3-5 times for character intros and dramatic reveals
-[ ] photo_frame effect is used for historical photos and documents (EARLY_LIFE, LEGACY)
-[ ] ink_splash transition is used 2-4 times for major section transitions
+**RETENTION:** Hook zone: 3-4 images in first 15s. Section boundaries: pattern interrupt.
+Midpoint rescue: 3-4 rapid 3s images at images 70-85. Golden ratio: every 3-4 images break pattern.
 
-**FORMAT CHECKS:**
-[ ] JSON structure matches the exact format (including section, emotional_tone, shot_type, color_temperature, movement_type, transition_type, effects)
-[ ] Thumbnail prompt follows all thumbnail generation rules
-[ ] Thumbnail face percentage is 65-70%
-[ ] All JSON is valid (no trailing commas, proper escaping)
-[ ] American audience visual anchors included where script references them
+**STORYTELLING (v9):**
+[ ] First image hooks BEFORE audio. Burning question bookend (Cold Open motif → Climax echo).
+[ ] Hero: warm/low-angle/god_rays. Villain: cold/dutch/chromatic. Story lens: 4+ sections.
+[ ] Context→Conflict→Consequence rhythm. Exclusivity gets visual emphasis. Lighter ending.
 
-**ENGAGEMENT CHECKS:**
-[ ] Cold Open has 8-10 images in ~30 seconds (3-4 seconds each — PACK it tight)
-[ ] A "pattern interrupt" (scale shift, flash_cut, spotlight, map_zoom) occurs every 15-20 seconds
-[ ] Text overlays appear every 20-30 seconds (not clustered, not absent for too long)
-[ ] No 3+ consecutive images with same transition_type
-[ ] No 3+ consecutive images with same shot scale (close/medium/wide)
-[ ] Every section has at least 1 image with overlay_text
-[ ] At least 3 map images are spread throughout the video
-[ ] Last image has an engaging overlay_text (subscribe hook or powerful closing statement)
-[ ] Average duration across all images is 4.5-5 seconds (NOT higher)
-
-**RETENTION ARCHITECTURE CHECKS (v2):**
-[ ] HOOK ZONE: First 15 seconds has 3-4 images (3-4s each) with push_in/cinematic_reveal movements
-[ ] TRANSITION BRIDGES: Every section boundary has a pattern-interrupt image (scale/color/movement shift)
-[ ] MIDPOINT RESCUE: Images 70-85 include a "visual escalation cluster" (3-4 rapid 3s images with aggressive movements)
-[ ] GOLDEN RATIO: Every 3-4 images, at least ONE breaks the visual pattern (scale shift, map, text overlay)
-[ ] No more than 4 consecutive images share the same color_temperature
-[ ] Section openers use cinematic_reveal or push_in movement for dramatic entry
-[ ] THE_CONFLICT section has the highest image density (shortest avg duration) for tension
-[ ] LEGACY section has the lowest image density (longest avg duration) for contemplation
-
-**SPECIAL CASES:**
-[ ] For ancient/unknown subjects: silhouettes and objects used instead of guessed faces
-[ ] For modern/living subjects: fallback prompts included where likeness might be blocked
+**FORMAT:** Valid JSON. Thumbnail 65-70% face. American anchors where referenced.
+Ancient subjects: silhouettes. Modern/living: include fallback_prompt.
 
 ============================================================
-EXAMPLE USAGE
+EXPECTED OUTPUT
 ============================================================
 
-User provides (pasted as text, NOT as file attachments):
-- Person name: [NAME]
-- Script: [FULL NARRATION TEXT]
-- Narration timestamps: [PASTE narration_timestamps.json contents]
-
-You respond with:
-- The complete JSON (this IS the duration config — no separate step needed)
-- Brief summary: total images, duration coverage, average duration, max duration
-- Scene breakdown by section (Cold Open: X images, Early Life: X images, etc.)
-- Thumbnail description and color scheme summary
-- Shot type distribution (close-ups: X%, wide shots: X%, detail: X%, etc.)
-- Color temperature distribution (warm: X%, cool: X%, neutral: X%)
-- Movement type distribution (parallax_depth: X, push_in: X, gentle_drift: X, crane_up: X, map_zoom: X, etc.)
-- Transition type distribution (light_leak: X, crossfade: X, glitch: X, flash_cut: X, etc.)
-- Effects usage (film_grain: X images, dust_particles: X images, light_leak: X images, etc.)
-- Map images count and locations covered
-- Timeline images count
-
-NOTE: Save the JSON output as the duration config file. The sequential_video_composer
-reads this JSON directly — no separate duration config prompt is needed.
-
-============================================================
-VIDEO ENGINE ARCHITECTURE NOTES (v4.0)
-============================================================
-
-These notes document key architectural decisions in the video generation engine.
-Understanding them helps you write better prompts that take advantage of the system.
-
-**MOVEMENT EASING:**
-All movements use ease_in_out_sine — a smooth sinusoidal curve that gives the most
-fluid, professional feel with no sudden acceleration or deceleration. The visual
-personality comes from the movement's zoom/pan pattern, not the easing curve.
-Choose the movement that matches the emotional intent.
-
-**SECTION-AWARE ZOOM MULTIPLIERS:**
-The engine scales zoom intensity per section:
-  COLD_OPEN: ×1.1     THE_RISE: ×1.05    THE_CLIMAX: ×1.15
-  THE_CONFLICT: ×1.1   THE_FALL: ×0.9     LEGACY: ×0.8
-  EARLY_LIFE: ×0.85    THE_SPARK: ×1.0    CTA: ×0.75
-Dramatic sections get more aggressive camera movement, calm sections stay subtle.
-A safety cap of 15% max zoom prevents content from being cropped out of frame.
-
-**CROSSFADE OVERLAP:**
-Clips overlap with section-aware fade durations so there are NEVER black gaps:
-  THE_CONFLICT: ×0.7 (snappy cuts for tension)
-  COLD_OPEN: ×0.8 (punchy)
-  THE_CLIMAX: ×0.75 (dramatic but breathing)
-  THE_RISE: ×0.9
-  THE_SPARK: ×1.0 (baseline)
-  THE_FALL: ×1.2 (graceful fades)
-  CTA: ×1.3 (smooth closing)
-  EARLY_LIFE: ×1.4 (longer, graceful fades)
-  LEGACY: ×1.5 (gentle dissolves)
-
-**MOTION BLUR:**
-Only whip_pan gets subtle directional motion blur (blended 60% sharp / 40% blurred).
-push_in, dramatic_zoom, and dolly_zoom NO LONGER receive motion blur — they stay
-sharp throughout the animation. This dramatically reduces the blurry-frame percentage.
-For chaotic scenes, use whip_pan for the blur effect, and use dutch_tilt or
-handheld_drift for shaky/tense feel without losing sharpness.
-
-**POST-PROCESSING PIPELINE:**
-Before encoding, frames pass through adaptive brightness lift:
-- Frames with mean luminance < 85 receive a proportional brightness boost so no scene
-  appears too dark for viewers.
-- Sharpening is handled per-clip in the movement make_frame (unsharp mask 1.3× sharp
-  − 0.3× blur after every crop+resize). This avoids the double-sharpening artifact that
-  occurred in v7 when both make_frame AND post-processing sharpened every frame.
-- In --fast and --preview modes, post-processing is skipped entirely for speed.
-This means your image prompts can describe dramatic dark scenes without worrying about
-the final output being unwatchable — the engine automatically ensures visibility.
-
-**TEXT RENDERING:**
-Text overlays now use:
-- 8px outline width (up from 6px) for stronger contrast against any background
-- 4-layer drop shadow with full opacity for deeper depth perception
-- Double-drawn main text for crispness
-- Minimum 2px outline even at small scales
-This means overlay_text is readable over bright backgrounds, dark backgrounds, and
-busy/detailed images alike.
-
-**EXPORT SETTINGS:**
-The video exports with these settings for maximum quality and universal compatibility:
-- H.264 High profile level 4.1 (plays in VS Code, browsers, QuickTime, mobile)
-- yuv420p pixel format (universal color space)
-- CRF 18 / medium preset (high quality encoding — no bitrate cap, pure quality control.
-  Changed from 'slow' to 'medium' for 2-3x faster encoding with negligible quality loss)
-- +faststart flag (progressive download — video starts playing before fully loaded)
-- Adaptive brightness post-processing applied before encoding (sharpening handled per-clip)
-- Multi-threaded encoding (auto-detected CPU count, max 8 threads)
-
-**RENDERING SPEED MODES:**
-The engine supports three rendering tiers via CLI flags:
-- **Default (no flag)**: Full quality, medium preset, CRF 18, per-clip sharpening, LANCZOS resize.
-  ~2x faster than v7 due to preset change + removed double-sharpening.
-- **--fast**: Full 1080p resolution but skips per-frame sharpening, uses INTER_AREA resize
-  (3-5x faster), veryfast encoding preset, CRF 23. ~2-4x total speedup.
-- **--preview**: 480p output, CRF 28, all post-processing skipped. ~5-8x faster.
-  Use for checking timing and flow before final render.
-- Flags can be combined with --no-documentary-effects for even more speed.
-
-**ADDITIONAL CLI FEATURES:**
-- --dry-run: Validate config and images without rendering
-- --render-frame N: Export a single PNG frame for debugging
-- --aspect-mode fill|fit|letterbox: Control how non-16:9 images are fitted
-- -v / -vv: Verbose logging (INFO / DEBUG level)
+Respond with: Complete JSON + brief summary (total images, avg duration, shot/color/movement
+distributions, map count). Save JSON as the duration config — no separate step needed.
 
 ============================================================

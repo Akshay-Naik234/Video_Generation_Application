@@ -42,18 +42,18 @@ class DocumentaryEffects:
         'CTA': ['shimmer_sparkles', 'bokeh_orbs', 'edge_bloom'],
     }
 
-    # Section-aware intensity multipliers so dramatic sections get stronger
-    # effects and calm sections stay subtle.
+    # Section-aware intensity multipliers — kept moderate to prevent
+    # brightness stacking when multiple effects are composited.
     SECTION_INTENSITY_MULTIPLIERS = {
-        'COLD_OPEN': 1.3,
-        'EARLY_LIFE': 0.8,
-        'THE_SPARK': 1.0,
-        'THE_RISE': 1.15,
-        'THE_CONFLICT': 1.25,
-        'THE_CLIMAX': 1.4,
-        'THE_FALL': 0.9,
-        'LEGACY': 0.75,
-        'CTA': 0.7,
+        'COLD_OPEN': 0.9,
+        'EARLY_LIFE': 0.6,
+        'THE_SPARK': 0.75,
+        'THE_RISE': 0.8,
+        'THE_CONFLICT': 0.85,
+        'THE_CLIMAX': 1.0,
+        'THE_FALL': 0.65,
+        'LEGACY': 0.55,
+        'CTA': 0.5,
     }
 
     def __init__(self, resolution: Tuple[int, int] = (1920, 1080), fps: int = 30):
@@ -101,7 +101,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 1.5, 0.85))
+        clip = clip.set_opacity(min(intensity * 0.8, 0.4))
         return clip
 
     def create_film_grain(
@@ -178,7 +178,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 1.5, 0.8))
+        clip = clip.set_opacity(min(intensity * 0.7, 0.35))
         return clip
 
     def create_bokeh_orbs(
@@ -236,11 +236,11 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 0.8, 0.45))
+        clip = clip.set_opacity(min(intensity * 0.5, 0.25))
         return clip
 
     def create_camera_shake(
-        self, duration: float, intensity: float = 0.5
+        self, duration: float, intensity: float = 0.3
     ) -> VideoClip:
         """Subtle camera shake overlay — gentle scan-line displacement.
 
@@ -248,7 +248,7 @@ class DocumentaryEffects:
         camera vibration. Kept deliberately mild to avoid jarring shaking.
         """
         w, h = self.width, self.height
-        amp = intensity * 3.0 * self.scale
+        amp = intensity * 1.5 * self.scale
 
         def make_frame(t):
             frame = np.zeros((h, w, 3), dtype=np.uint8)
@@ -266,7 +266,7 @@ class DocumentaryEffects:
             return frame
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 0.4, 0.25))
+        clip = clip.set_opacity(min(intensity * 0.2, 0.1))
         return clip
 
     def create_cinematic_bars(
@@ -354,7 +354,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 1.5, 0.8))
+        clip = clip.set_opacity(min(intensity * 0.7, 0.35))
         return clip
 
     def create_chromatic_aberration(
@@ -646,7 +646,7 @@ class DocumentaryEffects:
         return clip
 
     def create_god_rays(
-        self, duration: float, intensity: float = 0.15
+        self, duration: float, intensity: float = 0.10
     ) -> VideoClip:
         """Volumetric light beams streaming from upper area.
 
@@ -672,7 +672,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 0.5, 0.2))
+        clip = clip.set_opacity(min(intensity * 0.3, 0.12))
         return clip
 
     def create_fog_overlay(
@@ -715,7 +715,7 @@ class DocumentaryEffects:
         return clip
 
     def create_shimmer_sparkles(
-        self, duration: float, intensity: float = 0.4, count: int = 20
+        self, duration: float, intensity: float = 0.25, count: int = 20
     ) -> VideoClip:
         """Magical floating sparkles with starburst glow.
 
@@ -780,7 +780,7 @@ class DocumentaryEffects:
             return np.clip(frame, 0, 255).astype(np.uint8)
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        clip = clip.set_opacity(min(intensity * 0.5, 0.35))
+        clip = clip.set_opacity(min(intensity * 0.3, 0.18))
         return clip
 
     def create_film_strip(
@@ -925,7 +925,7 @@ class DocumentaryEffects:
         return clip
 
     def create_edge_bloom(
-        self, duration: float, intensity: float = 0.2
+        self, duration: float, intensity: float = 0.12
     ) -> VideoClip:
         """Subtle bright-area bloom that gives a dreamy cinematic glow.
 
@@ -954,8 +954,8 @@ class DocumentaryEffects:
             return bloom * intensity * pulse * 0.3
 
         clip = VideoClip(make_frame, duration=duration).set_fps(self._overlay_fps)
-        mask = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
-        clip = clip.set_mask(mask)
+        mask_clip = VideoClip(make_mask, duration=duration, ismask=True).set_fps(self._overlay_fps)
+        clip = clip.set_mask(mask_clip)
         return clip
 
     def get_section_effects(
@@ -987,30 +987,30 @@ class DocumentaryEffects:
     ) -> list:
         """Create effect clips from a list of effect names."""
         creators = {
-            'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.6),
-            'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.35),
-            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.25, particle_count=12),
-            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.35),
+            'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.3),
+            'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.25),
+            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.15, particle_count=10),
+            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.2),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
-            'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.45),
-            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.35),
-            'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.3),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.15),
-            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.8),
-            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.2),
-            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.5),
-            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.4),
-            'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.6),
-            'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, effects_intensity * 0.5),
-            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.3),
-            'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', effects_intensity * 0.5),
-            'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.5),
-            'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.5),
-            'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.4),
-            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.25),
-            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.15),
-            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.5),
-            'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.6),
+            'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.25),
+            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.2),
+            'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.2),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.1),
+            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.5),
+            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.12),
+            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.3),
+            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.25),
+            'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.4),
+            'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, effects_intensity * 0.25),
+            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.2),
+            'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', effects_intensity * 0.3),
+            'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.3),
+            'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.3),
+            'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.2),
+            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.12),
+            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.1),
+            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.25),
+            'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.4),
         }
 
         clips = []

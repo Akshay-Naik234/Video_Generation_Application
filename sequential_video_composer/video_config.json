@@ -6,7 +6,7 @@
   "image_duration": 4.0,
   "crossfade": 1.2,
   "zoom": 1.15,
-  "effects_intensity": 0.7,
+  "effects_intensity": 0.4,
   "transition_style": "random",
   "movement_style": "random",
   "color_grade": "cinematic",

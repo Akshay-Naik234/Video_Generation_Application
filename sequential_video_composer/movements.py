@@ -154,9 +154,10 @@ class MovementStyles:
         }
         # Breathing base layer amplitude (subtle oscillation on all movements)
         self._breathing_amplitude = 0.0
-        self._breathing_freq = 0.06  # Hz
-        # Camera inertia overshoot settings
-        self._inertia_duration_frac = 0.08
+        self._breathing_freq = 0.04  # Hz
+        # Camera inertia overshoot disabled — it caused visible jitter at
+        # movement endpoints, especially at low zoom intensities.
+        self._inertia_duration_frac = 0.0
         self._inertia_overshoot = 0.0
 
     def _fit_image(
@@ -644,9 +645,9 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.03 * np.sin(raw_progress * np.pi * 1.2)
-            pan_y = 0.02 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.012 * np.sin(raw_progress * np.pi * 0.8)
+            pan_y = 0.008 * np.sin(raw_progress * np.pi * 0.6 + 0.5)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
@@ -674,8 +675,8 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            tilt = 0.04 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
+            tilt = 0.02 * eased
             pan_x = tilt
             pan_y = tilt * 0.5
             return zoom, pan_x, pan_y
@@ -685,8 +686,8 @@ class MovementStyles:
             return zoom, 0, 0
 
         elif movement_type == 'bounce_zoom':
-            overshoot = 1.0 + 0.03 * np.sin(eased * np.pi * 2) * (1.0 - eased)
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9 * overshoot
+            overshoot = 1.0 + 0.015 * np.sin(eased * np.pi * 2) * (1.0 - eased)
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8 * overshoot
             return zoom, 0, 0
 
         elif movement_type == 'float_up':
@@ -742,9 +743,9 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'shoulder_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.6
-            pan_x = 0.02 * eased + 0.01
-            pan_y = 0.01 * eased
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
+            pan_x = 0.01 * eased + 0.005
+            pan_y = 0.005 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'tracking_shot':
