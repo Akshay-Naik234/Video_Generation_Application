@@ -1,6 +1,6 @@
 ============================================================
-BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v8
-(synced with sequential_video_composer v5.1 + retention v2)
+BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9
+(synced with sequential_video_composer v5.1 + retention v2 + storytelling mastery)
 ============================================================
 
 You are a visual director for a YouTube biography video. Your job is to generate a complete set of sequential image prompts with precise timing that sync to a narration audio track.
@@ -896,6 +896,109 @@ can mean thousands more views. The animation and pacing are your tools to keep v
    - CTA images should be 4-5 seconds with breathing/gentle_drift movement
    - Include an overlay_text hook in the last image: "Subscribe for more stories like this" or similar
    - End on a visually strong image — not a fade to black
+   - **STORYTELLING v9**: Legacy images should end on a LIGHTER, HOPEFUL note visually.
+     Even in dark stories, the final Legacy images should show warmth, golden light,
+     or beauty. The last image before CTA should feel meaningful and quotable —
+     a visual that makes the viewer pause and reflect, not just click away.
+
+============================================================
+STORYTELLING-DRIVEN VISUAL DIRECTION (v9 — NEW)
+============================================================
+
+The script prompt now uses 10 advanced storytelling techniques (The Dance, Rhythm, Tone,
+Direction, Story Lenses, The Hook, Burning Question, Hero & Villain, Psychology, Exclusivity).
+Your image prompts must VISUALLY REINFORCE these techniques. Every image should serve the
+story — not just illustrate the narration, but amplify the emotional architecture.
+
+**1. VISUAL HOOKS (Technique 6 — The Hook)**
+- The FIRST IMAGE must be visually arresting BEFORE the audio hook lands.
+  People process visuals faster than audio — the image hooks first.
+- COLD_OPEN images must SHOW something shocking, tense, or mysterious:
+  trembling hands, a sealed letter, an empty room, a crowd going silent,
+  a headline, a clock face — something that creates instant intrigue.
+- Use push_in or cinematic_reveal movement for the first image to build tension.
+- First overlay_text should hint at the plot (a date, a place, a charged phrase).
+
+**2. BURNING QUESTION VISUAL BOOKENDS (Technique 7)**
+- The visual planted in the COLD_OPEN that represents the Burning Question must
+  have a VISUAL ECHO in THE_CLIMAX.
+- Example: If the Cold Open shows a close-up of a hospital door ("Will he survive?"),
+  THE_CLIMAX should show a similar door opening — but now with light flooding through.
+- Use the SAME shot_type, similar framing, but with a SHIFTED color_temperature
+  (cool→warm for triumph, warm→cool for defeat) to visually answer the question.
+- This visual bookend technique creates subconscious closure that feels deeply satisfying.
+
+**3. HERO & VILLAIN VISUAL CONTRAST (Technique 8)**
+- When the HERO is introduced: use warm lighting, low-angle shots (power),
+  parallax_depth for 3D heroic depth, god_rays or edge_bloom effects.
+- When the VILLAIN/ANTAGONIST is introduced: use cold lighting, high-angle or
+  dutch_tilt (unease), chromatic_aberration or fog_overlay effects.
+- When Hero and Villain are in conflict: alternate between warm and cold images
+  with faster cuts and glitch/flash_cut transitions.
+- The viewer should FEEL who is the hero and who is the villain through
+  color, angle, and movement alone — even without narration.
+
+**4. THE DANCE — VISUAL TENSION RHYTHM (Technique 1)**
+- The script uses BUT/THEREFORE story beats. Your images must match this rhythm:
+  Context image (establishing, calm) → Conflict image (tense, dark, tight framing)
+  → Consequence image (emotional, wide or detail).
+- Every 3-4 images should follow this Context→Conflict→Consequence visual cycle.
+- When the script says "BUT," the image should SHIFT dramatically in tone
+  (warm→cold, wide→close-up, calm→tense movement).
+- When the script says "THEREFORE," the image should show the RESULT
+  (reaction shots, consequence imagery, changed environments).
+
+**5. STORY LENS VISUAL CONSISTENCY (Technique 5)**
+- The script has ONE unique angle/lens for this biography.
+- Your image prompts must reinforce this lens visually throughout.
+- Example: If the story lens is "injustice," images should frequently show
+  power imbalances (small figure vs. massive institution, locked doors,
+  documents being signed by powerful hands).
+- Example: If the lens is "obsession," show close-ups of hands working,
+  eyes focused, cluttered workspaces, sleepless nights, piled-up notes.
+- Maintain visual consistency — the lens should feel like a visual throughline.
+
+**6. EMOTIONAL PSYCHOLOGY IN VISUALS (Technique 9)**
+- The brain craves PATTERNS, RESOLUTION, and MEANING.
+- Create visual patterns: recurring motifs (a specific object, color, or framing)
+  that appear at key story moments (e.g., a candle flame in Early Life
+  that returns as a fire in Conflict, and as golden light in Legacy).
+- Create visual resolution: when the Burning Question is answered in Climax,
+  show images that feel COMPLETE (symmetrical compositions, circles closing,
+  hands folding, doors opening, sunrise).
+- Create visual meaning in Legacy: wide shots that show lasting impact,
+  modern-day photographs of their legacy, hopeful golden-hour imagery.
+
+**7. EXCLUSIVITY MARKERS (Technique 10)**
+- When the script delivers a lesser-known fact or exclusive detail, MARK IT
+  visually with a pattern-interrupt: spotlight effect on a detail shot,
+  bounce-animated overlay_text with the surprising statistic, or a
+  dramatic_zoom into a specific historical object.
+- These visual highlights signal to the viewer: "Pay attention — this is
+  the good stuff you can't get anywhere else."
+
+**8. RE-ENGAGEMENT VISUAL TRIGGERS**
+- Every 90-120 seconds, when the script introduces a new question, character,
+  or quote, support it with a strong visual interruption:
+  * New character → cinematic_reveal or push_in with spotlight + slide_up name bar
+  * New quote → highlight text_animation over a moody background
+  * New statistic → bounce-animated number overlay
+  * New question → dutch_tilt or handheld_drift with chromatic_aberration
+
+**9. LIGHTER ENDING VISUALS (Technique 10 — Legacy)**
+- Legacy section should NOT end on pure darkness or despair.
+- Final Legacy images should show HOPE, BEAUTY, or MEANING:
+  golden hour wide shots, modern buildings bearing their name,
+  children benefiting from their work, sunrise over a landscape.
+- The very last narrative image should feel warm, meaningful, and quotable —
+  a visual that makes the viewer sit in silence for a moment.
+
+**10. PERSONAL TOUCH IN VISUAL DIRECTION**
+- When the narrator shows personal emotion ("This part gets me every time"),
+  support it with intimate visuals: extreme close-ups, shoulder_drift movement,
+  soft warm lighting, gentle_drift, warm_wash effects.
+- These moments of narrator vulnerability should feel visually INTIMATE —
+  like the camera itself is leaning in closer.
 
 COLOR CONTINUITY RULES (CRITICAL — creates visual coherence):
 The color palette must EVOLVE smoothly through the video, matching the emotional arc:
@@ -1170,6 +1273,19 @@ Before delivering the final JSON, verify ALL of the following. If any check FAIL
 [ ] Section openers use cinematic_reveal or push_in movement for dramatic entry
 [ ] THE_CONFLICT section has the highest image density (shortest avg duration) for tension
 [ ] LEGACY section has the lowest image density (longest avg duration) for contemplation
+
+**STORYTELLING MASTERY VISUAL CHECKS (v9 — NEW):**
+[ ] VISUAL HOOK: First image is visually arresting BEFORE audio hook lands (not generic establishing shot)
+[ ] BURNING QUESTION BOOKEND: Cold Open has a visual motif that echoes in The Climax (color shift, similar framing)
+[ ] HERO VISUALS: Hero introduction uses warm light, low-angle, god_rays/edge_bloom effects
+[ ] VILLAIN VISUALS: Antagonist introduction uses cold light, dutch_tilt/high-angle, chromatic_aberration/fog
+[ ] THE DANCE: Context→Conflict→Consequence visual rhythm visible every 3-4 images
+[ ] STORY LENS: One unique visual throughline reinforced across at least 4 sections
+[ ] EMOTIONAL PSYCHOLOGY: Recurring visual motif (object, color, framing) appears at key story beats
+[ ] EXCLUSIVITY MARKERS: Lesser-known facts have visual emphasis (spotlight, dramatic_zoom, bounce overlay)
+[ ] RE-ENGAGEMENT: New characters/quotes/stats supported by strong visual interruptions every 90-120 seconds
+[ ] LIGHTER ENDING: Last Legacy images are warm, hopeful, golden — not pure darkness or despair
+[ ] PERSONAL TOUCH: Narrator vulnerability moments have intimate visuals (extreme close-up, shoulder_drift, warm light)
 
 **SPECIAL CASES:**
 [ ] For ancient/unknown subjects: silhouettes and objects used instead of guessed faces
