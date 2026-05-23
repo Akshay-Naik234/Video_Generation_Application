@@ -205,7 +205,7 @@ class MovementStyles:
         image_path: Path,
         duration: float,
         movement_type: str,
-        zoom_intensity: float = 1.12,
+        zoom_intensity: float = 1.08,
         color_grader: 'ColorGrading' = None,
         color_grade: str = None,
         enable_vignette: bool = False,
@@ -223,15 +223,19 @@ class MovementStyles:
         # Apply section-aware zoom boost, capped to prevent excessive cropping
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
-        zoom_intensity = min(zoom_intensity, 1.15)  # hard cap
+        zoom_intensity = min(zoom_intensity, 1.12)  # hard cap
         base_img = PILImage.open(image_path)
         base_img.load()
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.20)
-        scaled_width = int(self.width * max_zoom * 1.4)
-        scaled_height = int(self.height * max_zoom * 1.4)
+        # Pan headroom: largest pan offset is ~15% of crop_w/2 = 7.5%,
+        # so canvas needs ~1.15x the output resolution.  Previous 1.68x
+        # buffer cropped away ~40% of every image.
+        max_zoom = zoom_intensity + 0.05
+        pan_buffer = 1.15
+        scaled_width = int(self.width * max_zoom * pan_buffer)
+        scaled_height = int(self.height * max_zoom * pan_buffer)
 
         base_img = self._fit_image(base_img, scaled_width, scaled_height)
         base_array = np.array(base_img)
@@ -304,7 +308,7 @@ class MovementStyles:
                 overshoot = _inertia_over * np.sin(inertia_t * np.pi)
                 zoom += overshoot * (zoom_intensity - 1.0)
 
-            zoom = min(zoom, 1.20)
+            zoom = min(zoom, 1.15)
 
             crop_w = self.width / zoom
             crop_h = self.height / zoom
@@ -532,7 +536,7 @@ class MovementStyles:
         Args:
             movement_type: One of MOVEMENT_TYPES (e.g. 'zoom_in', 'orbit').
             eased: Progress 0→1 after easing function is applied.
-            zoom_intensity: Base zoom multiplier (typically 1.08–1.15).
+            zoom_intensity: Base zoom multiplier (typically 1.05–1.10).
             raw_progress: Linear 0→1 progress before easing (used for
                 some effects that need raw time, like sinusoidal drift).
 
@@ -551,22 +555,22 @@ class MovementStyles:
 
         elif movement_type == 'pan_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * eased
+            pan_x = -0.10 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * eased
+            pan_x = 0.10 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = -0.15 * eased
+            pan_y = -0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = 0.15 * eased
+            pan_y = 0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
@@ -612,8 +616,8 @@ class MovementStyles:
         elif movement_type == 'parallax_depth':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
             phase = raw_progress * np.pi
-            pan_x = 0.12 * np.sin(phase)
-            pan_y = 0.06 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.08 * np.sin(phase)
+            pan_y = 0.04 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
@@ -629,8 +633,8 @@ class MovementStyles:
         elif movement_type == 'orbit':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
             angle = eased * np.pi * 1.0
-            pan_x = 0.12 * np.sin(angle)
-            pan_y = 0.06 * (1 - np.cos(angle))
+            pan_x = 0.08 * np.sin(angle)
+            pan_y = 0.04 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
@@ -652,12 +656,12 @@ class MovementStyles:
 
         elif movement_type == 'crane_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.1)
-            pan_y = -0.15 * eased
+            pan_y = -0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = 0.15 * eased
+            pan_y = 0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'spiral_zoom':
@@ -670,8 +674,8 @@ class MovementStyles:
 
         elif movement_type == 'tilt_shift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
-            pan_x = 0.12 * eased
-            pan_y = -0.06 * eased
+            pan_x = 0.08 * eased
+            pan_y = -0.04 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
@@ -692,18 +696,18 @@ class MovementStyles:
 
         elif movement_type == 'float_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_y = -0.12 * eased
-            pan_x = 0.03 * np.sin(raw_progress * np.pi)
+            pan_y = -0.08 * eased
+            pan_x = 0.02 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * (1.0 - eased)
+            pan_x = 0.10 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * (1.0 - eased)
+            pan_x = -0.10 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
@@ -713,27 +717,27 @@ class MovementStyles:
 
         elif movement_type == 'map_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.18 * eased
-            pan_y = 0.04 * np.sin(eased * np.pi)
+            pan_x = 0.12 * eased
+            pan_y = 0.03 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.18 * (1.0 - eased)
+            pan_x = -0.12 * (1.0 - eased)
             return zoom, pan_x, 0
 
         # ---- Cinematic camera movements (v5.0) ----
 
         elif movement_type == 'truck_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * eased
-            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            pan_x = -0.10 * eased
+            pan_y = 0.015 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'truck_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * eased
-            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            pan_x = 0.10 * eased
+            pan_y = 0.015 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'static_motion':
@@ -750,14 +754,14 @@ class MovementStyles:
 
         elif movement_type == 'tracking_shot':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_x = 0.15 * eased
-            pan_y = -0.04 * eased
+            pan_x = 0.10 * eased
+            pan_y = -0.03 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'cinematic_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * (1.0 - eased)
-            pan_y = -0.10 * (1.0 - eased)
-            pan_x = 0.05 * (1.0 - eased)
+            pan_y = -0.07 * (1.0 - eased)
+            pan_x = 0.04 * (1.0 - eased)
             return zoom, pan_x, pan_y
 
         else:

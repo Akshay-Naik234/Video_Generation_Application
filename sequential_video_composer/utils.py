@@ -12,7 +12,7 @@ def create_sequential_video(
     fps: int = 30,
     image_duration: float = 4.0,
     crossfade_duration: float = 1.2,
-    zoom_intensity: float = 1.15,
+    zoom_intensity: float = 1.08,
     effects_intensity: float = 0.7,
     audio_path: Optional[Union[str, Path]] = None,
     transition_style: str = "random",
@@ -36,7 +36,7 @@ def create_sequential_video(
         fps: Frames per second
         image_duration: Default duration each image is displayed (seconds)
         crossfade_duration: Duration of transitions between images (seconds)
-        zoom_intensity: Ken Burns zoom intensity (1.0 = no zoom, 1.2 = 20% zoom)
+        zoom_intensity: Ken Burns zoom intensity (1.0 = no zoom, 1.08 = 8% zoom)
         effects_intensity: Overall effects intensity (0.0 to 1.0)
         audio_path: Optional path to audio file
         transition_style: Transition style - 'random', 'sequential', 'cinematic', or specific type
@@ -118,7 +118,7 @@ def load_config_and_create_video(config_path: Union[str, Path]) -> None:
         fps=config.get('fps', 30),
         image_duration=config.get('image_duration', 4.0),
         crossfade_duration=config.get('crossfade', 1.2),
-        zoom_intensity=config.get('zoom', 1.15),
+        zoom_intensity=config.get('zoom', 1.08),
         effects_intensity=config.get('effects_intensity', 0.7),
         audio_path=audio_path,
         transition_style=config.get('transition_style', 'random'),

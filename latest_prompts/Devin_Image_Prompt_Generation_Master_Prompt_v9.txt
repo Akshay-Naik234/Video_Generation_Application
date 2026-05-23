@@ -180,15 +180,15 @@ MOVEMENT SELECTION RULES:
 - Alternate movements — NEVER use the same movement_type on consecutive images
 
 **IMPORTANT — CAMERA MOVEMENT & IMAGE COMPOSITION:**
-All camera movements apply zoom/pan (up to ~15% zoom, visible pans). The zoom safety cap
-prevents content from being cropped out of frame. This means:
-- Content at the edges of the image WILL be cropped during movement
-- **ALWAYS keep important visual elements (faces, text, key objects) CENTER-COMPOSED**
-- Do NOT place critical text, faces, or key details at the extreme edges of the frame
-- For images with on-screen text or numbers, describe them as LARGE and PROMINENTLY PLACED
-- For portrait images, describe the subject as CENTERED with generous breathing room on all sides
-- Leave at least 15-20% margin on all sides for important content
-- This ensures the stronger camera movement enhances the image without losing important content
+All camera movements apply subtle zoom/pan (up to ~8% zoom, gentle pans). The animation
+engine uses a tight canvas buffer so very little of the image is cropped:
+- Only ~10-15% of the edges may be cropped during movement — most of the image stays visible
+- **Keep important visual elements (faces, text, key objects) CENTER-COMPOSED** as best practice
+- For portrait images, describe the subject as CENTERED with breathing room on all sides
+- Leave at least 10% margin on all sides for important content
+- The gentle camera movement enhances the image without losing important content
+- **CRITICAL**: Generate images with FULL COMPOSITION — do NOT pre-crop tightly around subjects.
+  The engine needs the full scene context; overly tight AI-generated crops lose content during animation.
 
 ------------------------------------------------------------
 TRANSITION TYPES (28 available) — set via "transition_type" field

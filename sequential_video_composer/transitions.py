@@ -508,7 +508,7 @@ class TransitionEffects:
         def zoom_frame(get_frame):
             def _zf(t):
                 p = min(max((t - overlap_start) / duration, 0), 1)
-                scale = 1.0 + 0.15 * (p * p)
+                scale = 1.0 + 0.08 * (p * p)
                 frame = get_frame(t)
                 fh, fw = frame.shape[:2]
                 cw = int(fw / scale)
