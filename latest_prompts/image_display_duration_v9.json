@@ -1,0 +1,3031 @@
+{
+  "video_metadata": {
+    "person_name": "Elon Musk",
+    "title": "The Pattern You Can't Unsee \u2014 Elon Musk",
+    "total_duration_seconds": 730.24,
+    "total_images": 157,
+    "timing_mode": "CONTENT_MATCHED_TIMESTAMP_LOCKED",
+    "prompt_version": "v9.1",
+    "animation_engine": "v6.1-smooth-documentary",
+    "default_zoom_intensity": 1.08,
+    "zoom_hard_cap": 1.15,
+    "breathing_amplitude": 0.003,
+    "breathing_frequency_hz": 0.08,
+    "camera_inertia_overshoot": 0.005,
+    "camera_inertia_duration_fraction": 0.1,
+    "vignette_strength": 0.05,
+    "vignette_skip_threshold": 120,
+    "easing_profiles": {
+      "energy_settle": "ease_out_expo (crane_up, crane_down, float_up, reveal_left, reveal_right, cinematic_reveal)",
+      "build_impact": "ease_in_out_quart (push_in, dramatic_zoom, rack_focus, dolly_zoom, spiral_zoom)",
+      "organic_flow": "ease_in_out_sine (gentle_drift, breathing, parallax_depth, shoulder_drift, static_motion)",
+      "bouncy_emphasis": "ease_elastic_out (bounce_zoom)",
+      "speed_ramp": "custom_speed_ramp (whip_pan)",
+      "cinematic_orbit": "ease_in_out_quint (orbit)"
+    },
+    "section_aware_zoom_multipliers": {
+      "COLD_OPEN": 1.05,
+      "EARLY_LIFE": 0.9,
+      "THE_SPARK": 1.0,
+      "THE_RISE": 1.0,
+      "THE_CONFLICT": 1.05,
+      "THE_CLIMAX": 1.1,
+      "THE_FALL": 0.95,
+      "LEGACY": 0.85,
+      "CTA": 0.8
+    },
+    "crossfade_overlap_multipliers": {
+      "COLD_OPEN": 0.8,
+      "EARLY_LIFE": 1.2,
+      "THE_SPARK": 1.0,
+      "THE_RISE": 0.9,
+      "THE_CONFLICT": 0.7,
+      "THE_CLIMAX": 0.85,
+      "THE_FALL": 0.9,
+      "LEGACY": 1.3,
+      "CTA": 1.1
+    },
+    "effect_intensity_multipliers": {
+      "COLD_OPEN": 1.3,
+      "EARLY_LIFE": 0.8,
+      "THE_SPARK": 1.0,
+      "THE_RISE": 1.15,
+      "THE_CONFLICT": 1.25,
+      "THE_CLIMAX": 1.4,
+      "THE_FALL": 0.9,
+      "LEGACY": 0.75,
+      "CTA": 0.7
+    },
+    "total_movement_types": 40,
+    "movement_speed_reference": {
+      "standard": "Smooth documentary Ken Burns \u2014 gentle motion keeping full image visible",
+      "pan_distances": "0.15 normalized for full pans, 0.10 diagonal, 0.15 crane",
+      "zoom_multipliers": "0.6-1.2x base intensity \u2014 subtle and smooth",
+      "whip_pan_distance": 0.2,
+      "orbit_sweep_radians": 3.14,
+      "spiral_sweep_radians": 6.28,
+      "float_up_distance": 0.12,
+      "tracking_shot_distance": 0.15
+    },
+    "color_grading_notes": {
+      "shadow_lift": "Pixels below 40 lifted by 1.4x + 12 to prevent dark crush",
+      "brightness_floor": "Auto-boost applied when mean luminance drops below 100",
+      "contrast_reduction": "Cinematic contrast reduced from 1.10 to 1.06 to preserve brightness",
+      "vignette": "Reduced to 0.05 strength, skipped entirely on images with mean brightness below 120"
+    },
+    "rendering_speed_tiers": {
+      "default": "medium preset, CRF 18, full quality",
+      "fast": "INTER_AREA resize, veryfast encoding, CRF 23",
+      "preview": "480p, CRF 28, maximum speed"
+    },
+    "max_effects_per_image": 2,
+    "quality_philosophy": "Source image quality preserved. Shadow lifting applied to prevent dark crush. Gentle color grading that enhances without darkening."
+  },
+  "thumbnail": {
+    "prompt": "Cinematic portrait of Elon Musk at age 54, intense unreadable stare with direct eye contact, slight low-angle camera, dramatic Rembrandt lighting with left side illuminated in warm golden light and right side in deep cool shadow, wearing a dark SpaceX mission jacket over a black t-shirt, sharp angular jaw, close-cropped hair, positioned on right side of frame taking up 65% of image, left side dark with subtle rocket exhaust trail and courtroom gavel at 20% opacity, gold and electric blue color scheme suggesting power and technology, slightly desaturated with rich shadows. Cinematic portrait photograph, ultra-sharp focus on face, dramatic Rembrandt lighting, rich color grading, 8K resolution, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, shallow depth of field on background, professional YouTube thumbnail style, NOT AI looking, natural skin pores and texture visible",
+    "overlay_text": "THE PATTERN",
+    "text_position": "left",
+    "face_percentage": 65,
+    "color_scheme": "Gold (#FFD700) + Electric Blue (#0066FF)",
+    "face_expression": "intense unreadable stare with direct eye contact, controlled intensity"
+  },
+  "images": [
+    {
+      "image": 1,
+      "start_time": 0.0,
+      "duration": 4.26,
+      "end_time": 4.26,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "2026 | Federal Courtroom",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Extreme close-up of a heavy oak federal courtroom door, polished brass handles and a small engraved placard reading 'United States District Court', harsh fluorescent light bleeding through the crack, cool blue-grey hallway. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, film grain texture",
+      "prompt": "Extreme close-up of a heavy oak federal courtroom door, polished brass handles and a small engraved placard reading 'United States District Court', harsh fluorescent light bleeding through the crack at the bottom, Elon Musk's silhouette barely visible through frosted glass, tense atmosphere, cool blue-grey institutional hallway stretching behind the camera. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows and desaturated cool blue tones, film grain texture"
+    },
+    {
+      "image": 2,
+      "start_time": 4.26,
+      "duration": 4.26,
+      "end_time": 8.52,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Wide establishing shot of a modern federal courtroom interior, polished wooden gallery railing, defense table with legal team, judge's elevated bench with American flag, cold overhead fluorescent lighting, marble walls. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide establishing shot of a modern federal courtroom interior in Oakland, foreground: polished wooden gallery railing with spectators' hands gripping it, midground: Elon Musk seated at the defense table in a dark navy suit, his posture rigid and jaw set, lawyers flanking him with stacks of documents, background: the judge's elevated bench with American flag and Great Seal, cold overhead fluorescent lighting casting harsh shadows on marble walls. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, desaturated cool tones with rich shadows, film grain texture"
+    },
+    {
+      "image": 3,
+      "start_time": 8.52,
+      "duration": 4.26,
+      "end_time": 12.78,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Extreme close-up of a Fortune magazine cover on a newsstand, bold red masthead, headline about potential trillionaire, rain droplets on glossy surface, other magazines blurred behind. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Extreme close-up of a Fortune magazine cover on a newsstand rack, bold red masthead, the headline reading 'THE FIRST TRILLIONAIRE?' in large white serif type, a dramatic side-lit photograph of Elon Musk on the cover with half his face in shadow, rain droplets on the magazine's glossy surface reflecting city lights, other magazines blurred in background, harsh directional light from a streetlamp above. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool desaturated tones, film grain texture"
+    },
+    {
+      "image": 4,
+      "start_time": 12.78,
+      "duration": 4.26,
+      "end_time": 17.04,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "71% Profit Collapse",
+      "text_animation": "bounce",
+      "fallback_prompt": "Medium shot of a partially empty automotive factory production line, robotic arms frozen, workers standing idle looking at red downward graphs on screens, harsh industrial lighting, cold steel environment. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of a partially empty Tesla Gigafactory production line, robotic arms frozen mid-assembly, a few workers in Tesla-branded uniforms standing idle with arms crossed looking at dimmed overhead screens showing red downward-trending graphs, harsh industrial fluorescent lighting, a single Model Y body on the line with no doors attached, cold steel and concrete environment, tension and uncertainty in the air. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, desaturated cool industrial tones, film grain texture"
+    },
+    {
+      "image": 5,
+      "start_time": 17.04,
+      "duration": 4.26,
+      "end_time": 21.3,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "landscape",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide cinematic shot of a SpaceX Starship standing on the launch pad at Boca Chica Texas at dawn, the massive stainless steel rocket towering against a dark pre-dawn sky, foreground: chain-link security fence with 'RESTRICTED AREA' sign, midground: the rocket gleaming with frost condensation catching the first rays of orange sunrise light, background: Gulf of Mexico horizon with deep purple clouds, the scale of the rocket dwarfing everything around it, a single SpaceX logo visible on the fuselage. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool tones with warm sunrise accent, film grain texture"
+    },
+    {
+      "image": 6,
+      "start_time": 21.3,
+      "duration": 4.26,
+      "end_time": 25.56,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "mixed",
+      "movement_type": "rack_focus",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "Same Man. Same Week.",
+      "text_animation": "bounce",
+      "fallback_prompt": "Extreme close-up of a man's face split between cold blue fluorescent light on one side and warm golden glow on the other, stress lines visible, intense eyes staring at camera. Cinematic photorealistic photograph, 8K resolution, split lighting, film grain texture",
+      "prompt": "Extreme close-up split composition of Elon Musk's face, left half lit in cold blue courthouse fluorescent light showing stress lines and a clenched jaw, right half lit in warm golden rocket-launch glow showing determination and focus, the dividing line sharp down the center of his nose, individual pores and stubble visible, eyes intense and unwavering staring directly into camera, mixed blue-gold color palette creating visual tension. Cinematic photorealistic photograph, 8K resolution, dramatic split lighting, ultra-shallow depth of field, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 7,
+      "start_time": 25.56,
+      "duration": 4.26,
+      "end_time": 29.82,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of a man's hands counting crumpled dollar bills and loose change on a worn kitchen counter, a past-due rent notice partially visible underneath, a dim single overhead bulb casting harsh downward shadows, Elon Musk's wedding ring visible on his finger, the juxtaposition of a billionaire-to-be counting pennies, cold desaturated blue-grey domestic lighting, sparse apartment background blurred. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, desaturated cool tones, film grain texture"
+    },
+    {
+      "image": 8,
+      "start_time": 29.82,
+      "duration": 4.26,
+      "end_time": 34.08,
+      "section": "COLD_OPEN",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Medium shot down a sterile hospital corridor, harsh fluorescent lights, a man's silhouette standing motionless at the far end facing away, NICU door to his left, empty chairs, polished floor. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot down a sterile hospital corridor, harsh fluorescent lights creating a cold blue-white wash, a man's silhouette \u2014 Elon Musk \u2014 standing motionless at the far end of the hallway facing away from camera, his shoulders slightly slumped, a closed NICU door to his left with a small window casting a faint warm glow, empty plastic chairs lining the wall, the polished floor reflecting the lights in long streaks, devastating isolation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated hospital tones, film grain texture"
+    },
+    {
+      "image": 9,
+      "start_time": 34.08,
+      "duration": 4.26,
+      "end_time": 38.34,
+      "section": "COLD_OPEN",
+      "emotional_tone": "darkness",
+      "shot_type": "over_shoulder",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "prompt": "Over-the-shoulder shot looking down a concrete school staircase in 1980s South Africa, harsh midday sun cutting through a dirty window, a young boy crumpled at the bottom of the stairs \u2014 young Elon Musk at age 13 \u2014 his school uniform torn, his arm covering his face, two blurred figures at the top of the stairs looking down, gritty institutional concrete walls, the violence implied rather than shown, raw documentary photography style. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, desaturated harsh tones, film grain texture"
+    },
+    {
+      "image": 10,
+      "start_time": 38.34,
+      "duration": 4.26,
+      "end_time": 42.6,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "mixed",
+      "movement_type": "bounce_zoom",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "$800,000,000,000",
+      "text_animation": "bounce",
+      "prompt": "Close-up of a Bloomberg Terminal screen in a dim Wall Street trading floor, green and white text showing Elon Musk's net worth crossing eight hundred billion dollars, the number glowing against the dark screen, a trader's hand frozen mid-reach toward the keyboard, multiple monitors in the blurred background showing market charts with steep upward lines, the cold blue glow of screens illuminating the darkness. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool blue screen-glow tones, film grain texture"
+    },
+    {
+      "image": 11,
+      "start_time": 42.6,
+      "duration": 4.26,
+      "end_time": 46.86,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "still_life",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Still-life arrangement on a dark mahogany desk: a SpaceX mission patch, a Tesla key card, a crumpled court summons document, a baby's hospital bracelet, a South African passport with a boarding pass tucked inside, and a single chess piece \u2014 a king lying on its side \u2014 all arranged in a circle around a central pool of harsh white spotlight, the items casting long dramatic shadows, suggesting the scattered evidence of one impossible life. Cinematic photorealistic photograph, 8K resolution, dramatic overhead spotlight, rich shadows, cool desaturated tones with warm highlight on objects, film grain texture"
+    },
+    {
+      "image": 12,
+      "start_time": 46.86,
+      "duration": 4.26,
+      "end_time": 51.12,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Dramatic full-body silhouette of a tall man standing alone at a launch viewing area at sunset, profile outlined against orange-red sky, rocket silhouette in background, long golden shadows. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Dramatic full-body silhouette of Elon Musk standing alone at the edge of a SpaceX launch viewing area at sunset, his distinctive profile \u2014 tall frame, slightly forward-leaning posture \u2014 perfectly outlined against an orange-red sky, the silhouette of a Starship rocket visible in the far background, neither heroic nor villainous, just a human figure dwarfed by the scale of his own ambitions, long golden shadows stretching toward the camera. Cinematic photorealistic photograph, 8K resolution, dramatic backlit silhouette, shallow depth of field, warm golden sunset with cool shadow tones, film grain texture"
+    },
+    {
+      "image": 13,
+      "start_time": 51.12,
+      "duration": 4.26,
+      "end_time": 55.38,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "\"One pattern \u2014 repeating across 30 years\"",
+      "text_animation": "highlight",
+      "prompt": "Extreme close-up of a hand-drawn graph on lined notebook paper, a thick red line showing a repeating pattern \u2014 steep drop nearly touching zero, then a sharp spike upward, repeated five times across the page, each spike higher than the last, Elon Musk's handwriting visible in margin notes, a pen lying across the page, warm desk lamp light from the left, the pattern of near-death and resurrection made visible. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber desk lamp tones on cool paper, film grain texture"
+    },
+    {
+      "image": 14,
+      "start_time": 55.38,
+      "duration": 4.26,
+      "end_time": 59.64,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_zoom",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "map_label": "Pretoria, South Africa | 1971",
+      "prompt": "Vintage sepia-toned map of southern Africa circa 1970, showing South Africa with Pretoria and Johannesburg clearly labeled, the Indian Ocean to the east, ornate cartographic details with compass rose in the corner, aged parchment texture with darkened edges, the Transvaal province highlighted with a faint golden glow around Pretoria, suggesting the origin point of an extraordinary story. Cinematic photorealistic photograph, 8K resolution, warm vintage sepia tones, film grain texture"
+    },
+    {
+      "image": 15,
+      "start_time": 59.64,
+      "duration": 4.26,
+      "end_time": 63.9,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme macro close-up of a human eye \u2014 representing the viewer \u2014 with the pupil dilated wide, reflecting in its surface the faint glow of a rocket launch and a courtroom, individual iris fibers visible in stunning detail, a single eyelash in the foreground slightly out of focus, cool blue-grey eye color with warm orange reflection, the moment before understanding, before the pattern becomes visible. Cinematic photorealistic photograph, 8K resolution, macro photography, ultra-shallow depth of field, cool tones with warm reflection, film grain texture"
+    },
+    {
+      "image": 16,
+      "start_time": 63.9,
+      "duration": 4.26,
+      "end_time": 68.16,
+      "section": "COLD_OPEN",
+      "emotional_tone": "nostalgia",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_warm",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "Pretoria, South Africa | 1971",
+      "text_animation": "typewriter",
+      "prompt": "Wide establishing shot of a quiet suburban street in Pretoria, South Africa in 1971, foreground: jacaranda tree branches heavy with purple blossoms framing the shot, midground: a modest single-story house with a concrete driveway and a child's bicycle leaning against the wall, background: the Pretoria skyline with the Voortrekker Monument visible on a distant hill, warm late-afternoon African sun casting long golden shadows across the red brick and green lawns, a peaceful surface hiding domestic turbulence beneath. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome color grading with golden amber tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 17,
+      "start_time": 68.16,
+      "duration": 4.26,
+      "end_time": 72.42,
+      "section": "COLD_OPEN",
+      "emotional_tone": "nostalgia",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "Maye Musk \u2014 Mother",
+      "text_animation": "slide_up",
+      "prompt": "Medium portrait shot of a striking woman in her early 30s representing Maye Musk circa 1975, standing in the doorway of a modest Pretoria home, wearing a simple cotton dress with her hair pulled back, her expression fierce and self-reliant, one hand on the doorframe and the other holding a stack of work folders, warm late-afternoon South African sunlight illuminating her face from the side, a child's toy visible on the floor behind her, the beauty and determination of a woman who would work multiple jobs and model into her sixties. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber Kodachrome tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 18,
+      "start_time": 72.42,
+      "duration": 4.26,
+      "end_time": 76.68,
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Errol Musk \u2014 Father",
+      "text_animation": "slide_up",
+      "prompt": "Medium shot of a stern-looking man in his late 30s representing Errol Musk circa 1975, seated in a dimly lit home office, harsh single desk lamp casting deep shadows under his eyes and across half his face, engineering blueprints spread across the desk, his expression cold and distant, slightly high-angle camera looking down at him, the warm tones of the house visible through a doorway behind him contrasting with the cold blue-white desk lamp, a man Elon Musk has publicly called a terrible human being. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool desaturated tones with warm background contrast, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 19,
+      "start_time": 76.68,
+      "duration": 4.76,
+      "end_time": 81.44,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a young boy's hands \u2014 young Elon Musk at age 9 \u2014 holding open a thick Encyclopedia Britannica volume, the pages yellowed and well-worn, his small fingers tracing a line of text about physics, a stack of completed volumes beside him on a wooden floor, warm afternoon sunlight streaming through a window casting a golden rectangle of light across the books, 1980s South African suburban home interior. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber Kodachrome color grading, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "parallax_depth",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide shot of a 1980s Pretoria public library, foreground: wooden card catalog drawers with small brass handles, midground: a young boy \u2014 young Elon Musk at 9 \u2014 sitting cross-legged on the floor between towering bookshelves reading a thick encyclopedia volume, completely absorbed, background: tall windows letting warm afternoon sunlight stream between the shelves creating golden light columns, the quiet temple of a boy who consumed entire encyclopedias. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber Kodachrome tones, film grain texture",
+      "image": 20,
+      "start_time": 81.44,
+      "end_time": 86.2
+    },
+    {
+      "image": 21,
+      "start_time": 86.2,
+      "duration": 4.76,
+      "end_time": 90.96,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "prompt": "Medium shot of young Elon Musk at age 10 sitting at a Commodore VIC-20 computer in a small bedroom in Pretoria, 1981, the green phosphor screen glowing with lines of BASIC code, his face illuminated by the monitor's green light, intense concentration, a programming manual open on the desk beside him, posters of space and rockets on the wall behind, warm amber desk lamp providing additional light, the birth of a coding obsession. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber tones with green monitor accent, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 22,
+      "start_time": 90.96,
+      "duration": 4.76,
+      "end_time": 95.72,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "nostalgia",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "warm",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "Blastar | Age 12 | $500",
+      "text_animation": "typewriter",
+      "prompt": "Extreme close-up of a vintage 1983 computer monitor showing a simple space-shooter video game called Blastar, pixelated aliens and a spaceship on a black background, green phosphor text reading 'BLASTAR' at the top of the screen, scan lines visible on the CRT monitor, the reflection of a 12-year-old boy's excited face faintly visible in the glass, a South African computer magazine with a check for five hundred dollars placed beside the keyboard, warm amber desk lighting. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm vintage monitor tones, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "bounce_zoom",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "$500 | Age 12",
+      "duration": 4.26,
+      "text_animation": "bounce",
+      "prompt": "Extreme close-up of a check for five hundred dollars made out to a twelve-year-old, a South African computer magazine logo in the header, young Elon Musk's name on the payee line, warm afternoon desk lamp light, the check resting on a bedroom desk next to scattered programming notes and a half-eaten sandwich, the first money earned by a future multi-billionaire \u2014 five hundred dollars for a video game built by a child. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber tones, film grain texture",
+      "image": 23,
+      "start_time": 95.72,
+      "end_time": 99.98
+    },
+    {
+      "image": 24,
+      "start_time": 99.98,
+      "duration": 4.76,
+      "end_time": 104.74,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "camera_shake"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide shot looking down a concrete staircase in a 1980s South African school, harsh midday sun creating sharp geometric shadows through barred windows, a young boy \u2014 young Elon Musk at age 13 \u2014 lying crumpled at the bottom of the stairs, his school uniform disheveled, his bookbag contents scattered across the floor, two blurred figures walking away at the top of the stairs, the violence over but its aftermath vivid, gritty documentary photography style capturing institutional cruelty. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated harsh tones, film grain texture"
+    },
+    {
+      "image": 25,
+      "start_time": 104.74,
+      "duration": 4.76,
+      "end_time": 109.5,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "darkness",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a young boy's face \u2014 young Elon Musk \u2014 lying in a 1984 South African hospital bed, his eyes swollen shut with purple bruising, a white bandage across the bridge of his nose, harsh overhead hospital fluorescent light, his expression not of pain but of calculation, processing betrayal, a thin hospital blanket pulled up to his chin, the sterile white walls and metal bed frame visible, the moment a child learned the cost of trust. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated hospital tones, photorealistic skin texture with bruising detail, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "darkness",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "static_motion",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Close-up of a cracked pair of glasses lying on a concrete school staircase landing in 1980s South Africa, one lens shattered, a drop of blood visible on the frame, harsh midday light cutting geometric shadows through barred windows, scattered schoolbooks and papers on the ground around them, the aftermath of violence reduced to a single broken object, the gritty truth of what being kicked until you black out looks like. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold harsh desaturated tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "image": 26,
+      "start_time": 109.5,
+      "end_time": 113.76
+    },
+    {
+      "image": 27,
+      "start_time": 113.76,
+      "duration": 4.76,
+      "end_time": 118.52,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "darkness",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "\"They got my best friend to lure me out\" \u2014 Elon Musk",
+      "text_animation": "highlight",
+      "prompt": "Silhouette of a young teenage boy \u2014 young Elon Musk \u2014 standing alone in a school corridor, his shadow long and distorted on the concrete floor, looking at an empty space where a friend should be, a closed door at the end of the hallway representing sealed trust, cold fluorescent blue-white light from above, the composition suggesting betrayal and isolation, the formative wound that would echo through every future relationship. Cinematic photorealistic photograph, 8K resolution, dramatic backlighting, rich shadows, cold desaturated tones, film grain texture"
+    },
+    {
+      "image": 28,
+      "start_time": 118.52,
+      "duration": 4.76,
+      "end_time": 123.28,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up triple exposure style image showing three overlapping scenes from Elon Musk's life: a boardroom table with hands slamming down documents, a wedding ring being removed from a finger, and a corporate office door closing \u2014 all layered semi-transparently, suggesting the same betrayal pattern repeating across decades, cold blue-grey tones throughout, the visual architecture of broken trust. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, multiple exposure documentary style, cold desaturated tones, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "truck_right",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide shot of a long corporate boardroom table in a modern glass office, the table extending into the distance, every chair empty except one at the far end where a silhouette sits alone \u2014 Elon Musk \u2014 harsh overhead fluorescent lighting reflecting off the polished table surface, the emptiness around him deliberate, the man who fills rooms with genius and empties them of trust, cool blue institutional lighting creating stark shadows. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool desaturated institutional tones, film grain texture",
+      "image": 29,
+      "start_time": 123.28,
+      "end_time": 128.04
+    },
+    {
+      "image": 30,
+      "start_time": 128.04,
+      "duration": 4.76,
+      "end_time": 132.8,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "map",
+      "color_temperature": "neutral",
+      "movement_type": "map_pan",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "map_label": "South Africa \u2192 Canada \u2192 America | 1988-1992",
+      "prompt": "Vintage sepia-toned map of the Atlantic Ocean showing southern Africa on the right and North America on the left, circa 1988, a bold red dotted line tracing the journey from Pretoria South Africa through Canada to the United States, ornate Victorian cartographic style with compass rose and decorative borders, aged parchment texture, each stop marked with a small golden star, the route of a teenager escaping apartheid and chasing the future. Cinematic photorealistic photograph, 8K resolution, warm vintage sepia tones, film grain texture"
+    },
+    {
+      "image": 31,
+      "start_time": 132.8,
+      "duration": 4.76,
+      "end_time": 137.56,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "tracking_shot",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "Age 17 | Refused Military Service",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Medium shot of a young man at 17 walking through a 1988 South African airport carrying a worn suitcase, determined posture, warm golden light through terminal windows. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of a young man \u2014 Elon Musk at 17 \u2014 walking through Jan Smuts International Airport in Johannesburg, 1988, carrying a single worn suitcase, wearing simple clothes, his posture upright and determined despite his youth, other travelers in 1980s attire passing by, warm golden late-afternoon light streaming through the terminal windows behind him, the moment a teenager chose to leave everything he knew rather than serve a military enforcing apartheid. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber departure-light tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "over_shoulder",
+      "color_temperature": "warm",
+      "movement_type": "push_out",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Over-the-shoulder shot from behind young Elon Musk at 17 looking back one final time through the departure gate window at the Pretoria skyline, the jacaranda trees purple in the distance, a South African Airways plane visible on the tarmac, his reflection ghostly in the glass, one hand on his worn suitcase, the moment of choosing to leave a homeland rather than serve its military, warm golden African sunset light flooding through the terminal windows. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden departure tones, film grain texture",
+      "image": 32,
+      "start_time": 137.56,
+      "end_time": 142.32
+    },
+    {
+      "image": 33,
+      "start_time": 142.32,
+      "duration": 4.76,
+      "end_time": 147.08,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "float_up",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "light_leak"
+      ],
+      "overlay_text": "University of Pennsylvania",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Wide establishing shot of University of Pennsylvania campus in the early 1990s, autumn leaves, students walking between Gothic buildings, warm golden autumn light, Ivy League atmosphere. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide establishing shot of the University of Pennsylvania campus in the early 1990s, foreground: autumn leaves on a brick pathway, midground: students walking between grand collegiate Gothic buildings, background: the iconic College Hall tower rising against a crisp blue fall sky, warm golden autumn sunlight filtering through red and orange maple trees, a young Elon Musk visible among the students carrying physics and economics textbooks, Ivy League academic atmosphere, the American dream beginning. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Kodachrome autumn color grading, film grain texture"
+    },
+    {
+      "image": 34,
+      "start_time": 147.08,
+      "duration": 4.76,
+      "end_time": 151.84,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Close-up of a young man studying at a university library desk late at night, desk lamp illuminating physics and economics textbooks, coffee cup, intense focus. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up of a young Elon Musk in his early 20s at a university library desk at Penn, late night, a single desk lamp illuminating his face from the side, physics textbooks and economics papers spread across the table, a half-empty coffee cup, his eyes intense and focused, pen in hand making rapid notes in the margin of a quantum mechanics textbook, warm amber desk lamp glow against the dark library background, the intellectual engine that would power every irrational financial decision to come. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber desk lamp tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "tracking_shot",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "Physics & Economics | Penn",
+      "duration": 4.26,
+      "text_animation": "typewriter",
+      "prompt": "Medium shot of a university physics laboratory at Penn in the early 1990s, young Elon Musk standing at a lab bench examining an electrical circuit, oscilloscope traces visible on a nearby screen, other students working at adjacent benches, the warm yellow glow of old laboratory fixtures mixing with the green phosphor of CRT displays, the intellectual foundation being laid for rockets and electric cars. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral lab tones with warm fixture accents, photorealistic skin texture, film grain texture",
+      "image": 35,
+      "start_time": 151.84,
+      "end_time": 156.1
+    },
+    {
+      "image": 36,
+      "start_time": 156.1,
+      "duration": 4.76,
+      "end_time": 160.86,
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "neutral",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a hand-written financial plan on a legal pad, aggressive numbers and arrows drawn in thick black marker, crossed-out conservative options with the word 'ALL IN' circled multiple times, a calculator showing an impossibly large number, Elon Musk's handwriting style, warm desk lamp light from the left creating dramatic shadows across the paper, the blueprint of irrational genius or irrational madness. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral tones with warm amber accent, film grain texture"
+    },
+    {
+      "image": 37,
+      "start_time": 160.86,
+      "duration": 4.76,
+      "end_time": 165.62,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "spotlight"
+      ],
+      "overlay_text": "1999 | Zip2",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Medium shot of a late-1990s Silicon Valley startup office, whiteboard with code and diagrams, young engineers at computers, pizza boxes, CRT monitors glowing. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of a late-1990s Silicon Valley startup office, young Elon Musk at 27 standing in front of a whiteboard covered in code and business diagrams, wearing a casual button-down shirt with sleeves rolled up, a team of young engineers visible at computer terminals behind him, late-night energy with pizza boxes and Red Bull cans on desks, the warm glow of CRT monitors mixing with harsh overhead fluorescent, the first company about to sell for three hundred and seven million dollars. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral tones with warm monitor glow, photorealistic skin texture, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "closeup",
+      "color_temperature": "neutral",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Close-up of Elon Musk's face at age 25, illuminated by a computer monitor at 3 AM in the Zip2 office, empty pizza boxes and Red Bull cans visible on the desk, his face showing intense focus and mild exhaustion, stubble visible, the CRT monitor glow creating a blue-white halo around his head, sleeping bag visible rolled up under the desk \u2014 the future billionaire sleeping at the office because he couldn't afford an apartment and a car. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral tones with blue monitor glow, photorealistic skin texture, film grain texture",
+      "image": 38,
+      "start_time": 165.62,
+      "end_time": 169.88
+    },
+    {
+      "image": 39,
+      "start_time": 169.88,
+      "duration": 4.76,
+      "end_time": 174.64,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "$307 Million | Age 27",
+      "text_animation": "bounce",
+      "prompt": "Extreme close-up of a corporate acquisition document on a polished conference table, the number $307,000,000 visible in bold print, a pen lying across the signature line, Elon Musk's hand reaching for the pen, reflections of conference room windows on the glossy paper surface, warm celebratory golden light flooding through floor-to-ceiling windows, champagne glasses visible at the edge of frame, the first fortune \u2014 twenty-two million for a twenty-seven-year-old who would spend every penny of it. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden celebratory tones, film grain texture"
+    },
+    {
+      "image": 40,
+      "start_time": 174.64,
+      "duration": 4.76,
+      "end_time": 179.4,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "neutral",
+      "movement_type": "truck_right",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "X.com \u2192 PayPal \u2192 eBay | 2002",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Wide shot of a tech company headquarters in Palo Alto circa 2002, glass building, a man walking out with laptop bag, warm California sunlight, palm trees. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide shot of the PayPal headquarters in Palo Alto circa 2002, a modern glass-and-steel office building, the PayPal logo illuminated on the facade, Elon Musk walking out the front door in business casual with a laptop bag, his expression not of celebration but of calculation \u2014 already planning what comes next, warm California sunlight, palm trees lining the parking lot, a silver sports car in the foreground that he would trade for rockets. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral-warm California tones, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Close-up of a newspaper business section headline reading 'eBay to Acquire PayPal for $1.5 Billion,' the paper resting on a coffee shop table next to a half-drunk latte, a red pen mark circling the paragraph mentioning Elon Musk's share at $175 million, morning sunlight falling across the newsprint, the casual way fortunes are announced in black ink on grey paper. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm morning caf\u00e9 tones, film grain texture",
+      "image": 41,
+      "start_time": 179.4,
+      "end_time": 183.66
+    },
+    {
+      "image": 42,
+      "start_time": 183.66,
+      "duration": 4.26,
+      "end_time": 187.92,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "$175 Million",
+      "text_animation": "bounce",
+      "fallback_prompt": "Close-up of a man at 31 seated in a leather chair, holding a financial document, expression hungry not satisfied, warm golden afternoon light from window. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up portrait of Elon Musk at 31, seated in a leather chair in a sunny California office, holding a bank wire confirmation showing one hundred seventy-five million dollars, his expression not satisfied but hungry, warm golden afternoon light from a window behind him creating a halo effect, the look of a man who sees money not as security but as fuel for something much larger. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden tones, photorealistic skin texture with natural imperfections, film grain texture"
+    },
+    {
+      "image": 43,
+      "start_time": 187.92,
+      "duration": 4.76,
+      "end_time": 192.68,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "still_life",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "prompt": "Still-life composition of luxury items on a marble kitchen counter in a Bel Air mansion: a set of car keys to a McLaren F1, a real estate brochure for a Bel Air estate, a gold Rolex, a bottle of Dom Perignon, and a pair of first-class airline tickets \u2014 all untouched, still in their packaging, with a single red pen drawn X crossing through each item on a notepad, Elon Musk's handwriting, warm morning light through kitchen windows, the sensible life he refused. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden morning tones, film grain texture"
+    },
+    {
+      "image": 44,
+      "start_time": 192.68,
+      "duration": 4.76,
+      "end_time": 197.44,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "neutral",
+      "movement_type": "crane_up",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "$100 Million \u2192 SpaceX",
+      "text_animation": "bounce",
+      "fallback_prompt": "Wide shot of a small industrial warehouse in El Segundo, early SpaceX headquarters, chain-link fence with 'SPACE EXPLORATION TECHNOLOGIES' sign, a man standing in the bay door looking up at the sky. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide shot of a small industrial warehouse in El Segundo, California, 2002, the early SpaceX headquarters, foreground: a chain-link fence with a hand-painted 'SPACE EXPLORATION TECHNOLOGIES' sign, midground: Elon Musk standing in the open bay door looking up at the sky with his hands in his pockets, a tiny Falcon 1 rocket component visible inside the warehouse behind him, background: the vast blue California sky representing the impossible goal, a hundred-million-dollar bet on reaching orbit when only governments had done it. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral tones with hopeful blue sky, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "crane_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide shot of an early SpaceX rocket engine test firing in the Mojave Desert, a Merlin engine mounted on a test stand erupting in a column of blue-white flame, Elon Musk and a small team of engineers watching from behind a concrete blast wall, heat haze distorting the desert landscape behind the flame, warm desert sunset light mixing with the harsh white of the rocket exhaust, the first steps of a hundred-million-dollar bet being tested in a desert. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm desert-sunset with white exhaust contrast, film grain texture",
+      "image": 45,
+      "start_time": 197.44,
+      "end_time": 202.2
+    },
+    {
+      "image": 46,
+      "start_time": 202.2,
+      "duration": 4.76,
+      "end_time": 206.96,
+      "section": "THE_SPARK",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "parallax_depth",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "$70 Million \u2192 Tesla",
+      "text_animation": "bounce",
+      "fallback_prompt": "Medium shot inside an early electric car workshop in San Carlos, automotive parts and battery cells on workbenches, prototype car chassis with exposed motor, whiteboards with calculations. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot inside an early Tesla Motors workshop in San Carlos, California, 2004, foreground: scattered automotive parts and battery cells on workbenches, midground: Elon Musk examining a prototype Tesla Roadster chassis \u2014 bare aluminum frame with exposed electric motor \u2014 his hand resting on the battery pack, background: whiteboards with range calculations and charging diagrams, warm workshop lighting mixing with fluorescent overheads, seventy million into an electric car when EVs were glorified golf carts. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral workshop tones, film grain texture"
+    },
+    {
+      "image": 47,
+      "start_time": 206.96,
+      "duration": 4.26,
+      "end_time": 211.22,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a newspaper editorial page from 2004, the headline reading 'ELECTRIC CARS: EXPENSIVE GOLF CARTS FOR THE RICH?' visible in bold print, a coffee ring stain on the corner of the paper, Elon Musk's red pen marks in the margin underlining key phrases with aggressive question marks, a Tesla business plan visible underneath the newspaper, the mockery that fueled the obsession. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, slightly cool desaturated newsprint tones, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Medium shot of a panel of automotive industry executives at a 2005 conference, three men in expensive suits seated at a long table with microphones, smirking at a question about electric vehicles, one man shaking his head dismissively, a banner reading 'AUTOMOTIVE FUTURE SUMMIT' behind them, cold conference lighting, the established industry laughing at what Elon Musk was building \u2014 the same industry that would spend billions trying to copy him within a decade. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool conference tones, film grain texture",
+      "image": 48,
+      "start_time": 211.22,
+      "end_time": 215.48
+    },
+    {
+      "image": 49,
+      "start_time": 215.48,
+      "duration": 4.76,
+      "end_time": 220.24,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Every Dollar \u2014 Gone",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Extreme close-up of a computer screen showing a bank account balance near zero, cursor blinking, reflection of a face in the glass, banking interface glow. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Extreme close-up of a computer screen showing a bank account balance approaching zero, the cursor blinking next to a near-empty account, the reflection of Elon Musk's face barely visible in the monitor glass, his jaw clenched, the green and white numbers of the banking interface casting a sickly glow, a $175 million fortune reduced to almost nothing, the stakes now existential. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold screen-glow tones, film grain texture"
+    },
+    {
+      "image": 50,
+      "start_time": 220.24,
+      "duration": 4.76,
+      "end_time": 225.0,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "\"I thought he was going to lose everything\"",
+      "text_animation": "highlight",
+      "prompt": "Medium shot of a dimly lit bar in Los Angeles, 2007, a man \u2014 a friend of Elon Musk \u2014 leaning across a bar counter speaking to someone off-camera, his face partially lit by a neon bar sign, his expression a mixture of concern and disbelief, an empty whiskey glass in his hand, the background bar patrons blurred and indistinct, the confidential moment when someone close watched genius tilt toward self-destruction. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool desaturated bar tones with warm neon accent, photorealistic skin texture, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "breathing",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Silhouette of Elon Musk standing alone at a window in his Los Angeles apartment at night, 2007, the city lights of LA creating a bokeh backdrop, his posture tense with arms crossed, the apartment nearly empty of furniture \u2014 he had sold everything for his companies \u2014 the reflection of financial spreadsheets visible on the window glass, the quiet private moment of a man who has bet everything and is waiting to see if the bet kills him. Cinematic photorealistic photograph, 8K resolution, dramatic backlighting through window, cool night tones with warm city-light bokeh, film grain texture",
+      "image": 51,
+      "start_time": 225.0,
+      "end_time": 229.76
+    },
+    {
+      "image": 52,
+      "start_time": 229.76,
+      "duration": 4.76,
+      "end_time": 234.52,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "landscape",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "2008",
+      "text_animation": "bounce",
+      "prompt": "Wide atmospheric shot of storm clouds gathering over the American Southwest desert where SpaceX tested rockets, foreground: cracked dry earth with scattered rocket debris, midground: the distant SpaceX test facility barely visible through heat haze, background: massive dark thunderclouds building on the horizon with lightning visible inside them, the visual metaphor of 2008 \u2014 the year everything was about to break, golden dying sunlight cutting through the storm edge. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool storm tones with warm dying light, film grain texture"
+    },
+    {
+      "image": 53,
+      "start_time": 234.52,
+      "duration": 4.76,
+      "end_time": 239.28,
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "timeline",
+      "color_temperature": "neutral",
+      "movement_type": "timeline_reveal",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "prompt": "Cinematic timeline infographic on a dark navy background with golden connecting lines between dates: 1999 'Zip2 Sold \u2014 $307M' \u2014 2002 'PayPal to eBay \u2014 $175M' \u2014 2002 'SpaceX Founded \u2014 $100M' \u2014 2004 'Tesla Motors \u2014 $70M' \u2014 2008 'EVERYTHING AT STAKE', elegant serif typography in white and gold, the amounts getting larger as the bank account gets smaller, a visual countdown to crisis. Cinematic photorealistic photograph, 8K resolution, clean dark background, warm golden accent lines, film grain texture"
+    },
+    {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "landscape",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide atmospheric shot of the SpaceX facility in Kwajalein Atoll at dawn, foreground: rusted metal equipment and palm fronds, midground: the small Falcon 1 rocket standing alone on its launch pad like a thin white needle, background: storm clouds building over the Pacific horizon, the isolation of a remote coral island in the Marshall Islands where the fate of private space exploration would be decided, warm dawn light fighting against approaching storm darkness. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool storm tones with warm dawn accent, film grain texture",
+      "image": 54,
+      "start_time": 239.28,
+      "end_time": 244.04
+    },
+    {
+      "image": 55,
+      "start_time": 244.04,
+      "duration": 4.26,
+      "end_time": 248.3,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "Nevada Alexander Musk | 2002",
+      "text_animation": "fade_in",
+      "prompt": "Close-up of a tiny infant's hospital bracelet lying on a white hospital blanket, the name 'Nevada Alexander Musk' printed on the small plastic band, soft warm light from a nursery window, a small blue baby cap placed beside the bracelet, the quiet devastating stillness of a NICU room, every detail painfully ordinary \u2014 the blanket folds, the gentle light, the terrible silence. Cinematic photorealistic photograph, 8K resolution, soft directional lighting, shallow depth of field, warm gentle nursery tones, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Medium shot of a young woman \u2014 Justine Musk \u2014 sitting in a hospital rocking chair in the NICU, cradling a small bundle in a blue blanket, her face turned toward the nursery window where warm afternoon light streams in, tears on her cheeks but her grip on the baby steady and protective, medical monitors beeping softly in the background, the quiet devastating tenderness of a mother holding a son who will not survive. Cinematic photorealistic photograph, 8K resolution, soft directional lighting, warm gentle nursery tones, photorealistic skin texture, film grain texture",
+      "image": 56,
+      "start_time": 248.3,
+      "end_time": 253.06
+    },
+    {
+      "image": 57,
+      "start_time": 253.06,
+      "duration": 4.26,
+      "end_time": 257.32,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "warm",
+      "movement_type": "breathing",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "color_pulse_warm"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of a tiny infant's hand curled around an adult's finger \u2014 Elon Musk's wife Justine holding their son Nevada \u2014 warm soft nursery light, a knitted baby blanket visible, the intimacy of the last normal moment before a nap that would end everything, the hand impossibly small, ten weeks of life distilled into one fragile grip, warm amber tones suggesting safety that was about to shatter. Cinematic photorealistic photograph, 8K resolution, soft directional lighting, ultra-shallow depth of field, warm golden nursery tones, film grain texture"
+    },
+    {
+      "image": 58,
+      "start_time": 257.32,
+      "duration": 4.26,
+      "end_time": 261.58,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Medium shot of a NICU room with medical equipment, a heart monitor showing a flat line, soft beeping machines now silent, a woman \u2014 Justine Musk \u2014 sitting in a hospital chair holding a swaddled infant, her face turned away from the camera showing only her trembling jaw and tear-streaked cheek, harsh hospital fluorescent overhead light, tubes and wires trailing from medical equipment, the devastating geometry of a room designed for saving lives that couldn't save this one, three days on life support before brain death. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated hospital tones, film grain texture"
+    },
+    {
+      "image": 59,
+      "start_time": 261.58,
+      "duration": 4.26,
+      "end_time": 265.84,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "\"He buried it \u2014 the way he buries everything\"",
+      "text_animation": "highlight",
+      "fallback_prompt": "Silhouette of a man walking away from a hospital exit into a cold grey rainy parking lot, back to camera, hands in pockets, harsh hospital light behind. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Silhouette of Elon Musk walking away from a hospital exit into a cold grey parking lot, his back to the camera, hands in his coat pockets, shoulders squared with forced composure, rain beginning to fall, the harsh white fluorescent of the hospital lobby behind him contrasting with the cold grey exterior, a single car waiting in the empty lot, the moment a man chose to seal grief behind a wall of work. Cinematic photorealistic photograph, 8K resolution, dramatic backlighting, rich shadows, cold desaturated rain-washed tones, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Wide shot of the SpaceX warehouse in El Segundo at night, weeks after Nevada's death, Elon Musk alone at a workstation surrounded by rocket components, his face lit only by a laptop screen and a single overhead work light, the vast dark warehouse stretching empty around him, his grief converted to work velocity, the man who buries everything that threatens to slow him down \u2014 already back at it, already building, the silence of the warehouse his only companion. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold dark warehouse tones with warm work-light accent, film grain texture",
+      "image": 60,
+      "start_time": 265.84,
+      "end_time": 270.1
+    },
+    {
+      "image": 61,
+      "start_time": 270.1,
+      "duration": 4.26,
+      "end_time": 274.36,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "landscape",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "2008 | Falcon 1",
+      "text_animation": "typewriter",
+      "prompt": "Wide establishing shot of the SpaceX Falcon 1 rocket on its launch pad at Kwajalein Atoll in the Marshall Islands, 2008, foreground: tropical vegetation and a rusty metal fence, midground: the small white rocket standing alone on a concrete pad with wisps of LOX venting, background: the vast empty Pacific Ocean stretching to the horizon under overcast grey skies, the isolation and vulnerability of a rocket that had failed three times, everything riding on this remote coral atoll. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool desaturated overcast tones, film grain texture"
+    },
+    {
+      "image": 62,
+      "start_time": 274.36,
+      "duration": 3.76,
+      "end_time": 278.12,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "camera_shake"
+      ],
+      "overlay_text": "Launch 1 \u2014 Failed",
+      "text_animation": "typewriter",
+      "prompt": "Detail shot of a rocket engine exploding on a launch pad, a fireball erupting from the base of the Falcon 1 rocket, debris scattering outward, the force of the explosion captured in freeze-frame sharpness, orange and red flames against the grey Pacific sky, smoke billowing upward in a dark column, the destruction of years of work and millions of dollars in a single devastating second. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, sharp freeze-frame detail, warm explosion tones against cool sky, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Wide aerial view of the Falcon 1 launch pad aftermath on Kwajalein Atoll after the first failure, scorched concrete, twisted metal debris scattered across the pad, smoke still rising from the wreckage, tropical vegetation singed around the edges, the Pacific Ocean indifferent and blue in the background, the total destruction of years of work visible from above, recovery crews beginning the cleanup. Cinematic photorealistic photograph, 8K resolution, dramatic aerial directional lighting, cool desaturated post-disaster tones, film grain texture",
+      "image": 63,
+      "start_time": 278.12,
+      "end_time": 282.38
+    },
+    {
+      "image": 64,
+      "start_time": 282.38,
+      "duration": 4.26,
+      "end_time": 286.64,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Launch 2 \u2014 Failed",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Medium shot of a mission control room during a rocket failure, engineers slumped at workstations, screens showing red failure indicators, a man standing behind with arms crossed, cold blue monitor glow. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot inside the SpaceX mission control room during the second Falcon 1 failure, engineers slumped at their workstations, one man with his head in his hands, screens showing red failure indicators and telemetry flatlines, Elon Musk standing behind them with his arms crossed and his face a mask of controlled fury, cold blue monitor glow illuminating the dark room, the weight of another failure pressing down on everyone. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold blue screen-glow tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 65,
+      "start_time": 286.64,
+      "duration": 4.26,
+      "end_time": 290.9,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Launch 3 \u2014 Failed | 200+ Memorial Remains Lost",
+      "text_animation": "typewriter",
+      "prompt": "Close-up of a small memorial satellite canister \u2014 the Celestis payload \u2014 containing the cremated remains of over two hundred people including James Doohan, Scotty from Star Trek, the polished metal capsule resting on a workbench before launch, small engraved nameplates visible on its surface, soft reverential lighting, the sacred cargo that SpaceX's Falcon 1 was carrying that families paid to send among the stars, all of it about to be lost in the Pacific Ocean, the weight of the human cost beyond money. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool reverential tones, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Medium shot of an elderly couple sitting on a couch watching news coverage of the Falcon 1 third launch failure, a framed photograph of their deceased son visible on the side table \u2014 one of the two hundred people whose cremated remains were lost \u2014 the woman covering her mouth, the man staring at the screen with wet eyes, warm domestic lamplight contrasting with the cold blue TV glow showing rocket debris falling into the ocean, the human cost beyond money or engineering. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool TV-glow with warm lamp accent, photorealistic skin texture, film grain texture",
+      "image": 66,
+      "start_time": 290.9,
+      "end_time": 295.66
+    },
+    {
+      "image": 67,
+      "start_time": 295.66,
+      "duration": 4.26,
+      "end_time": 299.92,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Extreme close-up of a hand holding up one finger during a tense meeting, whiteboard behind with budget numbers in red, the gesture meaning one chance left. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Extreme close-up of Elon Musk's hand holding up a single finger \u2014 one \u2014 during a tense meeting at SpaceX headquarters, his face partially visible and intensely focused, a whiteboard behind him showing budget calculations with every number in red except a single remaining column, one finger catching the harsh overhead light, the gesture that meant everything: one rocket left, one chance, one shot at survival. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, ultra-shallow depth of field, cool harsh meeting-room tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 68,
+      "start_time": 299.92,
+      "duration": 4.26,
+      "end_time": 304.18,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Tesla \u2014 Days From Bankruptcy",
+      "text_animation": "typewriter",
+      "prompt": "Wide tilted shot of the Tesla Motors office at night, a single light on in Elon Musk's corner office while the rest of the building is dark, his hunched silhouette visible through the window, a stack of unpaid invoices and legal notices visible on the reception desk through the glass front door, empty parking lot, the building looking fragile and temporary, the dutch-angle tilt suggesting everything is about to topple. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool desaturated night tones with warm single-office-light accent, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Close-up of a Tesla employee's face at a company all-hands meeting in 2008, their expression a mixture of loyalty and fear, the blurred background showing other employees in similar states of anxiety, a projected slide behind them reading 'CASH RUNWAY: 14 DAYS' in red text, cold overhead conference room lighting, the human reality of working at a company fourteen days from death. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold conference tones, photorealistic skin texture, film grain texture",
+      "image": 69,
+      "start_time": 304.18,
+      "end_time": 308.44
+    },
+    {
+      "image": 70,
+      "start_time": 308.44,
+      "duration": 4.26,
+      "end_time": 312.7,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "darkness",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Close-up of hands at a laptop at night, wire transfer form on screen with large amount, bare ring finger, coffee cups and papers, cold laptop glow in dark room. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up of Elon Musk's hands at a laptop late at night in 2008, transferring personal funds online to cover Tesla payroll, the screen showing a wire transfer form with a six-figure amount, his wedding ring finger bare now \u2014 marriage collapsing simultaneously \u2014 coffee cups and crumpled papers around the laptop, the cold blue laptop glow the only light in a dark apartment, a billionaire-turned-pauper paying his employees from the last of his own money. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold blue screen-glow tones, film grain texture"
+    },
+    {
+      "image": 71,
+      "start_time": 312.7,
+      "duration": 4.26,
+      "end_time": 316.96,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a wedding ring lying on a bathroom counter next to a sink, water droplets around it, harsh bathroom fluorescent light, a man's reflection barely visible in the mirror above \u2014 Elon Musk \u2014 his face turned away, the ring catching the cold light, a divorce document's edge visible under a towel, the domestic wreckage running parallel to the corporate wreckage, the private collapse alongside the public one. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated bathroom tones, film grain texture"
+    },
+    {
+      "image": 72,
+      "start_time": 316.96,
+      "duration": 4.26,
+      "end_time": 321.22,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Borrowing Money For Rent",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Medium shot of a man sitting alone on a bare mattress in a sparse apartment, head in hands, phone beside him, moving boxes unpacked, harsh light through cheap blinds creating stripe shadows. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of Elon Musk sitting alone on a bare mattress in a sparsely furnished Los Angeles apartment, 2008, his head in his hands, a phone beside him showing a recent call to a friend asking for money, moving boxes still unpacked in the corner, harsh afternoon light cutting through cheap blinds creating stripe shadows across his body, the man who had been worth a hundred and seventy-five million dollars now unable to pay his own rent, the absolute nadir. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold desaturated apartment tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 73,
+      "start_time": 321.22,
+      "duration": 4.26,
+      "end_time": 325.48,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "September 28, 2008",
+      "text_animation": "typewriter",
+      "prompt": "Extreme close-up of a mission control countdown clock showing T-minus 10 seconds, bright red digital numbers on a dark display, the reflection of engineers' faces visible in the glass surface, every person in the room frozen in anticipation, Elon Musk's silhouette visible at the back of the room with his arms crossed, the last ten seconds before the last chance, September 28th 2008. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool red countdown glow, film grain texture"
+    },
+    {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "over_shoulder",
+      "color_temperature": "cool",
+      "movement_type": "static_motion",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "duration": 3.76,
+      "prompt": "Over-the-shoulder shot from behind Elon Musk watching the mission control screens during the Falcon 1 fourth launch sequence, his posture rigid with tension, his reflection visible in the main display showing the rocket ascending, engineers around him frozen in held-breath silence, the cold blue glow of telemetry displays the only light, three previous failures weighing on every person in the room, the silence before orbit or another explosion. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold blue screen-glow tones, film grain texture",
+      "image": 74,
+      "start_time": 325.48,
+      "end_time": 329.24
+    },
+    {
+      "image": 75,
+      "start_time": 329.24,
+      "duration": 4.26,
+      "end_time": 333.5,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide cinematic shot of the Falcon 1 rocket standing on its launch pad at Kwajalein Atoll, steam venting from the fuselage, the Pacific Ocean stretching endlessly behind it, the last rays of sunset creating an orange band at the horizon while dark clouds gather above, the rocket gleaming white and alone against the vast sky, everything Elon Musk has ever built riding on this single slender column of metal and fuel. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool sky with warm sunset band, film grain texture"
+    },
+    {
+      "image": 76,
+      "start_time": 333.5,
+      "duration": 3.76,
+      "end_time": 337.26,
+      "section": "THE_CONFLICT",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "mixed",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "film_burn",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of the Falcon 1 rocket engine igniting, a blinding white-orange exhaust plume erupting from the Merlin engine nozzle, the force of thrust visible in the shockwave rippling through the exhaust, the launch pad infrastructure shaking, palm trees bending from the blast wave, the transition from stillness to violent controlled explosion in a single frozen moment, the fourth and final attempt to reach orbit. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, sharp detail on exhaust plume, warm fire tones against cool sky, film grain texture"
+    },
+    {
+      "image": 77,
+      "start_time": 337.26,
+      "duration": 5.26,
+      "end_time": 342.52,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "orbit",
+      "transition_type": "color_sweep",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "First Private Rocket to Orbit",
+      "text_animation": "bounce",
+      "fallback_prompt": "Wide shot of a mission control room erupting in celebration, engineers jumping with arms raised, screens showing green orbital trajectory, the room transformed from tension to triumph. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide shot of the SpaceX mission control room erupting in celebration, engineers jumping from their chairs with arms raised, computer screens showing orbital trajectory confirmation in green, Elon Musk visible in the center of the chaos \u2014 his face a mixture of disbelief and overwhelming emotion \u2014 tears visible on his cheeks, warm golden overhead lights suddenly feeling like sunshine, the cold blue monitors now showing green success indicators, confetti and papers thrown in the air, the moment first-ever privately-funded liquid-fuel rocket reached orbit. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm golden celebratory tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "whip_pan",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Detail shot of a mission control workstation in the moments after Falcon 1 reached orbit, a computer screen showing 'ORBIT CONFIRMED' in green text, champagne being poured over the keyboard (nobody cared about the equipment), confetti and printed telemetry reports scattered everywhere, warm golden celebration lighting, SpaceX badges and pens knocked to the floor in the chaos of joy, the mess of triumph. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm golden celebration tones, film grain texture",
+      "image": 78,
+      "start_time": 342.52,
+      "end_time": 346.78
+    },
+    {
+      "image": 79,
+      "start_time": 346.78,
+      "duration": 5.26,
+      "end_time": 352.04,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a SpaceX engineer's face \u2014 a young man in his late 20s \u2014 tears streaming down his cheeks, his mouth open in a shout of pure joy, his SpaceX badge hanging from his neck, warm golden mission control light illuminating his face, other celebrating engineers visible as blurred motion behind him, the raw human emotion of years of failure finally ending in success, the faces of people who had bet their careers on reaching the stars. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden emotional tones, photorealistic skin texture with tears visible, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 80,
+      "start_time": 352.04,
+      "duration": 5.26,
+      "end_time": 357.3,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Extreme close-up of a man's face breaking down with emotion, eyes red and wet, jaw working to maintain composure, half-smile breaking through, warm golden light. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Extreme close-up of Elon Musk's face in the moments after the Falcon 1 success, September 2008, his eyes red and wet with tears, his jaw working to maintain composure but failing, a half-smile breaking through the emotion, warm golden light from mission control screens illuminating his face from below, the man who had held everything together through sheer will finally letting the mask crack, the most human moment in the story of the most relentless man alive. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, ultra-shallow depth of field, warm golden emotional tones, photorealistic skin texture with tears and redness, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 81,
+      "start_time": 357.3,
+      "duration": 5.26,
+      "end_time": 362.56,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "crane_up",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "NASA | $1.6 Billion in Contracts",
+      "text_animation": "bounce",
+      "fallback_prompt": "Medium shot of two men in suits shaking hands at a podium with NASA and SpaceX logos, camera flashes, projection screen showing contract details, American flags. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of Elon Musk shaking hands with a NASA administrator at a press conference podium, both men in suits, the NASA logo and SpaceX logo displayed on the wall behind them, camera flashes from the press corps creating bright white bursts, a projection screen showing the Commercial Orbital Transportation Services contract worth 1.6 billion dollars, American flags on both sides, the transformation from near-death startup to national space partner. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm institutional lighting with camera flash accents, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 82,
+      "start_time": 362.56,
+      "duration": 5.26,
+      "end_time": 367.82,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "fade_through_warm",
+      "effects": [
+        "film_grain",
+        "light_leak"
+      ],
+      "overlay_text": "Christmas Eve 2008 | Tesla Saved",
+      "text_animation": "typewriter",
+      "prompt": "Close-up of a laptop screen showing an incoming wire transfer notification arriving at 11:47 PM on December 24th 2008, emergency funding for Tesla Motors, the screen reflected in a dark window behind which snow is falling, a small Christmas tree with lights visible in the corner of the frame, the warm glow of holiday lights mixing with the cold blue laptop screen, the last possible day before bankruptcy, salvation arriving on Christmas Eve \u2014 the timing so perfect it reads like fiction. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm Christmas tones with cool screen glow, film grain texture"
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "crane_up",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide shot of the Tesla Motors office on Christmas morning 2008, the small team of employees who had stayed through the crisis gathered around a conference table with Christmas decorations hastily put up, someone popping champagne, a laptop showing the emergency funding wire transfer confirmation, Elon Musk on speakerphone \u2014 his voice cracking with emotion \u2014 telling the team they survived, warm holiday lighting and string lights, the relief of people who were days from losing everything. Cinematic photorealistic photograph, 8K resolution, dramatic warm holiday lighting, golden amber tones, film grain texture",
+      "image": 83,
+      "start_time": 367.82,
+      "end_time": 372.58
+    },
+    {
+      "image": 84,
+      "start_time": 372.58,
+      "duration": 5.26,
+      "end_time": 377.84,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "landscape",
+      "color_temperature": "warm",
+      "movement_type": "parallax_depth",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide aerial view of Los Angeles at dawn on New Year's Day 2009, the city sprawling below in warm golden early-morning light, the SpaceX Hawthorne headquarters visible in one corner and the Tesla Palo Alto offices implied by the north-facing highway, a new year beginning for two companies that survived by days, the vast city indifferent to the drama that nearly destroyed both, cloud-break sunlight streaming through morning haze creating volumetric golden god rays across the landscape. Cinematic photorealistic photograph, 8K resolution, dramatic aerial golden-hour lighting, warm dawn tones, film grain texture"
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "reveal_right",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Close-up of a stack of newspapers from early January 2009, the top headline reading 'SpaceX Wins $1.6 Billion NASA Contract', beneath it another newspaper with 'Tesla Motors Secures Last-Minute Funding', the papers spread on a coffee table beside a mug of steaming coffee, warm morning sunlight falling across the headlines, the world learning what Elon Musk already knew \u2014 the pattern holds. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm morning sunlight tones, film grain texture",
+      "image": 85,
+      "start_time": 377.84,
+      "end_time": 382.1
+    },
+    {
+      "image": 86,
+      "start_time": 382.1,
+      "duration": 5.26,
+      "end_time": 387.36,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "closeup",
+      "color_temperature": "golden",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "\"Every time the math says it's over \u2014 it isn't\"",
+      "text_animation": "highlight",
+      "prompt": "Close-up of that same hand-drawn graph from the Cold Open (image 13 callback) \u2014 the repeating pattern of near-zero drops followed by sharp spikes \u2014 but now zoomed in on the latest spike, the line surging upward past all previous peaks, drawn in bold gold ink on the same lined notebook paper, a visual bookend showing the burning question answered: the pattern holds, warm golden desk lamp light creating long shadows. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 87,
+      "start_time": 387.36,
+      "duration": 4.76,
+      "end_time": 392.12,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "landscape",
+      "color_temperature": "mixed",
+      "movement_type": "parallax_depth",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide shot of a dramatic desert cliff edge at the Grand Canyon at sunrise, foreground: cracked red rock at the precipice, midground: the vast canyon dropping away into shadow and mist, background: the far rim catching golden dawn light, the visual metaphor of being at the edge \u2014 the pattern repeating but the stakes incomprehensibly larger, warm golden sunrise light on one side and cold shadow on the other, balanced between triumph and void. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, mixed warm-golden and cool-shadow tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 88,
+      "start_time": 392.12,
+      "duration": 5.26,
+      "end_time": 397.38,
+      "section": "THE_CLIMAX",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide comparison shot showing the small Falcon 1 rocket silhouette on the left side of the frame and the massive Starship rocket silhouette on the right, both against a bright golden sky, the Falcon 1 tiny \u2014 barely taller than a house \u2014 and Starship towering at nearly 400 feet, the scale difference visualizing how the stakes grew from millions to trillions, dramatic golden sunset backlighting both rockets. Cinematic photorealistic photograph, 8K resolution, dramatic backlit silhouette comparison, warm golden sky, film grain texture"
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "triumph",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Medium shot of Elon Musk in a quiet moment after the celebrations, sitting alone in the SpaceX mission control room, the screens still showing orbital telemetry but the room now empty, a single overhead light still on, his face showing not just relief but the profound exhaustion of a man who has been running on adrenaline and terror for months, the first moment of stillness since the crisis began. Cinematic photorealistic photograph, 8K resolution, dramatic single-light directional lighting, warm amber tones, photorealistic skin texture showing exhaustion, film grain texture",
+      "image": 89,
+      "start_time": 397.38,
+      "end_time": 402.14
+    },
+    {
+      "image": 90,
+      "start_time": 402.14,
+      "duration": 4.76,
+      "end_time": 406.9,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "crane_up",
+      "transition_type": "color_sweep",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "2015 | First Orbital Booster Landing",
+      "text_animation": "typewriter",
+      "prompt": "Wide dramatic shot of a SpaceX Falcon 9 first-stage booster descending on a column of fire toward a ground landing pad at Cape Canaveral in December 2015, foreground: spectators at the Kennedy Space Center press site watching in disbelief, midground: the rocket hovering impossibly on its exhaust plume above the landing zone, background: the dark Florida night sky with landing floodlights creating dramatic cross-shadows, the moment that looked like a film played in reverse \u2014 the first time an orbital rocket booster landed itself. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm exhaust glow against dark sky, film grain texture"
+    },
+    {
+      "image": 91,
+      "start_time": 406.9,
+      "duration": 4.76,
+      "end_time": 411.66,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "2020 | First Private Crew to ISS",
+      "text_animation": "typewriter",
+      "prompt": "Medium shot inside the SpaceX Crew Dragon capsule, NASA astronauts Bob Behnken and Doug Hurley in SpaceX spacesuits seated at the sleek white touchscreen control panels, the curvature of Earth visible through the window behind them, blue-white Earth light illuminating their faces, the first privately-built spacecraft to carry NASA astronauts to the International Space Station, the interior clean and futuristic compared to the cramped Soviet-era capsules of the past. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm Earth-glow tones, film grain texture"
+    },
+    {
+      "image": 92,
+      "start_time": 411.66,
+      "duration": 4.76,
+      "end_time": 416.42,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "aerial",
+      "color_temperature": "warm",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "More Orbital Missions Than Every Other Country Combined",
+      "text_animation": "bounce",
+      "prompt": "Aerial view of the SpaceX Starbase facility in Boca Chica Texas in 2025, multiple Starship rockets visible in various stages of assembly, launch towers standing like industrial cathedrals, the scale of the operation visible from above \u2014 dozens of buildings, test stands, and assembly bays covering miles of Texas coastline, golden afternoon light casting long shadows from the towering rockets, a single company outpacing every nation on Earth in space launches. Cinematic photorealistic photograph, 8K resolution, dramatic aerial golden-hour lighting, warm golden tones, film grain texture"
+    },
+    {
+      "image": 93,
+      "start_time": 416.42,
+      "duration": 4.76,
+      "end_time": 421.18,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "tracking_shot",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide establishing shot of a Tesla Gigafactory interior \u2014 a massive white-and-glass production facility \u2014 with hundreds of robotic arms assembling Model Y vehicles in perfect synchronization, foreground: a completed white Tesla rolling off the end of the line, midground: the vast production floor stretching into the distance with red robotic arms moving in choreographed precision, background: floor-to-ceiling windows showing the Nevada desert outside, warm industrial lighting, the factory that proved EVs were not glorified golf carts. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm industrial tones, film grain texture"
+    },
+    {
+      "image": 94,
+      "start_time": 421.18,
+      "duration": 4.26,
+      "end_time": 425.44,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "neutral",
+      "movement_type": "reveal_right",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up montage of four automotive press conference podiums showing Ford, GM, Toyota, and Volkswagen logos, each with a new electric vehicle model on stage behind them, the CEOs' faces showing forced enthusiasm, Tesla's market cap number visible on a screen in the background dwarfing all four companies combined, the industry that mocked electric cars now scrambling to copy them, warm stage lighting, professional automotive press event atmosphere. Cinematic photorealistic photograph, 8K resolution, dramatic stage lighting, neutral professional tones, film grain texture"
+    },
+    {
+      "image": 95,
+      "start_time": 425.44,
+      "duration": 4.76,
+      "end_time": 430.2,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "landscape",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "Starlink | 9,000 Active Satellites",
+      "text_animation": "bounce",
+      "prompt": "Wide breathtaking shot of the night sky over a rural American landscape, thousands of tiny Starlink satellites visible as a luminous train of lights crossing the Milky Way, foreground: a farmhouse with a white Starlink dish mounted on its roof, midground: rolling wheat fields under starlight, background: the vast cosmic canvas with the satellite constellation creating a lattice of light across the sky, the visual scale of nine thousand objects orbiting Earth simultaneously. Cinematic photorealistic photograph, 8K resolution, dramatic natural starlight, cool night-sky tones with warm satellite glow, film grain texture"
+    },
+    {
+      "image": 96,
+      "start_time": 430.2,
+      "duration": 4.76,
+      "end_time": 434.96,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_zoom",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "map_label": "Ukraine | February 2022",
+      "prompt": "Detailed political map of Ukraine and surrounding Eastern Europe, 2022, showing the border with Russia highlighted in red, major cities labeled including Kyiv, Kharkiv, and Mariupol, Russian military positions indicated with red arrows, Ukrainian defense lines in blue, the Black Sea to the south, the map having a military tactical quality with grid lines and satellite imagery overlay, the geography of invasion and resistance. Cinematic photorealistic photograph, 8K resolution, cool military map tones, film grain texture"
+    },
+    {
+      "image": 97,
+      "start_time": 434.96,
+      "duration": 4.26,
+      "end_time": 439.22,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a smartphone screen showing a tweet from Ukrainian Minister Mikhailo Fedorov to Elon Musk requesting Starlink terminals, the tweet visible against a dark background, blue Twitter interface, the reply 'Starlink service is now active in Ukraine' visible below, the phone held by a hand with Ukrainian military camouflage sleeve visible, the war visible through a digital window \u2014 one tweet changing the course of a conflict. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool screen-glow tones, film grain texture"
+    },
+    {
+      "image": 98,
+      "start_time": 439.22,
+      "duration": 4.76,
+      "end_time": 443.98,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "camera_shake"
+      ],
+      "overlay_text": "Terminals Crossed Polish Border in 48 Hours",
+      "text_animation": "typewriter",
+      "prompt": "Medium shot of a military cargo truck crossing the Polish-Ukrainian border at night in February 2022, Starlink terminal boxes stacked in the truck bed visible through an open tarp, soldiers in Ukrainian winter military gear directing the truck through a checkpoint, headlights cutting through falling snow, Polish border signs visible, the urgency and chaos of wartime logistics, cold blue winter night with warm amber headlights, within 48 hours of a single tweet. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold winter night tones with warm headlight accent, film grain texture"
+    },
+    {
+      "image": 99,
+      "start_time": 443.98,
+      "duration": 4.76,
+      "end_time": 448.74,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "\"Starlink changed the war in Ukraine's favor\"",
+      "text_animation": "highlight",
+      "prompt": "Close-up of a Ukrainian soldier identified only as Dima using a Starlink terminal set up in a trench on the front lines, the small white dish propped against sandbags, his cold-reddened hands typing coordinates into a ruggedized laptop, his face lit by the screen's blue glow, stubble and exhaustion visible, military radio equipment beside him, the Starlink signal meaning not just internet but survival \u2014 the difference between communication and silence, between coordination and death. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold winter combat tones with warm screen glow, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 100,
+      "start_time": 448.74,
+      "duration": 4.76,
+      "end_time": 453.5,
+      "section": "THE_RISE",
+      "emotional_tone": "darkness",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_zoom",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "prompt": "Vintage-style map of the southeastern United States showing Tennessee with Memphis highlighted in a warm golden glow, the Mississippi River clearly visible running through the city, surrounding states labeled, modern cartographic style with clean lines and subtle terrain shading, the location where a former appliance factory became the largest AI training facility ever built, compass rose in the corner. Cinematic photorealistic photograph, 8K resolution, warm vintage map tones with golden Memphis highlight, film grain texture",
+      "map_label": "Memphis, Tennessee | 2024"
+    },
+    {
+      "image": 101,
+      "start_time": 453.5,
+      "duration": 4.76,
+      "end_time": 458.26,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of the original OpenAI founding document from 2015, showing Elon Musk's signature alongside Sam Altman's at the bottom of the page, the organization's mission statement about beneficial AI visible, a pen lying across the signatures, the names side by side \u2014 co-founders who would become courtroom adversaries, warm desk lamp light creating shadows across the paper, the seed of a future war planted in what looked like friendship. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool document tones with warm lamp accent, film grain texture"
+    },
+    {
+      "image": 102,
+      "start_time": 458.26,
+      "duration": 4.76,
+      "end_time": 463.02,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "truck_left",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "OpenAI | Co-Founded 2015 | $38 Million",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Medium shot of a small 2015 tech office conference room, two men in their 40s seated across from each other, laptops open, whiteboard about AI behind them, engaged conversation. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of a small conference room in a San Francisco tech office, 2015, Elon Musk and Sam Altman seated across from each other at a table, both younger, both leaning forward in engaged conversation, laptops open between them, a whiteboard behind them with 'ARTIFICIAL GENERAL INTELLIGENCE \u2014 OPEN & SAFE' written in large letters, neutral warm office lighting, the beginning of a partnership that neither man knew would become the most expensive legal battle in tech history. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, neutral warm office tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 103,
+      "start_time": 463.02,
+      "duration": 4.76,
+      "end_time": 467.78,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "2018 | Walked Away",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Wide shot of a man walking away from a glass-fronted tech office in San Francisco fog, back to camera, frustration in his posture, doors closing behind him. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide shot of Elon Musk walking out of the OpenAI office building in San Francisco, 2018, his back to the camera, striding away with purpose and frustration visible in his posture, the glass doors closing behind him reflecting the office interior where employees continue working, cold overcast San Francisco fog blurring the street, the moment he realized he would never control the thing he helped create. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold foggy San Francisco tones, film grain texture"
+    },
+    {
+      "image": 104,
+      "start_time": 467.78,
+      "duration": 4.76,
+      "end_time": 472.54,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Sam Altman \u2014 CEO, OpenAI | $850 Billion",
+      "text_animation": "slide_up",
+      "fallback_prompt": "Medium portrait of a tech CEO in his late 30s behind a modern desk, high-angle shot, cold blue-white LED lighting, company logo on wall behind, composed expression. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium portrait of Sam Altman seated behind a sleek modern desk at OpenAI headquarters, 2024, high-angle camera looking slightly down at him, cold blue-white LED office lighting casting sharp shadows, his expression composed and confident, the OpenAI logo illuminated on the wall behind him, a stack of partnership agreements on the desk, the man who turned a nonprofit AI lab into an eight-hundred-fifty-billion-dollar company while his co-founder watched. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool institutional blue-white tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 105,
+      "start_time": 472.54,
+      "duration": 4.76,
+      "end_time": 477.3,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Oakland Federal Courthouse | 2026",
+      "text_animation": "typewriter",
+      "fallback_prompt": "Wide shot of a federal courtroom during a major tech trial, gallery divider, two parties at opposing tables, judge's bench with Great Seal, harsh fluorescent lighting. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide shot of the Oakland federal courtroom during the OpenAI trial, April 2026, foreground: the wooden gallery divider with press reporters' notebooks visible, midground: Elon Musk at the plaintiff's table on the left and Sam Altman at the defense table on the right, separated by the courtroom aisle, both in dark suits, background: the judge's bench with the Great Seal and an American flag, harsh courtroom fluorescent lighting, the two men who built AI together now on opposite sides of a legal war. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold institutional tones, film grain texture"
+    },
+    {
+      "image": 106,
+      "start_time": 477.3,
+      "duration": 4.76,
+      "end_time": 482.06,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "spotlight"
+      ],
+      "overlay_text": "\"I came up with the idea, the name, recruited the key people\"",
+      "text_animation": "highlight",
+      "fallback_prompt": "Close-up of a man on a witness stand, hand raised from being sworn in, intense expression, speaking to jury, cold courtroom lighting, American flag behind. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up of Elon Musk on the witness stand in the Oakland federal courtroom, his hand raised from having been sworn in, his face intense and certain, speaking directly to the jury, cold harsh courtroom lighting from above, the American flag slightly blurred behind him, his exact words under oath \u2014 I came up with the idea, the name, recruited the key people, taught them everything I know, provided all the initial funding \u2014 the testimony that would both make and undermine his case. Cinematic photorealistic photograph, 8K resolution, dramatic overhead directional lighting, shallow depth of field, cold institutional courtroom tones, photorealistic skin texture with stress lines, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 107,
+      "start_time": 482.06,
+      "duration": 4.26,
+      "end_time": 486.32,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "Court Transcript | April 28, 2026",
+      "text_animation": "typewriter",
+      "prompt": "Extreme close-up of a court transcript page showing Elon Musk's sworn testimony, the date April 28, 2026 at the top, key phrases highlighted by a legal team's yellow marker \u2014 'I came up with the idea,' 'provided all the initial funding' \u2014 a lawyer's red pen circling contradictions in the margins, harsh courtroom lighting on white paper, the permanent record of words that cannot be taken back. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cool white paper tones with warm highlight marker accent, film grain texture"
+    },
+    {
+      "image": 108,
+      "start_time": 486.32,
+      "duration": 4.76,
+      "end_time": 491.08,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a smartphone screen showing a text message exchange \u2014 Elon Musk reaching out to Sam Altman two days before trial to explore settlement, Altman's one-word rejection visible, the cold blue phone screen glow, a legal briefcase visible blurred in the background, the failed last-minute attempt at resolution, the text messages that would become part of the court record. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold screen-glow tones, film grain texture"
+    },
+    {
+      "image": 109,
+      "start_time": 491.08,
+      "duration": 4.76,
+      "end_time": 495.84,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "\"By the end of this week, you and Sam will be the most hated men in America\"",
+      "text_animation": "highlight",
+      "prompt": "Medium shot of a press scrum outside the Oakland courthouse, dozens of cameras and microphones thrust toward a courthouse door, reporters jostling for position, a legal analyst on a tablet showing prediction market odds dropping from 60% to 34%, the chaos of the biggest tech trial in history, cold overcast Oakland daylight, the public spectacle of two billionaires fighting over who owns the AI revolution. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold overcast tones with warm camera-light accents, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 110,
+      "start_time": 495.84,
+      "duration": 4.26,
+      "end_time": 500.1,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "60% \u2192 34%",
+      "text_animation": "bounce",
+      "prompt": "Close-up of a prediction market website on a laptop screen showing Elon Musk's odds of winning the OpenAI trial dropping in real-time from 60% to 34%, the red downward-trending line dramatic against the dark chart background, a legal notepad beside the laptop with hastily scrawled notes, the cold blue laptop glow the only light, his own words under oath hurting his own case. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold blue screen-glow tones, film grain texture"
+    },
+    {
+      "image": 111,
+      "start_time": 500.1,
+      "duration": 4.76,
+      "end_time": 504.86,
+      "section": "THE_RISE",
+      "emotional_tone": "darkness",
+      "shot_type": "over_shoulder",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Over-the-shoulder shot from behind a man at a courtroom table, looking across at his opponent, shoulders slightly hunched, cold institutional lighting. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Over-the-shoulder shot from behind Elon Musk seated at the plaintiff's table in the Oakland courtroom, his shoulders slightly hunched, looking across the aisle at Sam Altman \u2014 his former partner, now his opponent \u2014 the visual echoing the childhood staircase: a trusted friend became the instrument of pain, the same betrayal pattern repeating forty years later in a federal courtroom, the kid lured out by a friend still fighting over trust. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold institutional courtroom tones, film grain texture"
+    },
+    {
+      "image": 112,
+      "start_time": 504.86,
+      "duration": 4.76,
+      "end_time": 509.62,
+      "section": "THE_RISE",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "neutral",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "xAI",
+      "text_animation": "bounce",
+      "prompt": "Wide dramatic reveal shot of the xAI company logo illuminated on the exterior of a massive industrial building in Memphis, Tennessee at dusk, the logo glowing white against dark steel walls, construction cranes still visible on the roof, the scale of the building enormous \u2014 a former appliance factory transformed into the largest AI training facility ever built, warm sunset light mixing with industrial artificial lighting, the response of a man who lost control of OpenAI: build something bigger. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral-warm dusk tones, film grain texture"
+    },
+    {
+      "image": 113,
+      "start_time": 509.62,
+      "duration": 4.76,
+      "end_time": 514.38,
+      "section": "THE_RISE",
+      "emotional_tone": "hope",
+      "shot_type": "landscape",
+      "color_temperature": "neutral",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "Colossus | 200,000 Nvidia GPUs | 122 Days",
+      "text_animation": "typewriter",
+      "prompt": "Wide interior shot of the Colossus AI supercomputer facility in Memphis, foreground: miles of fiber optic cables with pulsing blue light running along the floor, midground: endless rows of server racks housing over two hundred thousand Nvidia GPUs, their green LED status lights creating a galaxy-like pattern, background: the vast warehouse ceiling with industrial cooling ducts, the scale absolutely staggering \u2014 the largest AI training facility ever built, constructed in just one hundred twenty-two days. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral tones with blue-green GPU glow, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 114,
+      "start_time": 514.38,
+      "duration": 4.76,
+      "end_time": 519.14,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "$1.25 Trillion Merger | February 2026",
+      "text_animation": "bounce",
+      "prompt": "Close-up of a legal merger document on a polished boardroom table showing SpaceX and xAI logos side by side, the merger value of one-point-two-five trillion dollars printed in bold, multiple signatures at the bottom, a gold-plated pen resting across the page, warm boardroom lighting from overhead fixtures, the largest private corporate merger in recorded history \u2014 two of Elon Musk's companies becoming one entity worth more than most nations' GDP. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden boardroom tones, film grain texture"
+    },
+    {
+      "image": 115,
+      "start_time": 519.14,
+      "duration": 4.76,
+      "end_time": 523.9,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "orbit",
+      "transition_type": "color_sweep",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "SpaceX IPO | $1.75 Trillion | Roadshow June 8",
+      "text_animation": "bounce",
+      "fallback_prompt": "Medium shot of a Wall Street conference room, massive screen showing space company financials and trillion-dollar valuation, investors leaning forward, a presenter at the podium. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of a Wall Street investment bank conference room during the SpaceX IPO roadshow presentation, a massive screen displaying SpaceX's financials and the target valuation of one-point-seven-five trillion dollars, institutional investors in suits leaning forward in their chairs, Elon Musk standing at the podium gesturing toward the screen, warm presentation lighting, the room buzzing with the energy of what would be the biggest public offering in American stock market history. Cinematic photorealistic photograph, 8K resolution, dramatic presentation lighting, warm golden tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 116,
+      "start_time": 523.9,
+      "duration": 4.76,
+      "end_time": 528.66,
+      "section": "THE_RISE",
+      "emotional_tone": "hope",
+      "shot_type": "landscape",
+      "color_temperature": "warm",
+      "movement_type": "float_up",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide breathtaking shot of a conceptual orbital data center floating in low Earth orbit, a modular structure of solar panels and server modules gleaming in unfiltered sunlight above the blue curve of Earth, solar panels extended like golden wings catching perpetual light \u2014 where sunlight never stops \u2014 the Earth's atmosphere glowing blue at the horizon, satellite dishes pointing earthward, the audacious vision of AI computing infrastructure built in space itself. Cinematic photorealistic photograph, 8K resolution, dramatic space lighting, warm golden sunlight tones against cool Earth tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 117,
+      "start_time": 528.66,
+      "duration": 4.76,
+      "end_time": 533.42,
+      "section": "THE_RISE",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "tracking_shot",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "CyberCab | No Steering Wheel | No Pedals",
+      "text_animation": "typewriter",
+      "prompt": "Medium shot of a Tesla CyberCab autonomous vehicle on a California street in 2026, its sleek minimalist exterior gleaming in warm afternoon light, through the windshield the completely empty driver's cockpit visible \u2014 no steering wheel, no pedals \u2014 a passenger sitting calmly in the back seat looking at a tablet, the car navigating traffic independently, pedestrians on the sidewalk doing double-takes at the driverless vehicle, the future rolling down a present-day street. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral-warm California tones, film grain texture"
+    },
+    {
+      "image": 118,
+      "start_time": 533.42,
+      "duration": 4.76,
+      "end_time": 538.18,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of Neuralink's first patient \u2014 a paralyzed young man \u2014 sitting in a wheelchair with a small titanium Neuralink implant visible as a subtle bump behind his ear, his eyes focused intensely on a computer screen where he is playing a video game, a cursor moving across the screen controlled entirely by his thoughts, his hands motionless in his lap but his face alive with concentration and joy, warm home lighting, the profound moment a paralyzed person moved a digital object with pure thought. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm human tones, photorealistic skin texture, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 119,
+      "start_time": 538.18,
+      "duration": 4.76,
+      "end_time": 542.94,
+      "section": "THE_RISE",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "neutral",
+      "movement_type": "truck_right",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "Optimus | Mass Production 2026",
+      "text_animation": "typewriter",
+      "prompt": "Wide shot of a Tesla Gigafactory floor with multiple Optimus humanoid robots working alongside human employees, the silver-and-black robots performing repetitive assembly tasks with precise mechanical movements, human workers monitoring from elevated walkstations, the factory bathed in clean industrial LED lighting, the robots standing approximately five-foot-eight with smooth articulated joints, science fiction made tangible on an actual production floor. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, neutral-warm industrial tones, film grain texture"
+    },
+    {
+      "image": 120,
+      "start_time": 542.94,
+      "duration": 4.76,
+      "end_time": 547.7,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "whip_pan",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Rapid montage-style triple-split image: left panel shows a SpaceX rocket mid-launch, center panel shows a Tesla driving itself through city traffic, right panel shows a Neuralink cursor moving on screen \u2014 all three images connected by a thin golden line suggesting the same pattern, the same impossible ambition repeated across three industries simultaneously, warm golden light unifying the triptych, 2026 all at once. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm golden unifying tones, film grain texture"
+    },
+    {
+      "image": 121,
+      "start_time": 547.7,
+      "duration": 4.76,
+      "end_time": 552.46,
+      "section": "THE_RISE",
+      "emotional_tone": "triumph",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of the Neuralink patient's eye, his pupil dilated with focus, the reflection of a computer cursor visible in the iris, the eye sharp and alive despite the body's paralysis, warm soft light illuminating his face, individual eyelashes in sharp focus, the bridge between human biology and machine intelligence visible in a single human gaze, the rockets are flying and a mind is moving matter. Cinematic photorealistic photograph, 8K resolution, macro photography, ultra-shallow depth of field, warm golden human tones, photorealistic skin texture, realistic eye with catchlight, film grain texture"
+    },
+    {
+      "image": 122,
+      "start_time": 552.46,
+      "duration": 4.76,
+      "end_time": 557.22,
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "mixed",
+      "movement_type": "dutch_tilt",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a cracked smartphone screen showing positive Tesla headlines on one half and negative ones on the other, the physical crack in the glass running right through the middle, splitting the narrative, warm light on the positive side and cold blue on the negative, the duality of Elon Musk's 2026 made physical \u2014 triumph and collapse happening simultaneously on the same device, the screen tilted at a dutch angle suggesting instability. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, mixed warm-cool split tones, film grain texture"
+    },
+    {
+      "image": 123,
+      "start_time": 557.22,
+      "duration": 4.76,
+      "end_time": 561.98,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Tesla Q1 2026 | -71% Profits",
+      "text_animation": "bounce",
+      "prompt": "Close-up of a Tesla earnings report displayed on a Bloomberg terminal, a massive red bar showing 71% profit decline in Q1 2026, the red glow of the negative numbers reflected on the trader's desk, other screens showing Tesla stock dropping, the terminal's dark interface making the red numbers look like warning lights, cold blue ambient room light, the financial gravity of a 71 percent collapse made visceral. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold blue screen-glow with red number accents, film grain texture"
+    },
+    {
+      "image": 124,
+      "start_time": 561.98,
+      "duration": 4.76,
+      "end_time": 566.74,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "DOGE Cost Tesla 1-1.26 Million Vehicle Sales",
+      "text_animation": "typewriter",
+      "prompt": "Close-up of a Yale University research paper on a desk, the title visible about DOGE political work costing Tesla between one and one-point-two-six million American vehicle sales, academic graphs showing the correlation between political activity and brand damage, a red line trending sharply downward, the paper's Yale crest and formal academic formatting lending institutional weight to devastating findings. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool academic paper tones, film grain texture"
+    },
+    {
+      "image": 125,
+      "start_time": 566.74,
+      "duration": 4.26,
+      "end_time": 571.0,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "camera_shake"
+      ],
+      "overlay_text": "Stock Down 45% From Peak",
+      "text_animation": "typewriter",
+      "prompt": "Wide shot of a Wall Street trading floor showing Tesla's stock chart on the main display board, a dramatic 45% decline from peak visible in a steep red downward curve, traders watching with expressions ranging from concern to panic, phones ringing, the trading floor's cold fluorescent lights creating a sickly institutional atmosphere, the most valuable car company bleeding shareholder value. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold institutional tones with red screen accents, film grain texture"
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide shot of a Tesla showroom in a major American city, foreground: a velvet rope blocking the entrance, midground: the showroom floor with only two vehicles where there used to be six, a sales associate standing alone checking their phone, background: the glass storefront reflecting a busy street where no one is entering, warm showroom lighting making the emptiness feel more pronounced, the brand damage of political controversy made tangible in an empty retail space. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool showroom tones, film grain texture",
+      "image": 126,
+      "start_time": 571.0,
+      "end_time": 575.76
+    },
+    {
+      "image": 127,
+      "start_time": 575.76,
+      "duration": 4.76,
+      "end_time": 580.52,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "\"A little bit successful\" \u2014 Elon Musk on DOGE",
+      "text_animation": "highlight",
+      "fallback_prompt": "Close-up of a man speaking at a press event with unusually subdued expression, cold blue stage lighting, multiple microphones, the weight of understatement visible. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up of Elon Musk speaking at a press event about DOGE, his expression unusually subdued, not his typical confidence \u2014 the words 'a little bit successful' carrying the weight of regret rather than triumph, cold blue stage lighting casting shadows under his eyes, microphones pointed at him from multiple angles, the rare moment of public understatement from a man known for hyperbole. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, cold stage lighting tones, photorealistic skin texture showing fatigue, film grain texture"
+    },
+    {
+      "image": 128,
+      "start_time": 580.52,
+      "duration": 4.26,
+      "end_time": 584.78,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "reveal_left",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "",
+      "prompt": "Medium shot of three empty executive office chairs arranged in a row at Tesla headquarters, nameplates removed from the doors behind them, personal items packed into boxes on the desks, the harsh overhead office light illuminating the abandonment, three senior CyberCab leaders who departed since production started, the empty chairs a visual metaphor for leadership bleeding from a troubled program. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold empty office tones, film grain texture"
+    },
+    {
+      "image": 129,
+      "start_time": 584.78,
+      "duration": 4.76,
+      "end_time": 589.54,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "4x Human Crash Rate",
+      "text_animation": "bounce",
+      "prompt": "Close-up of a Tesla CyberCab's front-facing camera view displayed on a diagnostic screen, showing a near-miss incident \u2014 a pedestrian frozen mid-crosswalk, the AI's emergency braking visualization overlaid in red bounding boxes, error codes scrolling in a sidebar, the autonomous software processing a situation it shouldn't have gotten into, the cold clinical interface showing that the car crashes at four times the rate of a human driver. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold diagnostic screen tones, film grain texture"
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "camera_shake"
+      ],
+      "overlay_text": "",
+      "duration": 4.26,
+      "prompt": "Medium shot of a local TV news broadcast showing a CyberCab incident report, a news anchor gesturing toward a split-screen showing a damaged CyberCab and a graph of autonomous driving crash statistics, the chyron reading 'TESLA CYBERCAB: 4X HUMAN CRASH RATE \u2014 NHTSA INVESTIGATION', visible through the window of a bar where patrons are watching with concerned expressions, cold blue TV glow on their faces. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold TV-glow tones, film grain texture",
+      "image": 130,
+      "start_time": 589.54,
+      "end_time": 593.8
+    },
+    {
+      "image": 131,
+      "start_time": 593.8,
+      "duration": 4.76,
+      "end_time": 598.56,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "X | $44 Billion \u2192 Massive Value Loss",
+      "text_animation": "typewriter",
+      "prompt": "Wide shot of the X (formerly Twitter) headquarters building in San Francisco, the giant illuminated 'X' logo on the roof flickering slightly, foreground: protestors and former employees holding signs outside the building, midground: the glass facade reflecting a grey overcast sky, background: San Francisco skyline shrouded in fog, the building looking diminished and besieged, advertiser logos crossed out on a billboard nearby, the forty-four-billion-dollar acquisition bleeding value from every direction. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold grey San Francisco tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "image": 132,
+      "start_time": 598.56,
+      "duration": 4.26,
+      "end_time": 602.82,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "truck_left",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of a laptop screen showing a spreadsheet of major advertising brands \u2014 Apple, Disney, Coca-Cola \u2014 with 'PAUSED' or 'CANCELLED' status markers next to each, the red status tags overwhelming the green ones, a marketer's hand scrolling through the devastating list, cold office lighting, the systematic corporate exodus from a platform that once defined social media. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold screen-glow tones, film grain texture, associated with Elon Musk's story. Cinematic photorealistic photograph, 8K resolution, film grain texture"
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Silhouette of former X employees carrying cardboard boxes through the glass lobby of Elon Musk's X headquarters, their figures dark against the bright San Francisco skyline visible through the floor-to-ceiling windows, one person holding a small plant, another a framed photo, the steady stream of departures that followed the acquisition, cold grey winter light making the scene feel like a funeral procession for a platform that once defined an era. Cinematic photorealistic photograph, 8K resolution, dramatic backlighting through glass, cold grey silhouette tones, film grain texture",
+      "image": 133,
+      "start_time": 602.82,
+      "end_time": 607.58
+    },
+    {
+      "image": 134,
+      "start_time": 607.58,
+      "duration": 4.76,
+      "end_time": 612.34,
+      "section": "THE_FALL",
+      "emotional_tone": "darkness",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_pan",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "map_label": "X Legal Battles | Worldwide",
+      "prompt": "Political world map showing countries where X faces legal battles marked with red warning icons \u2014 Brazil, the European Union, Australia, India, multiple locations highlighted with red flames, the global scope of regulatory and legal challenges, cold blue-grey map tones with red warning accents, the worldwide pushback against a single platform. Cinematic photorealistic photograph, 8K resolution, cool military-tactical map tones, film grain texture"
+    },
+    {
+      "image": 135,
+      "start_time": 612.34,
+      "duration": 4.76,
+      "end_time": 617.1,
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "still_life",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "prompt": "Still-life arrangement echoing image 11 from the Cold Open \u2014 similar objects but smaller and more fragile: a tiny SpaceX model rocket lying on its side, a miniature Tesla car with a chipped wheel, a crumpled stock certificate, a small judge's gavel \u2014 all arranged on a cold glass surface with harsh overhead lighting casting long shadows, the visual metaphor of 2008 repeating in miniature, every stumble looking from a certain angle exactly like the crisis that nearly ended everything. Cinematic photorealistic photograph, 8K resolution, dramatic overhead lighting, cool reflective glass tones, film grain texture"
+    },
+    {
+      "image": 136,
+      "start_time": 617.1,
+      "duration": 4.76,
+      "end_time": 621.86,
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Medium shot of a financial analyst at a Wall Street desk, surrounded by multiple screens all showing negative Tesla and SpaceX-related headlines, his face illuminated by the red glow of declining markets, his expression one of grim certainty \u2014 the rational conclusion \u2014 papers and charts spread across the desk all pointing to the same conclusion: it's unraveling, cold blue ambient office light mixing with red screen warnings. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cold blue-red screen-glow tones, film grain texture"
+    },
+    {
+      "image": 137,
+      "start_time": 621.86,
+      "duration": 4.76,
+      "end_time": 626.62,
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Close-up of an old 2008 newspaper headline reading 'TESLA BANKRUPT? SPACEX FINAL LAUNCH FAILS' beside a current 2026 tablet showing nearly identical headlines about Tesla's profit collapse and SpaceX challenges, the two eras placed side by side on a desk, the visual rhyme between decades unmistakable, the same rational conclusion reached and proven wrong before \u2014 but was it luck or pattern, warm amber old newsprint next to cold blue digital screen. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, split warm-vintage and cool-digital tones, film grain texture"
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "mixed",
+      "movement_type": "parallax_depth",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "duration": 4.76,
+      "prompt": "Wide split-screen composition: left half shows the 2008 SpaceX Kwajalein launch pad at dawn with Falcon 1 standing ready, right half shows the 2026 Boca Chica Starbase at dawn with Starship towering, foreground on both sides: similar chain-link fences with warning signs, the visual rhyme between decades showing the same pattern at dramatically different scales \u2014 the same bet, the same brink, the same impossible odds, but now measured in trillions instead of millions. Cinematic photorealistic photograph, 8K resolution, dramatic dawn lighting on both sides, mixed warm-cool split tones, film grain texture",
+      "image": 138,
+      "start_time": 626.62,
+      "end_time": 631.38
+    },
+    {
+      "image": 139,
+      "start_time": 631.38,
+      "duration": 4.76,
+      "end_time": 636.14,
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "breathing",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "\"We don't actually know if this time is different\"",
+      "text_animation": "highlight",
+      "fallback_prompt": "Silhouette of a tall man standing alone at a floor-to-ceiling window at night, reflection ghostly in glass, city lights creating bokeh below, ambiguous posture. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Silhouette of Elon Musk standing alone at a floor-to-ceiling window in a high-rise building overlooking the night skyline of a city \u2014 could be any city, any decade \u2014 his reflection ghostly in the glass, the city lights below creating bokeh circles, his posture ambiguous \u2014 confident or cornered, triumphant or trapped, the uncertainty of whether the pattern holds or this is the time it breaks, cool blue night tones. Cinematic photorealistic photograph, 8K resolution, dramatic backlighting through window, cool night tones with warm city-light bokeh, film grain texture"
+    },
+    {
+      "image": 140,
+      "start_time": 636.14,
+      "duration": 4.76,
+      "end_time": 640.9,
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of a human eye \u2014 the viewer's own \u2014 reflecting the uncertainty, the iris a cold grey-blue, the pupil slightly contracted as if wincing, no tears but the beginning of understanding visible in the gaze, the eye reflecting both a rocket launch and a stock chart decline simultaneously, the uncomfortable honesty of not knowing how this story ends. Cinematic photorealistic photograph, 8K resolution, macro photography, ultra-shallow depth of field, cool grey-blue tones, film grain texture"
+    },
+    {
+      "image": 141,
+      "start_time": 640.9,
+      "duration": 5.76,
+      "end_time": 646.66,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "Justine Musk \u2014 First Wife",
+      "text_animation": "slide_up",
+      "prompt": "Medium portrait of a woman in her late 30s representing Justine Musk, seated in a sunlit California home office writing at a desk, warm afternoon golden light through sheer curtains illuminating her profile, a laptop open with a memoir draft visible, framed family photos on the bookshelf behind her \u2014 including one with Elon that's been turned face-down \u2014 her expression thoughtful and clear-eyed, the woman who knew him most intimately writing the most accurate sentence ever said about him. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm golden afternoon tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 142,
+      "start_time": 646.66,
+      "duration": 5.76,
+      "end_time": 652.42,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "\"His relentlessness \u2014 the most empowering quality in a CEO, and the most terrifying in a husband\"",
+      "text_animation": "highlight",
+      "prompt": "Close-up of a hand-written letter on cream stationery, Justine Musk's words about Elon Musk \u2014 'His relentlessness is the most empowering quality imaginable in a CEO, and the most terrifying quality in a husband' visible in elegant female handwriting, warm desk lamp light from the left, a wedding photo lying face-down beside the letter, a small coffee ring stain on the paper's corner, the intimate documentary moment of truth written by the person who knew the pattern firsthand. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber stationery tones, film grain texture"
+    },
+    {
+      "image": 143,
+      "start_time": 652.42,
+      "duration": 5.26,
+      "end_time": 657.68,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "wide",
+      "color_temperature": "mixed",
+      "movement_type": "parallax_depth",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide symbolic split composition: left half shows a SpaceX rocket ascending through golden dawn clouds, powerful and beautiful, the fire of its engines creating trails of light \u2014 right half shows an empty dining table in a luxury home, two place settings but only one chair pushed back, a glass of wine untouched, cold evening blue light through tall windows, foreground: the dividing line between the two halves is a thin golden strip like a wedding band, the same force creating and destroying simultaneously. Cinematic photorealistic photograph, 8K resolution, dramatic split-tone directional lighting, warm golden left half, cool blue right half, film grain texture"
+    },
+    {
+      "image": 144,
+      "start_time": 657.68,
+      "duration": 5.26,
+      "end_time": 662.94,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "landscape",
+      "color_temperature": "golden",
+      "movement_type": "float_up",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "light_leak"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide golden-hour landscape showing a Tesla charging station in an open American field at sunset, a single Tesla parked and charging, the driver's seat empty, in the vast sky above nine thousand Starlink satellites create faint trails of light, a SpaceX rocket launch visible as a distant flame on the horizon, the beauty and loneliness of empire \u2014 everything built, nothing held close, golden amber light flooding the entire scene with warmth that borders on sadness. Cinematic photorealistic photograph, 8K resolution, dramatic golden-hour lighting, warm amber-gold tones, film grain texture"
+    },
+    {
+      "image": 145,
+      "start_time": 662.94,
+      "duration": 5.26,
+      "end_time": 668.2,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Close-up of a desk with a space mission patch beside a child's crayon drawing, a framed rocket photo beside a family photo, warm desk lamp light, intimate shadows. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Close-up of a home office desk belonging to Elon Musk \u2014 a SpaceX mission patch pinned to a corkboard beside a child's hand-drawn Father's Day card with 'I miss you Dad' written in crayon, a framed photo of a rocket launch beside a framed photo of his children that hasn't been updated in years, warm desk lamp light creating intimate shadows, the real wreckage running alongside the real achievement, every triumph paired with a loss measured in human distance. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, warm amber intimate tones, film grain texture"
+    },
+    {
+      "image": 146,
+      "start_time": 668.2,
+      "duration": 5.76,
+      "end_time": 673.96,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "wide",
+      "color_temperature": "golden",
+      "movement_type": "crane_up",
+      "transition_type": "fade_through_warm",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Wide aerial shot of a modest residential building in the foreground with an enormous industrial rocket facility in the background at golden hour, the paradox of scale. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Wide aerial shot of Elon Musk's Boca Chica compound at golden hour, the SpaceX Starbase visible in the background with rockets and launch towers, in the foreground a modest residential building where he reportedly lives \u2014 small, almost ascetic compared to the industrial cathedral behind it \u2014 golden sunset light bathing everything, the visual paradox of the richest man in history living beside a rocket factory in a Texas border town, beauty and strangeness inseparable. Cinematic photorealistic photograph, 8K resolution, dramatic golden-hour aerial lighting, warm golden tones, film grain texture"
+    },
+    {
+      "image": 147,
+      "start_time": 673.96,
+      "duration": 5.76,
+      "end_time": 679.72,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "medium",
+      "color_temperature": "golden",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Medium shot of a tall man walking alone on a shoreline at sunset, waves washing over his shoes, industrial tower in far background, long golden shadow. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of Elon Musk walking alone along the shoreline near Boca Chica at sunset, his back partially to the camera, the Gulf of Mexico waves washing over his shoes as he walks at the water's edge, a SpaceX launch tower visible in the far background, warm golden sunset light creating a long shadow stretching behind him, the story that has no clean ending because it isn't over, a man literally walking the line between land and sea, between built and unbuilt. Cinematic photorealistic photograph, 8K resolution, dramatic golden-hour directional lighting, warm golden sunset tones, photorealistic skin texture, film grain texture"
+    },
+    {
+      "image": 148,
+      "start_time": 679.72,
+      "duration": 4.76,
+      "end_time": 684.48,
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "tracking_shot",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide shot of the Tesla CyberCab production line at night, robots welding and assembling in rhythmic automated precision, sparks flying from welding arms creating warm orange constellations in the dark factory, the line moving continuously \u2014 production that doesn't stop \u2014 warm industrial amber light mixing with cool blue robotic precision, the future being manufactured one unit at a time whether the critics are right or not. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm industrial tones with cool robotic accents, film grain texture"
+    },
+    {
+      "image": 149,
+      "start_time": 684.48,
+      "duration": 5.26,
+      "end_time": 689.74,
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "prompt": "Extreme close-up of a Neuralink brain-computer interface chip held by surgical tweezers, the tiny flexible threads extending from the chip like golden dendrites, the chip no larger than a coin, caught in dramatic warm spotlight against a dark surgical background, the threads that connect a human brain directly to a computer, the technology scaling beyond the first patient, beautiful and unsettling simultaneously. Cinematic photorealistic photograph, 8K resolution, dramatic spotlight directional lighting, warm golden chip tones against dark background, film grain texture"
+    },
+    {
+      "image": 150,
+      "start_time": 689.74,
+      "duration": 4.76,
+      "end_time": 694.5,
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "orbit",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Medium shot of a presenter at a podium, enormous screen behind showing a rocket animation, silhouetted audience, camera flashes, warm stage lighting. Cinematic photorealistic photograph, 8K resolution, film grain texture",
+      "prompt": "Medium shot of Elon Musk at a podium during the SpaceX IPO roadshow presentation, June 2026, an enormous screen behind him showing a Starship animation entering orbit, the audience of Wall Street investors visible in silhouette, camera flashes sparking, warm stage lighting creating a halo effect around his head, the largest IPO in American history about to launch \u2014 another rocket, this one financial, aimed at the stratosphere. Cinematic photorealistic photograph, 8K resolution, dramatic stage lighting, warm golden presentation tones, film grain texture"
+    },
+    {
+      "image": 151,
+      "start_time": 694.5,
+      "duration": 5.76,
+      "end_time": 700.26,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide shot returning to the Oakland federal courtroom \u2014 a visual echo of the Cold Open \u2014 foreground: the same heavy courtroom door from image 1, now slightly ajar with warm golden light spilling through the crack, midground: the courtroom interior visible through the gap with Elon Musk seated at the table, background: the judge's bench and American flag, the same door from the beginning but now the light is warmer, the question not yet answered, the man who helped build the AI revolution fighting again to take back what he believes was taken from him. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, cool courtroom with warm door-light accent, film grain texture"
+    },
+    {
+      "image": 152,
+      "start_time": 700.26,
+      "duration": 5.76,
+      "end_time": 706.02,
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "golden",
+      "movement_type": "push_in",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "fallback_prompt": "Extreme close-up of a man's face looking directly into camera, complex unreadable expression, warm golden light on one side, gentle shadow on the other, every line visible. Cinematic photorealistic photograph, 8K resolution, Rembrandt lighting, film grain texture",
+      "prompt": "Extreme close-up portrait of Elon Musk looking directly into the camera \u2014 direct eye contact \u2014 his expression complex and unreadable, neither triumphant nor defeated, warm golden late-afternoon light illuminating the left side of his face while the right side falls into gentle shadow, every line and pore visible, the eyes of a man who has been to the edge and back more times than anyone can count, the last narrative image \u2014 warm, meaningful, and designed to make the viewer sit in silence. Cinematic photorealistic photograph, 8K resolution, dramatic Rembrandt lighting, ultra-shallow depth of field, warm golden tones, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, film grain texture"
+    },
+    {
+      "image": 153,
+      "start_time": 706.02,
+      "duration": 5.26,
+      "end_time": 711.28,
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "warm",
+      "movement_type": "breathing",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide shot from behind a viewer's silhouette watching this very video on a large monitor in a dimly lit room, the glow of the screen illuminating the viewer's outline, the video showing a montage of Elon Musk imagery on screen, the viewer leaning slightly forward \u2014 engaged, still watching \u2014 warm amber screen-glow creating a cozy intimate atmosphere, the meta-moment of acknowledging the viewer's attention as the ultimate compliment. Cinematic photorealistic photograph, 8K resolution, dramatic screen-glow directional lighting, warm amber tones, film grain texture"
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "zoom_in",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "Next Episode Coming Soon",
+      "duration": 4.76,
+      "text_animation": "fade_in",
+      "prompt": "Close-up of a bulletin board with pinned photographs and red string connecting them \u2014 investigation-style \u2014 showing teaser images of future biography subjects, their faces partially obscured, names covered with sticky notes reading 'NEXT WEEK,' warm desk lamp light illuminating the board from the side, the promise of more stories to come, the series just getting started. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, warm amber investigation-board tones, film grain texture",
+      "image": 154,
+      "start_time": 711.28,
+      "end_time": 716.04
+    },
+    {
+      "image": 155,
+      "start_time": 716.04,
+      "duration": 5.26,
+      "end_time": 721.3,
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "minimal",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "Subscribe \u2014 The Story Only Gets Stranger",
+      "text_animation": "bounce",
+      "prompt": "Medium shot of a clean, warmly-lit desk setup with a monitor showing a YouTube subscribe button animation, the channel logo visible, warm ambient lighting, a cup of coffee, headphones, and a notebook with 'NEXT VIDEO' written at the top of a fresh page, inviting and warm, the promise of more stories to come, the visual language of a creator's workspace that produces quality content. Cinematic photorealistic photograph, 8K resolution, warm ambient directional lighting, clean warm tones, film grain texture"
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "static_motion",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "Hit the Bell \ud83d\udd14",
+      "duration": 4.26,
+      "text_animation": "bounce",
+      "prompt": "Medium shot of a clean modern workspace with a large monitor showing a YouTube notification bell icon with a subscribe button, warm ambient lighting, a channel logo visible on the screen, coffee cup and notebook beside the monitor, the visual call to action clean and inviting, professional content creator environment. Cinematic photorealistic photograph, 8K resolution, warm ambient directional lighting, clean warm tones, film grain texture",
+      "image": 156,
+      "start_time": 721.3,
+      "end_time": 725.56
+    },
+    {
+      "image": 157,
+      "start_time": 725.56,
+      "duration": 4.68,
+      "end_time": 730.24,
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "landscape",
+      "color_temperature": "golden",
+      "movement_type": "float_up",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "prompt": "Wide final shot of a single SpaceX rocket trail ascending through a golden-hour sky, the white exhaust trail curving gracefully into the heavens, the rocket itself a tiny bright point at the top of the trail, below it the Texas coastline stretching into the distance, the Gulf of Mexico reflecting the golden sky, the image of perpetual ascent \u2014 whether it ends in orbit or flame, the trajectory is always upward, the story only gets stranger from here, warm golden amber fading to deep purple at the zenith. Cinematic photorealistic photograph, 8K resolution, dramatic golden-hour sky lighting, warm golden-to-purple gradient tones, film grain texture"
+    }
+  ]
+}
