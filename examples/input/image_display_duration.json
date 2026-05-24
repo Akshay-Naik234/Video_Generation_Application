@@ -1,653 +1,3259 @@
 {
   "video_metadata": {
-    "person_name": "Albert Einstein",
-    "title": "Albert Einstein The Man Who Refused the Room",
-    "total_duration_seconds": 695.52,
-    "total_images": 107,
-    "timing_mode": "TIMESTAMP_LOCKED"
+    "person_name": "Lai Kui Sen & Yan Zhao (OST/Ostin Technology Fraud)",
+    "title": "The $950 Million Deepfake Stock Fraud That Broke NASDAQ",
+    "total_duration_seconds": 737.06,
+    "total_images": 162,
+    "timing_mode": "CONTENT_MATCHED_TIMESTAMP_LOCKED"
+  },
+  "thumbnail": {
+    "prompt": "Cinematic dark composition, cracked smartphone screen showing stock chart crashing from green to red, NASDAQ logo in corner, phone on scattered dollar bills and stock certificates, dramatic overhead spotlight, deep red and dark blue color scheme, $950 million stock fraud visual. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+    "overlay_text": "DEEPFAKE FRAUD",
+    "text_position": "left",
+    "face_percentage": 0,
+    "color_scheme": "Red (#CC0000) + Dark Blue (#001133)",
+    "face_expression": "N/A - no real faces"
   },
   "images": [
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "cinematic_reveal",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "Based on Federal Court Filings",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Wide shot of the NASDAQ stock exchange building exterior in Times Square at dawn, massive LED screens glowing with red financial data and falling stock tickers, the famous NASDAQ MarketSite tower reflecting in rain-slicked streets, dramatic storm clouds overhead, the building facade lit with harsh blue-white light, the morning the market would remember, the opening bell ringing on NASDAQ. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 1,
       "start_time": 0.0,
-      "duration": 5.4,
-      "end_time": 5.4
+      "end_time": 4.33,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "OST | Begins to Die",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Extreme close-up of a stock trading terminal screen showing ticker 'OST' in bright red with a massive downward arrow, price plummeting from $9.40 to $0.55 in cascading red numbers, -94.1% in large flashing digits, blue screen glow reflecting on polished desk, the death of a stock in real time. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 2,
-      "start_time": 5.4,
-      "duration": 3.88,
-      "end_time": 9.28
+      "start_time": 4.33,
+      "end_time": 8.66,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "$950 MILLION \u2014 DESTROYED IN HOURS",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of a Wall Street trading floor in chaos, foreground: a trader's hands gripping his head in disbelief, midground: multiple screens all showing red cascading numbers and the OST ticker crashing, background: other traders standing frozen staring at screens, harsh overhead fluorescent lighting, the ninety-four percent crash, 94% gone, destroying nine hundred and fifty million dollars. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
       "image": 3,
-      "start_time": 9.28,
-      "duration": 5.88,
-      "end_time": 15.16
+      "start_time": 8.66,
+      "end_time": 12.99,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a laptop screen showing an AI-generated deepfake video mid-playback, the face on screen slightly glitching with visible digital artifacts and pixel distortion around the jawline, a progress bar at the bottom, the screen surrounded by darkness with only blue glow illuminating the frame, the weapon Wall Street never saw coming. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 4,
-      "start_time": 15.16,
-      "duration": 2.0,
-      "end_time": 17.16
+      "start_time": 12.99,
+      "end_time": 17.32,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide establishing shot at dusk, foreground: iron bollards and security barriers at street level, midground: the Goldman Sachs headquarters building at 200 West Street with its glass and steel facade, background: dark cloudy sky with city lights, the institution whose executives' faces were stolen for a fraud they never knew about. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 5,
-      "start_time": 17.16,
-      "duration": 6.84,
-      "end_time": 24.0
+      "start_time": 17.32,
+      "end_time": 21.65,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Extreme close-up of a smartphone screen showing a WhatsApp group chat, multiple green message bubbles with 'BUY OST NOW' and 'HOLD! TARGET $15' and fire emojis, group name 'Investment Advisory Group', the phone held by anonymous hand in shadow, cold blue ambient light, the digital trap that ensnared hundreds of victims. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 6,
-      "start_time": 24.0,
-      "duration": 2.3,
-      "end_time": 26.3
+      "start_time": 21.65,
+      "end_time": 25.98,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of a desktop monitor displaying multiple social media ad panels side by side, each showing a blurred face with 'SPONSORED' tag, Instagram and Facebook ad formats identifiable, 'FAKE' watermarked in semi-transparent red, cold harsh monitor glow in dark room, celebrity deepfake endorsements entirely fabricated by AI., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 7,
-      "start_time": 26.3,
-      "duration": 6.82,
-      "end_time": 33.12
+      "start_time": 25.98,
+      "end_time": 30.3,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of official federal court documents with 'UNITED STATES DISTRICT COURT' letterhead, 'INDICTMENT' stamped in large red letters, case numbers and legal text visible, documents spread on dark mahogany under dramatic overhead spotlight, documenting deepfake videos of Goldman Sachs executives and global celebrities, sharp focus on INDICTMENT, the legal foundation exposing deep fake videos of Goldman Sachs executives and global celebrities used in fraud. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 8,
-      "start_time": 33.12,
-      "duration": 3.66,
-      "end_time": 36.78
+      "start_time": 30.3,
+      "end_time": 34.63,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide aerial shot of the United States coastline at dusk from above the Atlantic, the eastern seaboard visible with city lights, dramatic cloud formations, a vast ocean separating America from the rest of the world, the geographic distance that made this crime possible without ever stepping on American soil., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 9,
-      "start_time": 36.78,
-      "duration": 2.42,
-      "end_time": 39.2
+      "start_time": 34.63,
+      "end_time": 38.96,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Dark silhouette of two men standing behind frosted glass in a modern office, outlines barely visible, one taller one shorter, harsh backlight creating dramatic rim lighting, the shadowy masterminds exposed by federal court filings behind the most brazen AI-powered stock fraud exposed by federal court filings in NASDAQ history who never set foot on American soil. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 10,
-      "start_time": 39.2,
-      "duration": 4.16,
-      "end_time": 43.36
+      "start_time": 38.96,
+      "end_time": 43.29,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_pan",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "Nanjing \u2192 Cayman Islands \u2192 NASDAQ | 2025",
+      "prompt": "Modern dark digital map showing East Asia and Western hemisphere, glowing route lines connecting Nanjing China with red pin, Cayman Islands with gold pin, and New York NASDAQ with blue pin, lines pulsing with light, dark ocean background with subtle grid lines, the international web of cross-border fraud, OST stock ticker visible on the exchange boards. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 11,
-      "start_time": 43.36,
-      "duration": 6.44,
-      "end_time": 49.8
+      "start_time": 43.29,
+      "end_time": 47.62,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of a nondescript industrial electronics factory in Nanjing China, grey concrete walls with small corporate sign, a company run from abroad that never set foot on American soil, loading docks with LCD display module shipping containers, overcast grey sky, puddles on ground, the boring facade of a micro-cap company nobody was watching, unremarkable and deliberately forgettable., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 12,
-      "start_time": 49.8,
-      "duration": 2.86,
-      "end_time": 52.66
+      "start_time": 47.62,
+      "end_time": 51.95,
+      "duration": 4.33
     },
     {
+      "section": "COLD_OPEN",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "tilt_shift",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide aerial tilt-shift shot of Wall Street and the Financial District in Manhattan, buildings appearing miniaturized, tiny figures walking between glass structures, yellow taxis like toys, the vast machinery of American finance where a $38 million company was nothing but background noise and wallpaper. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 13,
-      "start_time": 52.66,
-      "duration": 6.0,
-      "end_time": 58.66
+      "start_time": 51.95,
+      "end_time": 56.28,
+      "duration": 4.33
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "spotlight"
+      ],
+      "overlay_text": "Lai Kui Sen | Co-CEO",
+      "text_animation": "slide_up",
+      "map_label": "",
+      "prompt": "Close-up of a middle-aged Asian businessman seen from behind in three-quarter shadow, wearing dark formal suit, only back of head and collar visible, standing at rain-streaked window overlooking Nanjing Chinese city skyline at night, reflection barely visible in glass, the man whose name meant nothing on Wall Street before 2025. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
       "image": 14,
-      "start_time": 58.66,
-      "duration": 4.52,
-      "end_time": 63.18
+      "start_time": 56.28,
+      "end_time": 60.82,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "$38M Revenue | -$10.6M Losses",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of a financial document showing Ostin Technology Group annual report, Cayman Islands registered company revenue $38 million circled in red, net losses $10.6 million highlighted, institutional ownership near zero, SEC filing stamps visible, cold overhead lighting on white paper, the financial profile of a company so boring it was invisible. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 15,
-      "start_time": 63.18,
-      "duration": 3.9,
-      "end_time": 67.08
+      "start_time": 60.82,
+      "end_time": 65.36,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of an empty corporate analyst research office, vacant desks with dark monitors turned off, empty chairs, blank whiteboard, the absence of institutional interest, zero analyst coverage and near-zero institutional ownership, a stock that was background noise., with clear depth layers visible in the composition, a NASDAQ-listed company making LCD modules. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 16,
-      "start_time": 67.08,
-      "duration": 4.36,
-      "end_time": 71.44
+      "start_time": 65.36,
+      "end_time": 69.9,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "tilt_shift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide aerial view of a sprawling industrial park in Nanjing China at dawn, grey factory buildings with LCD component signage, trucks loading display modules, the mundane operations of Ostin Technology Group, a company manufacturing consumer electronics nobody cared about. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 17,
-      "start_time": 71.44,
-      "duration": 5.0,
-      "end_time": 76.44
+      "start_time": 69.9,
+      "end_time": 74.44,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of massive stock exchange display board, foreground: blurred railing in viewing gallery, midground: thousands of tiny ticker symbols scrolling with most in neutral grey, background: vast trading floor stretching into darkness, one tiny ticker 'OST' barely visible among thousands, wallpaper stock nobody noticed, automotive and consumer electronics display modules worth only $38 million in revenue. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 18,
-      "start_time": 76.44,
-      "duration": 4.86,
-      "end_time": 81.3
+      "start_time": 74.44,
+      "end_time": 78.98,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a dark SEC regulatory monitoring screen showing thousands of stock data feeds scrolling, screen reflection visible on reading glasses sitting abandoned on desk, nobody watching, coffee cup growing cold beside untouched compliance reports, the regulatory blind spot. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 19,
-      "start_time": 81.3,
-      "duration": 3.72,
-      "end_time": 85.02
+      "start_time": 78.98,
+      "end_time": 83.53,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a NASDAQ listing application with Ostin Technology Group company information, Cayman Islands jurisdiction, principal operations in Nanjing China, LCD display module manufacturing, background noise wallpaper stock with near zero institutional ownership, a perfectly boring company., with clear depth layers visible in the composition, losses of $10.6 million making it invisible to anyone watching. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 20,
-      "start_time": 85.02,
-      "duration": 2.86,
-      "end_time": 87.88
+      "start_time": 83.53,
+      "end_time": 88.07,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of an elegant empty house at night with front door standing wide open, golden light spilling onto empty porch, no security cameras, no alarm, the door invitingly ajar, the financial equivalent of a stock nobody was protecting, an unlocked door waiting for someone to walk through. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 21,
-      "start_time": 104.54,
-      "duration": 4.8,
-      "end_time": 109.34
+      "start_time": 88.07,
+      "end_time": 92.61,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of empty Bloomberg terminals at a Wall Street research firm with no OST coverage loaded, the micro-cap stock too boring and too small for any analyst to bother covering, no institutional money asking questions., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 22,
-      "start_time": 109.34,
-      "duration": 4.96,
-      "end_time": 114.3
+      "start_time": 92.61,
+      "end_time": 97.15,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "DOJ Indictment | September 10, 2025",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Extreme close-up of DOJ indictment document, 'UNITED STATES v. LAI KUI SEN and YAN ZHAO' in bold legal typeface, 'Eastern District of Virginia' court stamp, filing date September 10 2025, Department of Justice seal, dramatic overhead lighting on legal paper. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 23,
-      "start_time": 114.3,
-      "duration": 2.54,
-      "end_time": 116.84
+      "start_time": 97.15,
+      "end_time": 101.69,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Institutional Ownership: Near Zero",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of SEC ownership filing showing institutional holdings for Ostin Technology at near zero percent, the empty shareholder registry, no hedge funds no mutual funds, the stock existed in regulatory darkness, nobody protecting it, an unlocked door. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 24,
-      "start_time": 116.84,
-      "duration": 3.84,
-      "end_time": 120.68
+      "start_time": 101.69,
+      "end_time": 106.23,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "\"Hank Shi\" \u2022 \"Altman\" \u2022 \"Bob\"",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of dark shadowy figure at desk with multiple mobile phones, each showing different messaging app, face completely in shadow with only hands visible, phones labeled with alias names on sticky notes, the co-conspirator Yan Zhao with multiple identities and no accountability., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 25,
-      "start_time": 87.88,
-      "duration": 7.94,
-      "end_time": 95.82
+      "start_time": 106.23,
+      "end_time": 110.77,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide overhead shot of dark war-room style office with large central table covered in documents and laptops, fifteen chairs with numbered placards, maps and financial charts on walls, multiple phone lines visible, the headquarters of a fifteen-person conspiracy army armed with artificial intelligence. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 26,
-      "start_time": 95.82,
-      "duration": 1.7,
-      "end_time": 97.52
+      "start_time": 110.77,
+      "end_time": 115.31,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide establishing shot of Virginia Eastern District federal courthouse, foreground: iron fence and stone pillars, midground: imposing courthouse with tall columns, background: grey overcast sky, where the DOJ would file the September 2025 indictment. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 27,
-      "start_time": 97.52,
-      "duration": 2.36,
-      "end_time": 99.88
+      "start_time": 115.31,
+      "end_time": 119.85,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Extreme close-up of computer screen showing AI deepfake software interface with face-swapping tools, progress bar 'RENDERING VIDEO' at 87%, face thumbnails in sidebar, neural network visualization, artificial intelligence being weaponized for stock manipulation at a scale Wall Street had never seen, the Virginia Eastern District where the case would be filed. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 28,
-      "start_time": 99.88,
-      "duration": 4.66,
-      "end_time": 104.54
+      "start_time": 119.85,
+      "end_time": 124.39,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_zoom",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "Nanjing, China | 2025",
+      "prompt": "Satellite-style dark map of eastern China zoomed to Jiangsu province, Nanjing city marked with glowing red pin, Yangtze River as dark blue line, surrounding cities dimly labeled, modern cartographic styling, the operational base of Ostin Technology Group, origin point of the DOJ indictment against conspirators including Hank Shi. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 29,
-      "start_time": 120.68,
-      "duration": 8.24,
-      "end_time": 128.92
+      "start_time": 124.39,
+      "end_time": 128.94,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of multiple burner phones on dark surface, each showing different messaging app with different alias accounts, the digital arsenal of co-conspirator Yan Zhao who operated under five different names., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 30,
-      "start_time": 128.92,
-      "duration": 10.08,
-      "end_time": 139.0
+      "start_time": 128.94,
+      "end_time": 133.48,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Late 2024 | The Groundwork",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of dimly lit office at night, papers showing corporate structure diagrams and shell company flowcharts, calendar showing December 2024 with dates circled, laptop showing NASDAQ listing requirements, the quiet meticulous groundwork of the scheme. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 31,
-      "start_time": 139.0,
-      "duration": 1.34,
-      "end_time": 140.34
+      "start_time": 133.48,
+      "end_time": 138.02,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of an anonymous hand signing corporate registration documents in a shadowed office, multiple shell company names visible on the papers being signed, the pen moving methodically through stacks of incorporation paperwork, the legal infrastructure of an army of conspirators being quietly assembled. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 32,
-      "start_time": 140.34,
-      "duration": 5.56,
-      "end_time": 145.9
+      "start_time": 138.02,
+      "end_time": 142.56,
+      "duration": 4.54
     },
     {
+      "section": "EARLY_LIFE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "Armed With: Artificial Intelligence",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of a server rack with GPU computing units at full capacity, LED lights blinking, high-bandwidth connections, computational power of AI weaponized at a scale Wall Street had never seen. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 33,
-      "start_time": 145.9,
-      "duration": 2.62,
-      "end_time": 148.52
+      "start_time": 142.56,
+      "end_time": 147.1,
+      "duration": 4.54
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "April 15, 2025 | The First Strike",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of a stock offering document titled 'REGISTERED DIRECT OFFERING - OSTIN TECHNOLOGY GROUP' dated April 15 2025, '$5 million' in bold, '9 million shares at $0.55 per share' highlighted, warrant terms visible, the elegant first strike of the scheme., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 34,
-      "start_time": 148.52,
-      "duration": 3.32,
-      "end_time": 151.84
+      "start_time": 147.1,
+      "end_time": 152.41,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "$0.19 Per Share",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Extreme close-up macro shot of scattered small coins - a dime, a nickel and four pennies on dark surface, dramatic side lighting creating long shadows, the pathetically small amount that nineteen cents per share bought shares in what would briefly be a billion-dollar company. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 35,
-      "start_time": 151.84,
-      "duration": 4.64,
-      "end_time": 156.48
+      "start_time": 152.41,
+      "end_time": 157.72,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of SEC filing paperwork showing 'WARRANT AGREEMENT' header with financial terms, the conversion ratio of warrants to shares at just 19 cents each, attached to the registered direct offering documentation, legal financial terms that masked the true cost per share, a $5 million registered direct offering. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 36,
-      "start_time": 156.48,
-      "duration": 5.74,
-      "end_time": 162.22
+      "start_time": 157.72,
+      "end_time": 163.03,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Warrant Exchange | May 3-7, 2025",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of a stock transfer ledger on computer screen, 'WARRANT EXCHANGE AGREEMENT - May 3-7, 2025' header, columns showing 18 million warrants converting to 71 million new shares, cost column showing $0.00, shares conjured from nothing, green numbers multiplying., with clear depth layers visible in the composition, shares placed at $0.55 each with warrants attached. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 37,
-      "start_time": 162.22,
-      "duration": 5.66,
-      "end_time": 167.88
+      "start_time": 163.03,
+      "end_time": 168.34,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "71 Million Shares | Zero Cost",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of a digital share counter rapidly spinning up from zero to 71,000,000, each digit clicking into place like a mechanical counter, the zero cost shown below in red, no cash no purchase, shares conjured from nothing dropped into the hands of fifteen conspirators. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 38,
-      "start_time": 167.88,
-      "duration": 4.04,
-      "end_time": 171.92
+      "start_time": 168.34,
+      "end_time": 173.65,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide overhead shot looking down at a conference table, foreground: edge of table with coffee cups, midground: fifteen numbered name placards with stock certificate documents, background: large screen showing '80,000,000 SHARES' in bold red, fifteen people who controlled a publicly traded NASDAQ company for pennies, effective cost working out to just $0.19 per share. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 39,
-      "start_time": 171.92,
-      "duration": 4.84,
-      "end_time": 176.76
+      "start_time": 173.65,
+      "end_time": 178.96,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of a NASDAQ electronic listing board showing Ostin Technology Group's outstanding shares exploding as warrant exchange converts to seventy-one million (71 million) shares at zero cost for 15 conspirators, the numbers escalating dramatically, the quiet takeover of seventy-five percent of a publicly traded company happening in plain sight, over 18 million warrants exchanged. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 40,
-      "start_time": 176.76,
-      "duration": 5.08,
-      "end_time": 181.84
+      "start_time": 178.96,
+      "end_time": 184.27,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "80M Shares | 15 People | $0.19/Share",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of a spreadsheet on screen showing fifteen rows of co-conspirator accounts, each row showing millions of shares allocated, average cost per share showing $0.19, total shares showing 80 million, the spreadsheet of a perfectly executed hostile takeover disguised as a stock offering, converting to $71 million worth of new shares at near zero cost, 18 million warrants converting into new shares. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 41,
-      "start_time": 181.84,
-      "duration": 5.24,
-      "end_time": 187.08
+      "start_time": 184.27,
+      "end_time": 189.58,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a printed stock certificate for Ostin Technology Group showing massive share count, the certificate sitting on pile of scattered pennies, dramatic overhead spotlight, the absurd contrast between the massive share count and the tiny cost, pennies on the dollar for a NASDAQ company. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 42,
-      "start_time": 187.08,
-      "duration": 6.88,
-      "end_time": 193.96
+      "start_time": 189.58,
+      "end_time": 194.89,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of multiple encrypted messaging apps open on phones and laptops arranged on a table, a calendar showing May 11 2025 circled in red, coordination messages visible on screens, the final preparations before the pump launch., with clear depth layers visible in the composition, shares distributed directly to conspirators at no cost. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 43,
-      "start_time": 193.96,
-      "duration": 7.96,
-      "end_time": 201.92
+      "start_time": 194.89,
+      "end_time": 200.2,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "May 11, 2025 | The Pump Begins",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Wide shot of multiple computer screens in command-center formation, all showing social media platforms messaging apps and stock trading interfaces, hands hovering over keyboards, a countdown showing 00:00:00, the orchestrated launch of the most sophisticated pump and dump in NASDAQ history, May 11 2025. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 44,
-      "start_time": 201.92,
-      "duration": 7.46,
-      "end_time": 209.38
+      "start_time": 200.2,
+      "end_time": 205.51,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a social media scheduling dashboard showing dozens of pre-written promotional posts about OST queued for automated distribution, eighty million (80 million) shares acquired for pennies about to be pumped, each post featuring a different stolen advisor identity, timestamps set for coordinated release, the industrial-scale social media manipulation about to launch. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 45,
-      "start_time": 209.38,
-      "duration": 6.38,
-      "end_time": 215.76
+      "start_time": 205.51,
+      "end_time": 210.82,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of a phone screen showing the first promotional WhatsApp message being sent to multiple groups simultaneously, the 'forwarded many times' tag visible, the message containing a stock buy recommendation with false credentials, the opening salvo of the pump campaign., with clear depth layers visible in the composition, a NASDAQ-listed company about to be pumped. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 46,
-      "start_time": 215.76,
-      "duration": 4.48,
-      "end_time": 220.24
+      "start_time": 210.82,
+      "end_time": 216.13,
+      "duration": 5.31
     },
     {
+      "section": "THE_SPARK",
+      "emotional_tone": "tension",
+      "shot_type": "timeline",
+      "color_temperature": "cool",
+      "movement_type": "timeline_reveal",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Cinematic timeline infographic on dark background, golden connecting lines between dates: 'Dec 2024 Groundwork' \u2014 'Apr 15 $5M Offering' \u2014 'May 3-7 71M Warrant Shares' \u2014 'May 11 Pump Begins' \u2014 'Jun 26 Crash -94%', elegant typography with each node glowing, the complete timeline of the OST scheme. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 47,
-      "start_time": 220.24,
-      "duration": 7.18,
-      "end_time": 227.42
+      "start_time": 216.13,
+      "end_time": 221.44,
+      "duration": 5.31
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of high-end AI workstation running deepfake software, multiple GPUs at 100% utilization, face-mapping neural network on main screen with mesh overlays, green progress indicators, the sophisticated AI tools used for market manipulation at industrial scale. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 48,
-      "start_time": 227.42,
-      "duration": 13.74,
-      "end_time": 241.16
+      "start_time": 221.44,
+      "end_time": 225.9,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of computer screen showing FINRA BrokerCheck database search results, multiple investment advisor profiles in a grid, each showing real photograph and real license number, red 'STOLEN' stamps overlaid, legitimate credentials of real financial advisors being harvested for criminal use, this was not a typical pump-and-dump scheme. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 49,
-      "start_time": 241.16,
-      "duration": 5.9,
-      "end_time": 247.06
+      "start_time": 225.9,
+      "end_time": 230.36,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of a LinkedIn profile page showing a real SEC-registered financial advisor with professional headshot, certifications, years of experience, the real person whose entire digital identity was about to be stolen and weaponized. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 50,
-      "start_time": 247.06,
-      "duration": 9.02,
-      "end_time": 256.08
+      "start_time": 230.36,
+      "end_time": 234.82,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of computer workspace, foreground: coffee cup and notepad, midground: dual monitors showing social media account creation with stolen credentials, background: wall covered in printed advisor profiles like a criminal investigation board. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 51,
-      "start_time": 256.08,
-      "duration": 4.42,
-      "end_time": 260.5
+      "start_time": 234.82,
+      "end_time": 239.28,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of dimly lit workspace with dual monitors, one showing LinkedIn profile being cloned with real advisor photograph dragged into fake account form, other showing completed fake profiles, the systematic construction of stolen identities from SEC and FINRA registered advisors. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 52,
-      "start_time": 260.5,
-      "duration": 9.66,
-      "end_time": 270.16
+      "start_time": 239.28,
+      "end_time": 243.74,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of wall covered in printed photos and profiles of real financial advisors connected by red string lines, each annotated with fake social media account URLs, a criminal operations board mapping stolen identities to fake profiles., with clear depth layers visible in the composition, Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 53,
-      "start_time": 270.16,
-      "duration": 24.76,
-      "end_time": 294.92
+      "start_time": 243.74,
+      "end_time": 248.2,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Extreme close-up of FINRA BrokerCheck profile with green verification badges, registration ACTIVE, licenses current, the real database that made the stolen identity irrefutably convincing to anyone who checked. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 54,
-      "start_time": 294.92,
-      "duration": 5.38,
-      "end_time": 300.3
+      "start_time": 248.2,
+      "end_time": 252.66,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of smartphone showing Google search results for a financial advisor name, results showing legitimate FINRA registration, real LinkedIn profile, professional credentials confirming identity, green checkmark in results, everything looked legitimate because everything WAS real except the person posting. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 55,
-      "start_time": 300.3,
-      "duration": 4.85,
-      "end_time": 305.15
+      "start_time": 252.66,
+      "end_time": 257.12,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of AI deepfake rendering software mapping facial landmarks, generating realistic mouth movements to match text, the technical process of creating a fake video of Goldman Sachs chief strategist recommending OST stock. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 56,
-      "start_time": 305.15,
-      "duration": 4.85,
-      "end_time": 310.0
+      "start_time": 257.12,
+      "end_time": 261.58,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of video player on computer showing corporate financial presentation, speaker a blurred silhouette behind Goldman Sachs branded podium, visible digital glitch artifacts indicating AI manipulation, 'OST - STRONG BUY' on presentation slide, deepfake of a Goldman Sachs strategist recommending fraudulent stock, FINRA-registered credentials stolen from real advisors. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 57,
-      "start_time": 310.0,
-      "duration": 10.6,
-      "end_time": 320.6
+      "start_time": 261.58,
+      "end_time": 266.05,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of phone showing Instagram ad campaign dashboard, multiple ad creatives with deep fake Goldman Sachs celebrity videos queued, targeting parameters set to financial interest groups, paid promotions that looked legitimate and checked out, though the person posting was never the real person, about to launch. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 58,
-      "start_time": 320.6,
-      "duration": 4.14,
-      "end_time": 324.74
+      "start_time": 266.05,
+      "end_time": 270.51,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of phone scrolling through Instagram showing multiple sponsored ads, each with blurred face and 'SPONSORED' label and stock recommendation text, faces deliberately pixelated as deepfakes, paid ads appearing to show celebrities endorsing a company they never heard of. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 59,
-      "start_time": 324.74,
-      "duration": 4.64,
-      "end_time": 329.38
+      "start_time": 270.51,
+      "end_time": 274.97,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "truck_right",
+      "transition_type": "whip_pan",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of data center visualization showing WhatsApp messages distributed from central server to thousands of phones worldwide, connection lines spreading like a web, infrastructure behind funneling victims into fake communities, sponsored ads promoting OST stock, AI generated deep fake videos of Goldman Sachs executives weaponized at scale. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 60,
-      "start_time": 329.38,
-      "duration": 7.46,
-      "end_time": 336.84
+      "start_time": 274.97,
+      "end_time": 279.43,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of smartphone showing WhatsApp with multiple investment groups listed, group names with financial advisory language, hundreds of participants in each, green WhatsApp interface, victims from Instagram and Facebook ads funneled into WhatsApp groups designed to sound like legitimate financial communities, victims funneled into OST investment groups, AI generated deep fake videos of Goldman Sachs executives. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 61,
-      "start_time": 336.84,
-      "duration": 7.66,
-      "end_time": 344.5
+      "start_time": 279.43,
+      "end_time": 283.89,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of WhatsApp Web interface managing multiple investment groups simultaneously, hundreds of members per group, messages copy-pasted across all groups at once, industrial management of deep fake Goldman Sachs celebrity manipulation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 62,
-      "start_time": 344.5,
-      "duration": 6.28,
-      "end_time": 350.78
+      "start_time": 283.89,
+      "end_time": 288.35,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "\"Karen Finerman's Free Exchange Group\"",
+      "text_animation": "highlight",
+      "map_label": "",
+      "prompt": "Extreme close-up of WhatsApp group header showing 'Karen Finerman's Free Exchange Group Sharing' with profile picture, hundreds of members listed, the stolen identity of the well-known CNBC financial personality used without her knowledge, alongside deepfakes of Elon Musk and Mark Zuckerberg, Karen Finerman's Free Exchange Group promoting OST stock. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 63,
-      "start_time": 350.78,
-      "duration": 6.98,
-      "end_time": 357.76
+      "start_time": 288.35,
+      "end_time": 292.81,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of phone showing WhatsApp voice note from a supposed advisor giving confident stock advice about OST, green waveform visible, promoters posing as fellow investors issuing daily buying instructions, deepfake celebrity endorsements spread through Instagram and Facebook paid ads. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 64,
-      "start_time": 357.76,
-      "duration": 15.96,
-      "end_time": 373.72
+      "start_time": 292.81,
+      "end_time": 297.27,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "pan_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "\"Today we focus on OST. Buy $4.50-$5. HOLD.\"",
+      "text_animation": "highlight",
+      "map_label": "",
+      "prompt": "Close-up of WhatsApp chat thread showing message bubble with daily buying instructions, from promoter posing as fellow investor, green bubbles with timestamps, reactions from other members showing excited emojis, daily manipulation instructions issued to hundreds of victims. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 65,
-      "start_time": 373.72,
-      "duration": 5.08,
-      "end_time": 378.8
+      "start_time": 297.27,
+      "end_time": 301.73,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "pan_left",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of WhatsApp message thread with calculated buy recommendations and specific price ranges in Karen Finerman branded groups, emoji reactions showing excitement, the precise daily manipulation driving hundreds to invest. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 66,
-      "start_time": 378.8,
-      "duration": 7.1,
-      "end_time": 385.9
+      "start_time": 301.73,
+      "end_time": 306.19,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "15-25% WEEKLY Returns Promised",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of financial calculator showing impossibly high compound growth, 15-25% weekly returns producing astronomical figures, numbers glowing green against dark background, red warning triangle that should have appeared but never did, impossible promises that were too good to be true. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 67,
-      "start_time": 385.9,
-      "duration": 21.24,
-      "end_time": 407.14
+      "start_time": 306.19,
+      "end_time": 310.65,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of person in shadow monitoring phone screens tracking how many members follow buy instructions, spreadsheet counting victims and investment amounts, the cold calculation behind social engineering. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 68,
-      "start_time": 407.14,
-      "duration": 6.72,
-      "end_time": 413.86
+      "start_time": 310.65,
+      "end_time": 315.11,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of professional-looking stock research report on Ostin Technology, fabricated acquisition rumors with fake price targets showing '$15 TARGET', professional charts with invented data, 'FABRICATED' watermarked faintly in red, a fake research report circulated to build confidence. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 69,
-      "start_time": 413.86,
-      "duration": 9.74,
-      "end_time": 423.6
+      "start_time": 315.11,
+      "end_time": 319.57,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of trading chart showing earlier recommended stocks with small gains, green profit numbers on three previous trades, after fake research report promises, the trust-building mechanism making victims confident to invest bigger next time, buying between $4.50 ($450 level) and $5 per share. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 70,
-      "start_time": 423.6,
-      "duration": 7.28,
-      "end_time": 430.88
+      "start_time": 319.57,
+      "end_time": 324.03,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "whip_pan",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of phone showing WhatsApp notification 'You were removed from this group', a hard question about 15 to 25% (fifteen to twenty-five percent) weekly return promises visible above the removal, the abrupt silencing of anyone who pushed back or asked questions, cold blue phone glow in complete darkness, buying instructions to buy OST between $4.50 and $5. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 71,
-      "start_time": 430.88,
-      "duration": 4.76,
-      "end_time": 435.64
+      "start_time": 324.03,
+      "end_time": 328.49,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of OST stock chart on large monitor beginning upward climb from $0.78, green candles day after day, WhatsApp groups screaming buy and hold, the pump working exactly as designed. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 72,
-      "start_time": 435.64,
-      "duration": 5.66,
-      "end_time": 441.3
+      "start_time": 328.49,
+      "end_time": 332.95,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot showing phone notification with small stock gain, foreground: phone screen showing '+$2,400 profit' in green, midground: person's hand holding phone with excitement and growing trust to go bigger next time, background: comfortable living room, the small legitimate gains that built just enough trust to go bigger next time. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 73,
-      "start_time": 441.3,
-      "duration": 10.38,
-      "end_time": 451.68
+      "start_time": 332.95,
+      "end_time": 337.41,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide trading floor screen, foreground: blurred desk edge, midground: massive green stock chart climbing dramatically, background: multiple monitors showing euphoric upward trend, stock moving from pennies to dollars, the diabolical scheme where anyone removed from groups for questioning was replaced by new victims. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 74,
-      "start_time": 451.68,
-      "duration": 16.96,
-      "end_time": 468.64
+      "start_time": 337.41,
+      "end_time": 341.87,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of brokerage account statement showing three previous stock trades all with modest green profits of a few thousand dollars each, pen circling profits, warm golden desk lamp light, careful cultivation of real trust through real money, just enough to believe. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 75,
-      "start_time": 468.64,
-      "duration": 6.7,
-      "end_time": 475.34
+      "start_time": 341.87,
+      "end_time": 346.34,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "73 Days",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of calendar showing April 14 through June 26 2025, seventy-three days highlighted, just enough trust to go bigger, the impossibly short timeframe a $22 million company was pumped to over a billion dollars, OST being promoted through WhatsApp groups previously. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 76,
-      "start_time": 475.34,
-      "duration": 5.11,
-      "end_time": 480.45
+      "start_time": 346.34,
+      "end_time": 350.8,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "$0.78 \u2192 $9.40 | +1,175%",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Wide shot of large financial display showing OST stock chart April to June 2025, line starting flat at $0.78 then rising in dramatic exponential curve to $9.40, percentage gain 1175% in massive green numbers, 73-day journey from micro-cap to billion-dollar market cap on deepfakes and WhatsApp. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 77,
-      "start_time": 480.45,
-      "duration": 5.11,
-      "end_time": 485.56
+      "start_time": 350.8,
+      "end_time": 355.26,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of financial news ticker showing OST volume spiking to unprecedented levels, trading volume bars growing taller, market attention arriving for all the wrong reasons. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 78,
-      "start_time": 485.56,
-      "duration": 5.17,
-      "end_time": 490.73
+      "start_time": 355.26,
+      "end_time": 359.72,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "truck_left",
+      "transition_type": "parallax_slide",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot panning across wall of social media posts about OST, Instagram promoted posts, WhatsApp screenshots, fabricated news articles, the sheer volume of coordinated promotional material driving 73 days of pump flooding every digital channel, the stock rising from $0.78 on April 14th. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 79,
-      "start_time": 490.73,
-      "duration": 6.09,
-      "end_time": 496.82
+      "start_time": 359.72,
+      "end_time": 364.18,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "$22M \u2192 $1+ BILLION",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Extreme close-up of market cap display transforming from '$22,000,000' to '$1,000,000,000+' with digits spinning like slot machine, gold and green colors, the mathematically absurd transformation of a tiny LCD company into a billion-dollar entity on deepfakes and WhatsApp messages. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 80,
-      "start_time": 496.82,
-      "duration": 9.58,
-      "end_time": 506.4
+      "start_time": 364.18,
+      "end_time": 368.64,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of FINRA surveillance terminal showing normal-looking trading activity for OST, patterns not triggering automated alerts, the regulatory system failing to detect coordinated manipulation under its nose, reaching $9.40 for an 1175% increase. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 81,
-      "start_time": 506.4,
-      "duration": 3.94,
-      "end_time": 510.34
+      "start_time": 368.64,
+      "end_time": 373.1,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of SEC headquarters in Washington DC at night with most windows dark, the massive federal agency not catching the most brazen AI-powered stock fraud happening in real time. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 82,
-      "start_time": 510.34,
-      "duration": 3.94,
-      "end_time": 514.28
+      "start_time": 373.1,
+      "end_time": 377.56,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of three institutional buildings at night representing FINRA SEC and NASDAQ, each dark with lights off, empty parking lots, the three organizations that should have caught the fraud but failed, nobody caught it in time, built on deepfakes and WhatsApp promotion that nobody caught in time. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 83,
-      "start_time": 514.28,
-      "duration": 11.28,
-      "end_time": 525.56
+      "start_time": 377.56,
+      "end_time": 382.02,
+      "duration": 4.46
     },
     {
+      "section": "THE_RISE",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "orbit",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of stock exchange market cap ranking board, OST climbing past legitimate companies, passing $500M then $800M then crossing billion-dollar threshold, LCD maker worth more than real tech companies. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 84,
-      "start_time": 525.56,
-      "duration": 9.92,
-      "end_time": 535.48
+      "start_time": 382.02,
+      "end_time": 386.48,
+      "duration": 4.46
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of middle-aged man at kitchen table with laptop showing stock trading platform, coffee mug beside him, family photos on wall, warm morning light through window, ordinary person in ordinary home about to make the biggest financial mistake of his life. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
       "image": 85,
-      "start_time": 535.48,
-      "duration": 7.44,
-      "end_time": 542.92
+      "start_time": 386.48,
+      "end_time": 390.98,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_pan",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "Ohio \u2022 Florida \u2022 Texas \u2022 Tel Aviv \u2022 Toronto \u2022 Berlin | 2025",
+      "prompt": "Dark world map showing red victim location pins in US Ohio Florida Texas, plus Tel Aviv Israel, Toronto Canada, Berlin Germany, red lines connecting pins, retail investors devastated by the global reach of a fraud that destroyed lives across continents. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 86,
-      "start_time": 542.92,
-      "duration": 9.26,
-      "end_time": 552.18
+      "start_time": 390.98,
+      "end_time": 395.47,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of hands hovering over laptop keyboard on stock trading platform, large buy order entered for OST, cursor on 'EXECUTE TRADE' button, the moment of no return, warm desk lamp shadows, about to go bigger this time with twenty thousand maybe fifty thousand. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 87,
-      "start_time": 552.18,
-      "duration": 3.95,
-      "end_time": 556.13
+      "start_time": 395.47,
+      "end_time": 399.97,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of retirement account statement showing 401k balance with substantial six-figure amount, handwritten note 'transfer to brokerage?', reading glasses on top, warm amber lamp light, going bigger with retirement savings about to be transferred into a deepfake-driven fraud, having been in the WhatsApp group for months. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 88,
-      "start_time": 556.13,
-      "duration": 4.65,
-      "end_time": 560.78
+      "start_time": 399.97,
+      "end_time": 404.47,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium over-shoulder shot of person watching deepfake video on laptop, screen showing professional financial analyst at corporate podium, 'OST Price Target: $15' on slide, viewer's face showing trust, because a Goldman Sachs strategist ON VIDEO said fifteen dollars. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 89,
-      "start_time": 560.78,
-      "duration": 4.0,
-      "end_time": 564.78
+      "start_time": 404.47,
+      "end_time": 408.96,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "June 26 | OST Peak: $9.40",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Extreme close-up of stock screen at exactly 9:31 AM showing OST at $9.40, the peak, green numbers, brief triumph before everything falls, timestamp June 26 2025, the last second before the crash, Goldman Sachs on video had promised $15, investing retirement savings based on the deepfake video. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 90,
-      "start_time": 564.78,
-      "duration": 12.96,
-      "end_time": 577.74
+      "start_time": 408.96,
+      "end_time": 413.46,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "whip_pan",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "10:00 AM \u2014 $4.00",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of trading terminal showing OST at $4.00, massive red candlestick bars, price halved in under 30 minutes, trader's clenched fist at edge of frame, cascading red screens, Goldman Sachs strategist on video promised $15 target. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 91,
-      "start_time": 577.74,
-      "duration": 5.0,
-      "end_time": 582.74
+      "start_time": 413.46,
+      "end_time": 417.96,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "12:00 PM \u2014 $1.50",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of phone showing stock alert 'OST DOWN 84% - $1.50', trembling hands holding device, panicked WhatsApp messages scrolling, by noon a dollar fifty, crash from $9.40 accelerating, Goldman Sachs strategist on video had said $15 target. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 92,
-      "start_time": 582.74,
-      "duration": 10.04,
-      "end_time": 592.78
+      "start_time": 417.96,
+      "end_time": 422.45,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "extreme_closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "By 10 AM \u2014 $4.00",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Extreme close-up of closing price '$0.55' in large red digits, '-94.1%' in even larger red text, closing bell timestamp, ninety-four point one percent gone in one day, $950 million in market cap destroyed, crashing from the $9.40 peak. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 93,
-      "start_time": 592.78,
-      "duration": 5.59,
-      "end_time": 598.37
+      "start_time": 422.45,
+      "end_time": 426.95,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "$0.55 | -94.1% Gone",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of person in dark room lit only by laptop screen showing massive red losses, head in hands, complete defeat, family photos on wall behind mocking the devastation on screen, ninety-four percent gone in six hours, stock closing at $0.55 as the crash destroyed everything. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
       "image": 94,
-      "start_time": 598.37,
-      "duration": 5.59,
-      "end_time": 603.96
+      "start_time": 426.95,
+      "end_time": 431.45,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "luma_fade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "$10K to $800K+ Per Victim",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Wide shot with dark world map, foreground: scattered documents and financial statements, midground: illuminated map with victim countries highlighted in red, background: dark backdrop, victims who lost ten thousand to eight hundred thousand dollars each, by noon dropping to $1.50. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 95,
-      "start_time": 603.96,
-      "duration": 2.85,
-      "end_time": 606.81
+      "start_time": 431.45,
+      "end_time": 435.94,
+      "duration": 4.5
     },
     {
+      "section": "THE_CONFLICT",
+      "emotional_tone": "devastation",
+      "shot_type": "crowd",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide overhead shot of hundreds of empty chairs in dimly lit convention hall, each with small paper name placard, representing hundreds of victims across multiple lawsuits, the scale of human damage, by close at $0.55 after the catastrophic crash. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 96,
-      "start_time": 606.81,
-      "duration": 2.85,
-      "end_time": 609.65
+      "start_time": 435.94,
+      "end_time": 440.44,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "dolly_zoom",
+      "transition_type": "film_burn",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "$950 Million | DESTROYED",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Wide dramatic shot of NASDAQ trading floor with all screens red, massive central display '$950,000,000 MARKET CAP DESTROYED', floor bathed in red glow, complete financial annihilation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 97,
-      "start_time": 609.65,
-      "duration": 3.87,
-      "end_time": 613.52
+      "start_time": 440.44,
+      "end_time": 444.94,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of legal filing showing victim countries: 'United States, Israel, Canada, Germany, Netherlands, Switzerland, Italy, United Kingdom', each highlighted in yellow, losses $10,000 to $800,000 annotated, international scope of damage. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 98,
-      "start_time": 613.52,
-      "duration": 2.98,
-      "end_time": 616.5
+      "start_time": 444.94,
+      "end_time": 449.43,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of class-action lawsuit filings spread on legal office desk, each representing different country's victims, the paperwork of international financial devastation piled high. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 99,
-      "start_time": 616.5,
-      "duration": 3.82,
-      "end_time": 620.32
+      "start_time": 449.43,
+      "end_time": 453.93,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "whip_pan",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of stock trading interface showing rapid-fire SELL orders, green sell confirmations scrolling in succession, millions of shares being dumped, the co-conspirators dumping their shares the entire way up while WhatsApp groups screamed buy and hold, individual OST losses ranging from $10,000 to over $800,000 each. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 100,
-      "start_time": 620.32,
-      "duration": 2.35,
-      "end_time": 622.67
+      "start_time": 453.93,
+      "end_time": 458.42,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Split-frame showing two screens: left WhatsApp message 'HOLD! TARGET $15!', right brokerage executing massive 5-million-share sell order, the hypocrisy of people running groups selling everything while telling victims to hold. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 101,
-      "start_time": 622.67,
-      "duration": 2.35,
-      "end_time": 625.01
+      "start_time": 458.42,
+      "end_time": 462.92,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of WhatsApp group showing last messages 'HOLD! DO NOT SELL!' while notification shows admin has left the group, operators abandoning victims at maximum loss. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 102,
-      "start_time": 625.01,
-      "duration": 2.35,
-      "end_time": 627.36
+      "start_time": 462.92,
+      "end_time": 467.41,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of stacked wire transfer records and bank statements with large amounts highlighted, totaling over one hundred ten million from dumping shares and selling everything dollars, DOJ indictment page showing proceeds calculation, the profit from the most brazen AI stock fraud on NASDAQ, SEC investigation revealing the dumping pattern. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 103,
-      "start_time": 627.36,
-      "duration": 6.82,
-      "end_time": 634.18
+      "start_time": 467.41,
+      "end_time": 471.91,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of wire transfer records showing millions moving to offshore accounts in rapid succession, bank routing numbers partially visible, defendants extracting over one hundred ten million, WhatsApp groups screaming buy and hold while insiders sold. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 104,
-      "start_time": 634.18,
-      "duration": 13.64,
-      "end_time": 647.82
+      "start_time": 471.91,
+      "end_time": 476.4,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "push_in",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "$110 Million | Illicit Proceeds",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of a real financial advisor at kitchen table early morning, phone to ear with confused horror, coffee untouched, morning light through blinds, after 110 million dollars in illicit proceeds extracted, the real advisors whose identities were stolen had no idea, waking to angry phone calls demanding explanations. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
       "image": 105,
-      "start_time": 647.82,
-      "duration": 31.3,
-      "end_time": 679.12
+      "start_time": 476.4,
+      "end_time": 480.9,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "handheld_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of phone showing multiple missed calls and angry texts: 'YOU TOLD ME TO BUY OST' and 'I LOST EVERYTHING', phone buzzing with another call, the bombardment of blame directed at innocent people whose identities were stolen, as documented in the DOJ indictment alleging $110 million in proceeds. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 106,
-      "start_time": 679.12,
-      "duration": 9.16,
-      "end_time": 688.28
+      "start_time": 480.9,
+      "end_time": 485.39,
+      "duration": 4.5
     },
     {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of financial advisor's office with phone ringing off the hook, voicemail lights blinking, FINRA compliance letter on desk, real advisors having no idea until already under suspicion. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
       "image": 107,
-      "start_time": 688.28,
-      "duration": 7.24,
-      "end_time": 695.52
+      "start_time": 485.39,
+      "end_time": 489.89,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of FINRA compliance investigation letter addressed to an investment advisor, 'RE: INQUIRY INTO OST RECOMMENDATIONS', advisor's real name visible, compliance officers pulling records against innocent people whose stolen identities haunts them still, angry phone calls destroying careers who did nothing wrong. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 108,
+      "start_time": 489.89,
+      "end_time": 494.38,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "\"I spent 20 years building my reputation. Someone destroyed it overnight with a computer.\"",
+      "text_animation": "highlight",
+      "map_label": "",
+      "prompt": "Close-up portrait in shadow, only half face visible in warm side lighting, exhausted expression, framed FINRA license blurred on wall behind, the victim advisor who spent twenty years building a reputation destroyed overnight with a computer. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
+      "image": 109,
+      "start_time": 494.38,
+      "end_time": 498.88,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of framed professional certificate on office wall, advisor's name and qualifications displayed, morning light on twenty years of legitimate work about to be questioned by compliance, advisors with stolen identities confronting the aftermath. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 110,
+      "start_time": 498.88,
+      "end_time": 503.37,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "dolly_zoom",
+      "transition_type": "film_burn",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of large screen showing person's professional photo being AI-manipulated, face mapped with green mesh points, name being copied, credentials harvested, your face your name your career hijacked by AI and used to steal from strangers, the new crime. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 111,
+      "start_time": 503.37,
+      "end_time": 507.87,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Extreme close-up of screen showing digital identity being constructed: face photograph loading, name typed, FINRA credentials pasted, LinkedIn URL copied, systematic theft of a 20 years of reputation and human identity by computer as data points, digital body snatching. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 112,
+      "start_time": 507.87,
+      "end_time": 512.36,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of globe with digital data streams connecting countries, red streams showing stolen identity data flowing from US overseas, green streams showing fraudulent money back, the global network of AI identity theft. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 113,
+      "start_time": 512.36,
+      "end_time": 516.86,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of dark operations room with multiple monitors each showing different stolen advisor identity, faces and credentials lined up like gallery of hijacked lives, the industrial scale of identity theft, cold blue monitor glow. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 114,
+      "start_time": 516.86,
+      "end_time": 521.35,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of desk phone ringing with 'UNKNOWN CALLER' on ID, beside framed family photo and coffee mug reading 'World's Best Advisor', another angry investor calling about recommendations never made. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 115,
+      "start_time": 521.35,
+      "end_time": 525.85,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "Your Face. Your Name. Hijacked.",
+      "text_animation": "highlight",
+      "map_label": "",
+      "prompt": "Close-up of digital display showing person's face progressively overlaid with AI mesh mapping, real face dissolving into digital construct, the new crime: your face your name your career hijacked by artificial intelligence. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 116,
+      "start_time": 525.85,
+      "end_time": 530.34,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_CLIMAX",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot through rainy window, foreground: raindrops on glass creating bokeh, midground: laptop showing international wire transfers, background: city skyline in rain, crime spanning continents, stealing faces to rob strangers on the other side of the world. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 117,
+      "start_time": 530.34,
+      "end_time": 534.84,
+      "duration": 4.5
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "FINRA Market Abuse Group",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of FINRA monitoring center, wall of screens showing trading pattern analytics, one screen with red alert around OST's abnormal exponential spike, the Market Abuse Group finally flagging the anomaly. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 118,
+      "start_time": 534.84,
+      "end_time": 539.3,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of surveillance analytics showing OST pattern overlaid against normal patterns, OST a wild exponential spike outside parameters, 'UNPRECEDENTED PATTERN' in red, trading patterns unlike anything in surveillance history. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 119,
+      "start_time": 539.3,
+      "end_time": 543.76,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of FBI headquarters at night, foreground: security bollards and flagpoles, midground: the J. Edgar Hoover Building with select windows lit, background: dark sky, the FBI and SEC Office of Inspector General leading the investigation, referred to the DOJ for criminal prosecution. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 120,
+      "start_time": 543.76,
+      "end_time": 548.22,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of SEC investigators in conference room surrounded by evidence boxes, financial documents on long table, laptop screens showing trading data, SEC OIG logo on folder, the methodical federal investigation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 121,
+      "start_time": 548.22,
+      "end_time": 552.68,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "September 12, 2025 | Indictment Unsealed",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of unsealed indictment, 'UNSEALED' in large red letters, 'EASTERN DISTRICT OF VIRGINIA' and 'UNITED STATES v. LAI KUI SEN and YAN ZHAO', September 12 2025, the legal hammer falling. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 122,
+      "start_time": 552.68,
+      "end_time": 557.13,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of charges section: 'COUNT ONE: Conspiracy to Commit Securities Fraud' and 'COUNT TWO: Wire Fraud' and 'COUNT THREE: Securities Fraud', formal criminal charges carrying decades of prison time. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 123,
+      "start_time": 557.13,
+      "end_time": 561.59,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "bounce_zoom",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "NASDAQ: OST HALTED \u2014 INDEFINITELY",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of NASDAQ system showing red banner 'TRADING HALT - OST - INDEFINITELY', halt spreading across displays, NASDAQ halting trading permanently, the death of a fraudulent stock. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 124,
+      "start_time": 561.59,
+      "end_time": 566.05,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_zoom",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "Alexandria, Virginia | 2025",
+      "prompt": "Dark map of Washington DC area zoomed to Alexandria Virginia, courthouse location with blue justice-scale pin, Potomac River visible, case assigned to Judge Michael S. Nachmanoff, charged with securities fraud and wire fraud, NASDAQ halted trading of OST shares indefinitely. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 125,
+      "start_time": 566.05,
+      "end_time": 570.51,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Judge Michael S. Nachmanoff",
+      "text_animation": "slide_up",
+      "map_label": "",
+      "prompt": "Wide shot of imposing federal courtroom, judge's elevated bench in dark polished wood, empty defendant chairs, American and Virginia flags, solemn institutional lighting, the courtroom where the case would be heard. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 126,
+      "start_time": 570.51,
+      "end_time": 574.97,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "silhouette",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Dark silhouette of two figures walking away down international airport terminal corridor, departure boards showing Asian flights overhead, backs to camera growing smaller, both defendants Chinese nationals not in US when indictment dropped. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 127,
+      "start_time": 574.97,
+      "end_time": 579.43,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "Neither Has Been Arrested",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Close-up of Interpol-style document with blurred photographs and 'AT LARGE' stamped across both, beside cold cup of coffee, neither arrested both believed outside US jurisdiction. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 128,
+      "start_time": 579.43,
+      "end_time": 583.89,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of world map with digital connection lines showing how fraud operated remotely, deepfakes transmitted overseas, stolen identities routed through social media, WhatsApp across borders, they never stepped foot in America to rob American investors. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 129,
+      "start_time": 583.89,
+      "end_time": 588.35,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up triptych on single frame: blurred deepfake face on screen, stolen FINRA profile, WhatsApp buy message, three overlapping panels showing how deep fakes did the talking and WhatsApp did the selling, three weapons: the deep fakes did the talking, stolen identities did the convincing, WhatsApp groups did the selling, by the time algorithms caught the pattern money was gone. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 130,
+      "start_time": 588.35,
+      "end_time": 592.81,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_down",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of empty digital wallet showing $0.00, previous transactions showing millions flowing to overseas accounts, cold blue glow on empty desk, by the time algorithms caught the pattern the money was already gone. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 131,
+      "start_time": 592.81,
+      "end_time": 597.27,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of elderly couple on living room couch staring at tablet showing decimated retirement account, warm lamp light, family photos on mantle, the real victims not in courtrooms but in living rooms, retirement accounts wiped, the deep fakes did the talking, stolen identities did the convincing. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
+      "image": 132,
+      "start_time": 597.27,
+      "end_time": 601.72,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "blur_through",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of college 529 savings plan with devastated balance, child's school photo pinned to corner, warm side lighting, college funds gone, savings that took two decades to build showing near-zero, WhatsApp groups did the selling until the money was gone. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 133,
+      "start_time": 601.72,
+      "end_time": 606.18,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_cool"
+      ],
+      "overlay_text": "Life Savings \u2014 Erased in 6 Hours",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of clock showing 3:30 PM with stock closing bell symbol, six hours marked, the timespan that erased decades of savings, real victims not in courtrooms but in living rooms for hundreds of victims, cold harsh lighting. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 134,
+      "start_time": 606.18,
+      "end_time": 610.64,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "devastation",
+      "shot_type": "map",
+      "color_temperature": "cool",
+      "movement_type": "map_pan",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "dust_particles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "8 Countries | Hundreds of Victims | 2025",
+      "prompt": "Dark world map with red victim markers in US Israel Canada Germany Netherlands Switzerland Italy UK, connecting lines, victim count annotations, international devastation of cross-border AI stock fraud, retirement accounts wiped out in six hours. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 135,
+      "start_time": 610.64,
+      "end_time": 615.1,
+      "duration": 4.46
+    },
+    {
+      "section": "THE_FALL",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "push_out",
+      "transition_type": "ink_splash",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of empty federal courtroom with morning light through tall windows creating god rays across empty pews, judge's bench waiting, no defendants, chairs empty because accused are halfway around the world, college funds and life savings that took decades to build erased. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 136,
+      "start_time": 615.1,
+      "end_time": 619.56,
+      "duration": 4.46
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide museum-style display, foreground: glass barrier, midground: historical pump-and-dump evidence with newspaper clippings anonymous tips and bot accounts under glass, background: modern screen showing OST deepfake operation, evolution from crude scams to AI sophistication. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 137,
+      "start_time": 619.56,
+      "end_time": 624.15,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of old-style scam evidence: Telegram message from anonymous account, Reddit post from fake username, sketchy newsletter with obvious red flags, collage on aged paper, old methods that were different from today, you could FEEL the scam, no LinkedIn profiles to verify, warm vintage lighting showing how different fraud used to be before LinkedIn identity theft. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 138,
+      "start_time": 624.15,
+      "end_time": 628.73,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of professional investment advisory video on large monitor, production quality indistinguishable from real financial news, perfect lighting professional backdrop, advisor appearing completely legitimate, this one looked REAL because deepfake technology made it real. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 139,
+      "start_time": 628.73,
+      "end_time": 633.32,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of official FINRA BrokerCheck website showing search result with green checkmark, 'ACTIVE' status, 'Series 7, Series 66' credentials, real database confirming identity of someone being impersonated, credentials checked out on FINRA's own database. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 140,
+      "start_time": 633.32,
+      "end_time": 637.9,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "somber",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "dramatic_zoom",
+      "transition_type": "film_burn",
+      "effects": [
+        "film_grain",
+        "zoom_burst"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of two side-by-side video stills, one real one deepfake, both looking absolutely identical and indistinguishable, question mark between them, deepfake with verified LinkedIn credentials removed the ability to tell real human from fabricated one. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 141,
+      "start_time": 637.9,
+      "end_time": 642.49,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "crane_up",
+      "transition_type": "zoom_dissolve",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of digital warning billboard in Times Square at night showing 'AI MARKET MANIPULATION WARNING' in red and yellow, pedestrians walking past not looking, the warning nobody is saying loudly enough, credentials checked out on FINRA's own database. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 142,
+      "start_time": 642.49,
+      "end_time": 647.07,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "tracking_shot",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of multiple stock tickers on dark board, several highlighted with 'AI MANIPULATION FLAGGED' tags, OST as one node in larger network, broader wave of AI-powered market manipulations costing hundreds of millions in 2025, deepfake technology and stolen LinkedIn profiles enabled the fraud. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 143,
+      "start_time": 647.07,
+      "end_time": 651.66,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "gentle_drift",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of phone scrolling through list of flagged AI-powered market manipulation schemes from 2025, multiple ticker symbols in red, investigators flagging a broader wave of AI manipulation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 144,
+      "start_time": 651.66,
+      "end_time": 656.25,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "THIS WAS A BLUEPRINT",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of blueprint-style diagram on dark blue paper: 'Step 1: Acquire micro-cap', 'Step 2: Shares for pennies', 'Step 3: Deploy deepfakes', 'Step 4: Pump via WhatsApp', 'Step 5: Dump and exit', a warning that it is impossible to tell the difference between real and fabricated, not a one-time experiment but a replicable blueprint. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 145,
+      "start_time": 656.25,
+      "end_time": 660.83,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "zoom_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "Hundreds of Millions Lost",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Close-up of investigative report showing combined losses from multiple AI stock fraud schemes in 2025, hundreds of millions highlighted, the broader wave beyond just OST, a warning from SEC investigations about AI manipulation. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 146,
+      "start_time": 660.83,
+      "end_time": 665.42,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "spiral_zoom",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of consumer laptop showing open-source deepfake software freely available, simple interface, progress bar generating video in minutes, tools getting cheaper faster and more convincing every day, democratization of deception. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 147,
+      "start_time": 665.42,
+      "end_time": 670.0,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "wide",
+      "color_temperature": "cool",
+      "movement_type": "parallax_depth",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "fog_overlay"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide shot of dark internet cafe, foreground: keyboard and mouse, midground: screen showing deepfake tools available for download, background: row of workstations, tools getting cheaper and more accessible. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 148,
+      "start_time": 670.0,
+      "end_time": 674.59,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "dutch_tilt",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "chromatic_aberration"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of computer showing AI text-to-speech software with waveform, text input showing financial advice, output labeled 'synthesized voice', anyone with laptop and right software can put words in any person's mouth, OST as part of a broader pattern of AI-powered schemes. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 149,
+      "start_time": 674.59,
+      "end_time": 679.17,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "closeup",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "color_pulse_red"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of social media profile being created with stolen face photograph, profile looking completely authentic, a blueprint for crime getting cheaper, can steal YOUR face like Warren Buffett's and use it to rob a stranger without ever meeting them. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 150,
+      "start_time": 679.17,
+      "end_time": 683.76,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "tension",
+      "shot_type": "medium",
+      "color_temperature": "cool",
+      "movement_type": "rack_focus",
+      "transition_type": "glitch",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of webcam lens staring at viewer, tiny camera on laptop screen, green recording light glowing, faint face reflected in lens, can steal YOUR face and use it to rob a stranger on other side of the world. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 151,
+      "start_time": 683.76,
+      "end_time": 688.35,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "reveal_right",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of hand writing 'How to protect yourself from deepfake scams' with checklist visible, warm amber lighting, knowledge as first line of defense. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 152,
+      "start_time": 688.35,
+      "end_time": 692.93,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "warm",
+      "movement_type": "gentle_drift",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of regulatory tech monitoring center, modern clean office with wall-sized AI surveillance screens scanning for deepfake patterns, warm golden light through large windows suggesting dawn, hope we catch it faster next time, anyone can put words in Warren Buffett's mouth with today's tools. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 153,
+      "start_time": 692.93,
+      "end_time": 697.52,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "bittersweet",
+      "shot_type": "closeup",
+      "color_temperature": "warm",
+      "movement_type": "shoulder_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "warm_wash"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of person staring pensively out window at city skyline at dusk, warm golden hour light, honest uncertainty of not knowing if the system can adapt fast enough, if I'm honest I don't know the answer. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, sharp focus, film grain texture",
+      "image": 154,
+      "start_time": 697.52,
+      "end_time": 702.1,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "golden",
+      "movement_type": "float_up",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of morning light on desk with computer showing SEC regulatory updates about AI fraud detection, new rules proposed, the system beginning to adapt, hope that institutions will catch up. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 155,
+      "start_time": 702.1,
+      "end_time": 706.69,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "golden",
+      "movement_type": "reveal_right",
+      "transition_type": "morph_dissolve",
+      "effects": [
+        "film_grain",
+        "god_rays"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Medium shot of morning sunlight breaking through clouds over financial district, warm golden rays illuminating buildings, dawn of awareness, the first step is knowing it's possible, god rays through cloud breaks. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 156,
+      "start_time": 706.69,
+      "end_time": 711.27,
+      "duration": 4.59
+    },
+    {
+      "section": "LEGACY",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "golden",
+      "movement_type": "crane_up",
+      "transition_type": "fade_through_warm",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "The First Step Is Knowing It's Possible",
+      "text_animation": "highlight",
+      "map_label": "",
+      "prompt": "Wide sunrise over New York financial district from across harbor, golden light on water, Statue of Liberty silhouetted, new dawn of awareness for investors, now you know what is possible and knowledge is protection. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 157,
+      "start_time": 711.27,
+      "end_time": 715.86,
+      "duration": 4.59
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "breathing",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "shimmer_sparkles"
+      ],
+      "overlay_text": "SUBSCRIBE | Real Money. Real Victims.",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of clean YouTube subscribe button concept, red subscribe bell large and centered on dark cinematic background, subtle particles floating, clean typography, hit subscribe if this changed how you think. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 158,
+      "start_time": 715.86,
+      "end_time": 720.1,
+      "duration": 4.24
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "warm",
+      "movement_type": "minimal",
+      "transition_type": "light_leak",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Close-up of cinematic title card 'STORIES NOBODY ELSE IS TELLING' in elegant serif on dark textured background, warm amber edge lighting, film grain texture. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 159,
+      "start_time": 720.1,
+      "end_time": 724.34,
+      "duration": 4.24
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "medium",
+      "color_temperature": "neutral",
+      "movement_type": "gentle_drift",
+      "transition_type": "crossfade",
+      "effects": [
+        "film_grain",
+        "bokeh_orbs"
+      ],
+      "overlay_text": "Ever been targeted by a stock scam?",
+      "text_animation": "typewriter",
+      "map_label": "",
+      "prompt": "Medium shot of YouTube comment section concept with prompt question, warm inviting design, comment box empty waiting for engagement, drop a comment have you been targeted and what tipped you off. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 160,
+      "start_time": 724.34,
+      "end_time": 728.58,
+      "duration": 4.24
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "detail",
+      "color_temperature": "cool",
+      "movement_type": "push_in",
+      "transition_type": "flash_cut",
+      "effects": [
+        "film_grain",
+        "vignette_pulse"
+      ],
+      "overlay_text": "NEXT WEEK",
+      "text_animation": "bounce",
+      "map_label": "",
+      "prompt": "Medium shot of dark mysterious teaser, shadowy figure being Googled with massive search numbers, 'MOST GOOGLED PERSON IN AMERICA' in bold, crime scene tape in corner, next week the murder case nobody saw coming. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 161,
+      "start_time": 728.58,
+      "end_time": 732.82,
+      "duration": 4.24
+    },
+    {
+      "section": "CTA",
+      "emotional_tone": "hope",
+      "shot_type": "wide",
+      "color_temperature": "neutral",
+      "movement_type": "static",
+      "transition_type": "fade_through_black",
+      "effects": [
+        "film_grain",
+        "edge_bloom"
+      ],
+      "overlay_text": "",
+      "text_animation": "",
+      "map_label": "",
+      "prompt": "Wide dark cinematic end card with channel logo centered, warm accent lighting at edges, subscribe and bell icons visible, clean professional end screen for financial documentary channel. Cinematic photorealistic photograph, 8K resolution, dramatic directional lighting, shallow depth of field, color graded with rich shadows, sharp focus, film grain texture",
+      "image": 162,
+      "start_time": 732.82,
+      "end_time": 737.06,
+      "duration": 4.24
     }
   ]
 }
