@@ -71,8 +71,8 @@ movements, transitions, color grading, and visual effects.
   and 13 color grades — all automatically selected based on section and emotional_tone.
 - Section-aware intensity multipliers: CLIMAX gets 1.4x effect intensity, CONFLICT gets 1.25x,
   while LEGACY gets 0.75x and CTA gets 0.7x — dramatic sections feel more intense automatically.
-- Section-aware zoom multipliers: CLIMAX gets 1.15x zoom, CONFLICT gets 1.1x, while
-  LEGACY gets 0.8x and CTA gets 0.75x — camera movement matches emotional intensity.
+- Section-aware zoom multipliers: CLIMAX gets 1.1x zoom, CONFLICT gets 1.05x, while
+  LEGACY gets 0.85x and CTA gets 0.8x — camera movement matches emotional intensity.
 - Crossfade overlap varies by section: CONFLICT uses 0.7x (snappy cuts), EARLY_LIFE uses 1.2x
   (longer graceful fades), LEGACY uses 1.3x (gentle dissolves).
 

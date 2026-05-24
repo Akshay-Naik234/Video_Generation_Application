@@ -118,27 +118,27 @@ class MovementStyles:
         self.aspect_mode = 'letterbox'
         self.fast_mode = False
         self._easing_map = {
-            # Energy → settle (fast start, graceful deceleration)
-            'crane_up': self._ease_out_expo,
-            'crane_down': self._ease_out_expo,
-            'float_up': self._ease_out_expo,
-            'reveal_left': self._ease_out_expo,
-            'reveal_right': self._ease_out_expo,
-            'cinematic_reveal': self._ease_out_expo,
-            # Build → impact (slow start, accelerating into climax)
-            'push_in': self._ease_in_out_quart,
-            'dramatic_zoom': self._ease_in_out_quart,
-            'rack_focus': self._ease_in_out_quart,
-            'dolly_zoom': self._ease_in_out_quart,
-            'spiral_zoom': self._ease_in_out_quart,
+            # Energy → settle (moderate deceleration, avoids dead frames)
+            'crane_up': self._ease_out_cubic,
+            'crane_down': self._ease_out_cubic,
+            'float_up': self._ease_out_cubic,
+            'reveal_left': self._ease_out_cubic,
+            'reveal_right': self._ease_out_cubic,
+            'cinematic_reveal': self._ease_out_cubic,
+            # Build → impact (smooth cubic for steady motion)
+            'push_in': self._ease_in_out_cubic,
+            'dramatic_zoom': self._ease_in_out_cubic,
+            'rack_focus': self._ease_in_out_cubic,
+            'dolly_zoom': self._ease_in_out_cubic,
+            'spiral_zoom': self._ease_in_out_cubic,
             # Organic flow (smooth sinusoidal for natural movements)
             'gentle_drift': self._ease_in_out_sine,
             'breathing': self._ease_in_out_sine,
             'parallax_depth': self._ease_in_out_sine,
             'shoulder_drift': self._ease_in_out_sine,
             'static_motion': self._ease_in_out_sine,
-            # Bouncy emphasis (elastic/back overshoot for impact)
-            'bounce_zoom': self._ease_elastic_out,
+            # Bouncy emphasis (gentle back overshoot for impact)
+            'bounce_zoom': self._ease_out_back_gentle,
             # Mechanical consistency (linear for tracking)
             'tracking_shot': self._ease_in_out_sine,
             'truck_left': self._ease_in_out_sine,
@@ -149,7 +149,7 @@ class MovementStyles:
             # Speed ramp for fast movements
             'whip_pan': self._speed_ramp,
             # Standard cinematic ease for orbits
-            'orbit': self._ease_in_out_quint,
+            'orbit': self._ease_in_out_cubic,
             'push_out': self._ease_in_out_sine,
         }
         # Breathing base layer amplitude (subtle oscillation on all movements)
@@ -205,7 +205,7 @@ class MovementStyles:
         image_path: Path,
         duration: float,
         movement_type: str,
-        zoom_intensity: float = 1.12,
+        zoom_intensity: float = 1.08,
         color_grader: 'ColorGrading' = None,
         color_grade: str = None,
         enable_vignette: bool = False,
@@ -223,15 +223,19 @@ class MovementStyles:
         # Apply section-aware zoom boost, capped to prevent excessive cropping
         section_mult = self.SECTION_ZOOM_MULTIPLIERS.get(section, 1.0)
         zoom_intensity = 1.0 + (zoom_intensity - 1.0) * section_mult
-        zoom_intensity = min(zoom_intensity, 1.15)  # hard cap
+        zoom_intensity = min(zoom_intensity, 1.12)  # hard cap
         base_img = PILImage.open(image_path)
         base_img.load()
         if base_img.mode != 'RGB':
             base_img = base_img.convert('RGB')
 
-        max_zoom = max(zoom_intensity, 1.20)
-        scaled_width = int(self.width * max_zoom * 1.4)
-        scaled_height = int(self.height * max_zoom * 1.4)
+        # Pan headroom: largest pan offset is ~15% of crop_w/2 = 7.5%,
+        # so canvas needs ~1.15x the output resolution.  Previous 1.68x
+        # buffer cropped away ~40% of every image.
+        max_zoom = zoom_intensity + 0.05
+        pan_buffer = 1.15
+        scaled_width = int(self.width * max_zoom * pan_buffer)
+        scaled_height = int(self.height * max_zoom * pan_buffer)
 
         base_img = self._fit_image(base_img, scaled_width, scaled_height)
         base_array = np.array(base_img)
@@ -304,7 +308,7 @@ class MovementStyles:
                 overshoot = _inertia_over * np.sin(inertia_t * np.pi)
                 zoom += overshoot * (zoom_intensity - 1.0)
 
-            zoom = min(zoom, 1.20)
+            zoom = min(zoom, 1.15)
 
             crop_w = self.width / zoom
             crop_h = self.height / zoom
@@ -312,15 +316,14 @@ class MovementStyles:
             offset_x = pan_x * crop_w * 0.5
             offset_y = pan_y * crop_h * 0.5
 
-            left = center_x - crop_w / 2.0 + offset_x
-            top = center_y - crop_h / 2.0 + offset_y
+            cx = center_x + offset_x
+            cy = center_y + offset_y
 
-            left = max(0.0, min(left, scaled_width - crop_w))
-            top = max(0.0, min(top, scaled_height - crop_h))
-
-            l_i, t_i = int(left), int(top)
-            r_i = min(l_i + int(crop_w), scaled_width)
-            b_i = min(t_i + int(crop_h), scaled_height)
+            # Clamp so the crop window stays within the canvas
+            half_cw = crop_w / 2.0
+            half_ch = crop_h / 2.0
+            cx = max(half_cw, min(cx, scaled_width - half_cw))
+            cy = max(half_ch, min(cy, scaled_height - half_ch))
 
             src = base_np
             if movement_type == 'tilt_shift' and blurred_np is not None:
@@ -332,13 +335,28 @@ class MovementStyles:
                     base_np, blurred_np, progress
                 )
 
-            cropped = src[t_i:b_i, l_i:r_i]
-
+            # Sub-pixel crop using affine transform for smooth motion
             if _has_cv2:
-                frame = _cv2.resize(cropped, (out_w, out_h), interpolation=_interp)
+                patch_w = int(round(crop_w))
+                patch_h = int(round(crop_h))
+                cropped = _cv2.getRectSubPix(
+                    src, (patch_w, patch_h), (float(cx), float(cy))
+                )
+                frame = _cv2.resize(
+                    cropped, (out_w, out_h), interpolation=_interp
+                )
             else:
+                l_i = int(cx - half_cw)
+                t_i = int(cy - half_ch)
+                l_i = max(0, l_i)
+                t_i = max(0, t_i)
+                r_i = min(l_i + int(crop_w), scaled_width)
+                b_i = min(t_i + int(crop_h), scaled_height)
+                cropped = src[t_i:b_i, l_i:r_i]
                 pil_crop = PILImage.fromarray(cropped)
-                frame = np.array(pil_crop.resize((out_w, out_h), PILImage.LANCZOS))
+                frame = np.array(
+                    pil_crop.resize((out_w, out_h), PILImage.LANCZOS)
+                )
 
             if movement_type == 'whip_pan':
                 frame = self._apply_motion_blur(frame, progress)
@@ -532,7 +550,7 @@ class MovementStyles:
         Args:
             movement_type: One of MOVEMENT_TYPES (e.g. 'zoom_in', 'orbit').
             eased: Progress 0→1 after easing function is applied.
-            zoom_intensity: Base zoom multiplier (typically 1.08–1.15).
+            zoom_intensity: Base zoom multiplier (typically 1.05–1.10).
             raw_progress: Linear 0→1 progress before easing (used for
                 some effects that need raw time, like sinusoidal drift).
 
@@ -551,22 +569,22 @@ class MovementStyles:
 
         elif movement_type == 'pan_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * eased
+            pan_x = -0.10 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * eased
+            pan_x = 0.10 * eased
             return zoom, pan_x, 0
 
         elif movement_type == 'pan_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = -0.15 * eased
+            pan_y = -0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'pan_down':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_y = 0.15 * eased
+            pan_y = 0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'diagonal_tl_br':
@@ -612,8 +630,8 @@ class MovementStyles:
         elif movement_type == 'parallax_depth':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
             phase = raw_progress * np.pi
-            pan_x = 0.12 * np.sin(phase)
-            pan_y = 0.06 * np.sin(phase * 0.7 + 0.3)
+            pan_x = 0.08 * np.sin(phase)
+            pan_y = 0.04 * np.sin(phase * 0.7 + 0.3)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'push_in':
@@ -629,8 +647,8 @@ class MovementStyles:
         elif movement_type == 'orbit':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
             angle = eased * np.pi * 1.0
-            pan_x = 0.12 * np.sin(angle)
-            pan_y = 0.06 * (1 - np.cos(angle))
+            pan_x = 0.08 * np.sin(angle)
+            pan_y = 0.04 * (1 - np.cos(angle))
             return zoom, pan_x, pan_y
 
         elif movement_type == 'whip_pan':
@@ -645,20 +663,21 @@ class MovementStyles:
             return zoom, pan_x, pan_y
 
         elif movement_type == 'handheld_drift':
-            zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.012 * np.sin(raw_progress * np.pi * 0.8)
-            pan_y = 0.008 * np.sin(raw_progress * np.pi * 0.6 + 0.5)
+            zoom = 1.0 + (zoom_intensity - 1.0) * 0.4 * eased
+            pan_x = 0.04 * np.sin(raw_progress * np.pi * 1.2)
+            pan_y = 0.025 * np.sin(raw_progress * np.pi * 0.8 + 0.5)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'crane_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * (1.0 - eased * 0.1)
-            pan_y = -0.15 * eased
+            pan_y = -0.10 * eased
             return zoom, 0, pan_y
 
         elif movement_type == 'crane_down':
-            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_y = 0.15 * eased
-            return zoom, 0, pan_y
+            zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.9
+            pan_y = 0.10 * eased
+            pan_x = 0.015 * np.sin(raw_progress * np.pi)
+            return zoom, pan_x, pan_y
 
         elif movement_type == 'spiral_zoom':
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * eased
@@ -670,8 +689,8 @@ class MovementStyles:
 
         elif movement_type == 'tilt_shift':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.7
-            pan_x = 0.12 * eased
-            pan_y = -0.06 * eased
+            pan_x = 0.08 * eased
+            pan_y = -0.04 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'dutch_tilt':
@@ -692,18 +711,18 @@ class MovementStyles:
 
         elif movement_type == 'float_up':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.7
-            pan_y = -0.12 * eased
-            pan_x = 0.03 * np.sin(raw_progress * np.pi)
+            pan_y = -0.08 * eased
+            pan_x = 0.02 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'reveal_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * (1.0 - eased)
+            pan_x = 0.10 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'reveal_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * (1.0 - eased)
+            pan_x = -0.10 * (1.0 - eased)
             return zoom, pan_x, 0
 
         elif movement_type == 'map_zoom':
@@ -713,27 +732,27 @@ class MovementStyles:
 
         elif movement_type == 'map_pan':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.18 * eased
-            pan_y = 0.04 * np.sin(eased * np.pi)
+            pan_x = 0.12 * eased
+            pan_y = 0.03 * np.sin(eased * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'timeline_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.18 * (1.0 - eased)
+            pan_x = -0.12 * (1.0 - eased)
             return zoom, pan_x, 0
 
         # ---- Cinematic camera movements (v5.0) ----
 
         elif movement_type == 'truck_left':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = -0.15 * eased
-            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            pan_x = -0.10 * eased
+            pan_y = 0.015 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'truck_right':
             zoom = 1.0 + (zoom_intensity - 1.0) * 0.5
-            pan_x = 0.15 * eased
-            pan_y = 0.02 * np.sin(raw_progress * np.pi)
+            pan_x = 0.10 * eased
+            pan_y = 0.015 * np.sin(raw_progress * np.pi)
             return zoom, pan_x, pan_y
 
         elif movement_type == 'static_motion':
@@ -750,14 +769,14 @@ class MovementStyles:
 
         elif movement_type == 'tracking_shot':
             zoom = 1.0 + (zoom_intensity - 1.0) * eased * 0.8
-            pan_x = 0.15 * eased
-            pan_y = -0.04 * eased
+            pan_x = 0.10 * eased
+            pan_y = -0.03 * eased
             return zoom, pan_x, pan_y
 
         elif movement_type == 'cinematic_reveal':
             zoom = 1.0 + (zoom_intensity - 1.0) * 1.0 * (1.0 - eased)
-            pan_y = -0.10 * (1.0 - eased)
-            pan_x = 0.05 * (1.0 - eased)
+            pan_y = -0.07 * (1.0 - eased)
+            pan_x = 0.04 * (1.0 - eased)
             return zoom, pan_x, pan_y
 
         else:
@@ -810,10 +829,18 @@ class MovementStyles:
         raw = 2.0 ** (-10.0 * t) * np.sin((t * 10.0 - 0.75) * (2 * np.pi / 3)) + 1.0
         return float(np.clip(raw, 0.0, 1.05))
 
+    def _ease_out_cubic(self, t: float) -> float:
+        """Cubic ease-out — decelerates smoothly without going dead."""
+        return 1.0 - (1.0 - t) ** 3
+
     def _ease_out_back(self, t: float, overshoot: float = 1.70158) -> float:
         """Back easing — overshoots then settles for punchy emphasis."""
         t -= 1.0
         return t * t * ((overshoot + 1) * t + overshoot) + 1.0
+
+    def _ease_out_back_gentle(self, t: float) -> float:
+        """Gentle back easing with minimal overshoot for smooth bounce."""
+        return self._ease_out_back(t, overshoot=0.5)
 
     def _speed_ramp(self, t: float) -> float:
         """Speed ramp: slow start, fast middle, slow end."""

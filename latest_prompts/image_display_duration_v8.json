@@ -8,7 +8,7 @@
     "prompt_version": "v8",
     "animation_engine": "v6.1-smooth-documentary",
     "default_zoom_intensity": 1.08,
-    "zoom_hard_cap": 1.15,
+    "zoom_hard_cap": 1.12,
     "breathing_amplitude": 0.003,
     "breathing_frequency_hz": 0.08,
     "camera_inertia_overshoot": 0.005,

@@ -40,7 +40,7 @@ The Video_Generation_Application is a JSON-driven automated video generation pla
 
 The 9-section documentary structure (COLD_OPEN → EARLY_LIFE → THE_SPARK → THE_RISE → THE_CONFLICT → THE_CLIMAX → THE_FALL → LEGACY → CTA) driving every aspect of the animation is the single most valuable design decision in the codebase.
 
-- Camera zoom intensity scales by section (CLIMAX 1.15x, CONFLICT 1.1x, LEGACY 0.8x)
+- Camera zoom intensity scales by section (CLIMAX 1.1x, CONFLICT 1.05x, LEGACY 0.85x)
 - Crossfade overlap varies (CONFLICT 0.7x snappy, LEGACY 1.5x gentle dissolves)
 - Effect intensity multipliers per section (CLIMAX 1.4x, CTA 0.7x)
 - Movement selection pools per section via `SECTION_MOVEMENTS`
