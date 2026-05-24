@@ -985,32 +985,42 @@ class DocumentaryEffects:
         duration: float,
         effects_intensity: float = 0.7
     ) -> list:
-        """Create effect clips from a list of effect names."""
+        """Create effect clips from a list of effect names.
+
+        Applies a brightness budget: when multiple effects are active,
+        each effect's intensity is scaled down so the combined output
+        never exceeds safe broadcast levels.
+        """
+        n_effects = max(1, len(effect_names))
+        # Budget factor: 1 effect = 100%, 2 effects = 70% each, 3 = 55% each
+        budget_factor = 1.0 / (1.0 + 0.45 * (n_effects - 1))
+        scaled = effects_intensity * budget_factor
+
         creators = {
-            'light_leak': lambda: self.create_light_leak(duration, effects_intensity * 0.3),
-            'film_grain': lambda: self.create_film_grain(duration, effects_intensity * 0.25),
-            'dust_particles': lambda: self.create_dust_particles(duration, effects_intensity * 0.15, particle_count=10),
-            'camera_shake': lambda: self.create_camera_shake(duration, effects_intensity * 0.2),
+            'light_leak': lambda: self.create_light_leak(duration, scaled * 0.3),
+            'film_grain': lambda: self.create_film_grain(duration, scaled * 0.25),
+            'dust_particles': lambda: self.create_dust_particles(duration, scaled * 0.15, particle_count=10),
+            'camera_shake': lambda: self.create_camera_shake(duration, scaled * 0.2),
             'cinematic_bars': lambda: self.create_cinematic_bars(duration),
-            'lens_flare': lambda: self.create_lens_flare(duration, effects_intensity * 0.25),
-            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, effects_intensity * 0.2),
-            'film_scratches': lambda: self.create_film_scratches(duration, effects_intensity * 0.2),
-            'vignette_pulse': lambda: self.create_vignette_pulse(duration, effects_intensity * 0.1),
-            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=effects_intensity * 0.5),
-            'warm_wash': lambda: self.create_warm_wash(duration, effects_intensity * 0.12),
-            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, effects_intensity * 0.3),
-            'spotlight': lambda: self.create_spotlight(duration, effects_intensity * 0.25),
-            'photo_frame': lambda: self.create_photo_frame(duration, effects_intensity * 0.4),
-            'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, effects_intensity * 0.25),
-            'zoom_burst': lambda: self.create_zoom_burst(duration, effects_intensity * 0.2),
-            'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', effects_intensity * 0.3),
-            'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', effects_intensity * 0.3),
-            'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', effects_intensity * 0.3),
-            'edge_bloom': lambda: self.create_edge_bloom(duration, effects_intensity * 0.2),
-            'god_rays': lambda: self.create_god_rays(duration, effects_intensity * 0.12),
-            'fog_overlay': lambda: self.create_fog_overlay(duration, effects_intensity * 0.1),
-            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, effects_intensity * 0.25),
-            'film_strip': lambda: self.create_film_strip(duration, effects_intensity * 0.4),
+            'lens_flare': lambda: self.create_lens_flare(duration, scaled * 0.25),
+            'chromatic_aberration': lambda: self.create_chromatic_aberration(duration, scaled * 0.2),
+            'film_scratches': lambda: self.create_film_scratches(duration, scaled * 0.2),
+            'vignette_pulse': lambda: self.create_vignette_pulse(duration, scaled * 0.1),
+            'flash_strobe': lambda: self.create_flash_strobe(duration, intensity=scaled * 0.5),
+            'warm_wash': lambda: self.create_warm_wash(duration, scaled * 0.12),
+            'film_burn_overlay': lambda: self.create_film_burn_overlay(duration, scaled * 0.3),
+            'spotlight': lambda: self.create_spotlight(duration, scaled * 0.25),
+            'photo_frame': lambda: self.create_photo_frame(duration, scaled * 0.4),
+            'bokeh_orbs': lambda: self.create_bokeh_orbs(duration, scaled * 0.25),
+            'zoom_burst': lambda: self.create_zoom_burst(duration, scaled * 0.2),
+            'color_pulse_warm': lambda: self.create_color_pulse(duration, 'warm', scaled * 0.3),
+            'color_pulse_cool': lambda: self.create_color_pulse(duration, 'cool', scaled * 0.3),
+            'color_pulse_red': lambda: self.create_color_pulse(duration, 'red', scaled * 0.3),
+            'edge_bloom': lambda: self.create_edge_bloom(duration, scaled * 0.2),
+            'god_rays': lambda: self.create_god_rays(duration, scaled * 0.12),
+            'fog_overlay': lambda: self.create_fog_overlay(duration, scaled * 0.1),
+            'shimmer_sparkles': lambda: self.create_shimmer_sparkles(duration, scaled * 0.25),
+            'film_strip': lambda: self.create_film_strip(duration, scaled * 0.4),
         }
 
         clips = []

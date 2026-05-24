@@ -1,6 +1,6 @@
 ============================================================
-BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.1
-(synced with sequential_video_composer v5.1 + retention v2 + storytelling mastery)
+BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.2
+(synced with sequential_video_composer v5.2 + retention v2 + storytelling mastery)
 ============================================================
 
 ╔══════════════════════════════════════════════════════════════════╗
@@ -104,13 +104,24 @@ DOCUMENTARY ANIMATION SYSTEM (v3.0) — COMPLETE REFERENCE
 The video system supports 40 movement styles, 28 transition types, and 24 cinematic effect overlays.
 You MUST select the appropriate ones for each image based on the scene content and emotional tone.
 
-**ENGINE BEHAVIOR (v5.1 — what affects your prompts):**
+**ENGINE BEHAVIOR (v5.2 — what affects your prompts):**
 - Smooth sine easing on all movements. Effects intensity is SECTION-AWARE (CLIMAX ×1.4, LEGACY ×0.75).
 - Motion blur ONLY on whip_pan — all others stay sharp.
-- Effects limited to 2 per image (engine applies first 2 if you list 3). Vignette/fog/dust are subtle.
+- Effects limited to 2 per image (engine applies first 2 if you list 3). Brightness budget auto-scales:
+  2 simultaneous effects each get 70% intensity to prevent washed-out frames.
 - YOUR PROMPTS must specify proper lighting — engine preserves source brightness as-is.
 - Clips overlap with section-aware crossfade — NEVER black gaps between images.
-- Text overlays have stroke outlines + drop shadows — readable on any background.
+- Text overlays have mobile-first sizing (58pt name, 78pt chapter, 50pt quote at 1080p) with
+  5-layer drop shadows and 4px stroke outlines — readable on any background at any device size.
+- **Section title cards** are auto-generated at every section boundary (except first image
+  and CTA). Full-screen darkened overlay with golden accent lines and section name. You do NOT
+  need to create separate title-card images — the engine handles this automatically.
+- **Particle overlays** (dust, sparkles, embers, rain, confetti) are now auto-applied per section.
+- **Sound design** (whooshes, impacts, atmosphere) is auto-generated for transitions and sections.
+- Text-heavy shot types (detail, extreme_closeup, map, timeline) automatically receive
+  gentler movements to keep on-screen text readable during the Ken Burns effect.
+- Movement deduplication: engine never repeats the same movement within 3 consecutive images
+  (even if JSON specifies it — the pool is reshuffled automatically).
 
 ------------------------------------------------------------
 MOVEMENT TYPES (40 available) — set via "movement_type" field
@@ -860,6 +871,16 @@ RETENTION TECHNIQUES (condensed — see quick-reference card for priorities)
 - **Transitions**: Never same 2× in a row. ink_splash at narrative shifts, light_leak for nostalgia.
 - **End Retention**: Legacy 5-6s max, warm. CTA 4-5s, breathing movement. End visually strong.
   v9: Legacy = LIGHTER/HOPEFUL. Last image = meaningful, not just fade to black.
+- **Audio-Visual Sync (v9.2 — NEW)**: Every image transition MUST fall at a natural sentence
+  boundary or dramatic pause in the narration — NEVER mid-sentence. When setting start_time
+  and duration for each image, align the end_time to the nearest sentence boundary in the
+  narration timestamps. If the narration has a gap > 0.8s between segments, extend the
+  current image's duration to hold through the pause rather than cutting to silence.
+- **Section Title Cards (v9.2 — NEW)**: The engine auto-generates section title cards at every
+  section boundary. You do NOT need to create separate title-card images — but you SHOULD
+  ensure that the FIRST IMAGE of each new section is visually distinct from the last image of
+  the previous section (color shift, scale shift, or subject shift) so the title card overlay
+  looks intentional.
 
 ============================================================
 STORYTELLING-DRIVEN VISUAL DIRECTION (v9 — NEW)

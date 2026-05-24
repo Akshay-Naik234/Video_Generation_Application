@@ -75,17 +75,50 @@ class MovementStyles:
         'cinematic_reveal',
     ]
 
-    # Movements grouped by documentary section / emotional tone
+    # Movements grouped by documentary section / emotional tone.
+    # Pools expanded to 8-10 per section to prevent repetition across
+    # 20+ images in a single section.
     SECTION_MOVEMENTS = {
-        'COLD_OPEN': ['dramatic_zoom', 'push_in', 'handheld_drift', 'rack_focus', 'dutch_tilt'],
-        'EARLY_LIFE': ['gentle_drift', 'zoom_in', 'float_up', 'breathing', 'parallax_depth'],
-        'THE_SPARK': ['push_in', 'orbit', 'spiral_zoom', 'zoom_in', 'reveal_left'],
-        'THE_RISE': ['crane_up', 'push_in', 'orbit', 'dolly_zoom', 'parallax_depth'],
-        'THE_CONFLICT': ['handheld_drift', 'dutch_tilt', 'whip_pan', 'rack_focus', 'push_in'],
-        'THE_CLIMAX': ['dramatic_zoom', 'dolly_zoom', 'crane_up', 'spiral_zoom', 'parallax_depth'],
-        'THE_FALL': ['crane_down', 'zoom_out', 'float_up', 'gentle_drift', 'breathing'],
-        'LEGACY': ['parallax_depth', 'gentle_drift', 'zoom_out', 'float_up', 'orbit'],
-        'CTA': ['zoom_out', 'gentle_drift', 'breathing', 'minimal', 'parallax_depth'],
+        'COLD_OPEN': [
+            'dramatic_zoom', 'push_in', 'handheld_drift', 'rack_focus',
+            'dutch_tilt', 'cinematic_reveal', 'parallax_depth', 'zoom_in',
+        ],
+        'EARLY_LIFE': [
+            'gentle_drift', 'zoom_in', 'float_up', 'breathing',
+            'parallax_depth', 'pan_right', 'reveal_right', 'shoulder_drift',
+            'tracking_shot', 'tilt_shift',
+        ],
+        'THE_SPARK': [
+            'push_in', 'orbit', 'spiral_zoom', 'zoom_in', 'reveal_left',
+            'parallax_depth', 'crane_up', 'cinematic_reveal', 'tracking_shot',
+        ],
+        'THE_RISE': [
+            'crane_up', 'push_in', 'orbit', 'dolly_zoom', 'parallax_depth',
+            'tracking_shot', 'reveal_right', 'zoom_in', 'spiral_zoom',
+        ],
+        'THE_CONFLICT': [
+            'handheld_drift', 'dutch_tilt', 'whip_pan', 'rack_focus',
+            'push_in', 'parallax_depth', 'crane_down', 'dramatic_zoom',
+            'zoom_in',
+        ],
+        'THE_CLIMAX': [
+            'dramatic_zoom', 'dolly_zoom', 'crane_up', 'spiral_zoom',
+            'parallax_depth', 'orbit', 'push_in', 'cinematic_reveal',
+            'rack_focus',
+        ],
+        'THE_FALL': [
+            'crane_down', 'zoom_out', 'float_up', 'gentle_drift',
+            'breathing', 'parallax_depth', 'push_out', 'pan_down',
+            'shoulder_drift',
+        ],
+        'LEGACY': [
+            'parallax_depth', 'gentle_drift', 'zoom_out', 'float_up',
+            'orbit', 'breathing', 'crane_up', 'reveal_left', 'tilt_shift',
+        ],
+        'CTA': [
+            'zoom_out', 'gentle_drift', 'breathing', 'minimal',
+            'parallax_depth', 'float_up', 'static_motion', 'push_out',
+        ],
     }
 
     TONE_MOVEMENTS = {
@@ -97,6 +130,16 @@ class MovementStyles:
         'triumph': ['crane_up', 'dolly_zoom', 'orbit', 'spiral_zoom', 'dramatic_zoom'],
         'bittersweet': ['parallax_depth', 'gentle_drift', 'float_up', 'zoom_out', 'breathing'],
     }
+
+    # Shot types that contain important on-screen text/data. These need
+    # reduced motion to keep text readable during the Ken Burns effect.
+    TEXT_HEAVY_SHOT_TYPES = {'detail', 'extreme_closeup', 'map', 'timeline'}
+
+    # Gentle movements suitable for text-heavy images
+    TEXT_SAFE_MOVEMENTS = [
+        'gentle_drift', 'breathing', 'minimal', 'static_motion',
+        'zoom_in', 'parallax_depth',
+    ]
 
     # Section-aware zoom intensity multipliers: kept conservative to prevent
     # content from being cropped out of frame.
