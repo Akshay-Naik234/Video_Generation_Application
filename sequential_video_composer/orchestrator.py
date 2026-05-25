@@ -511,27 +511,16 @@ class SequentialVideoOrchestrator:
         if len(overlays) > 1:
             main_video = CompositeVideoClip(overlays)
 
-        # Sound design: mix transition sounds and section atmosphere
-        sound_layers = self._create_sound_design_layers(clips_data, main_video.duration)
-
+        # Audio: only attach narration if provided; never generate procedural noise
         if self.audio_path and self.audio_path.exists():
             logger.info("  Adding audio from: %s", self.audio_path)
             audio_clip = AudioFileClip(str(self.audio_path))
             if audio_clip.duration > main_video.duration:
                 audio_clip = audio_clip.subclip(0, main_video.duration)
             audio_clip = self._normalize_audio(audio_clip)
-            # Mix sound design layers into narration audio
-            if sound_layers is not None:
-                audio_clip = self._mix_sound_design(audio_clip, sound_layers)
             main_video = main_video.set_audio(audio_clip)
-        elif sound_layers is not None:
-            # No narration — use sound design layers as the audio track
-            from moviepy.audio.AudioClip import AudioArrayClip
-            sd_audio = AudioArrayClip(
-                sound_layers.reshape(-1, 1) if sound_layers.ndim == 1 else sound_layers,
-                fps=44100,
-            ).set_duration(main_video.duration)
-            main_video = main_video.set_audio(sd_audio)
+        else:
+            logger.info("  No audio file provided — video will have no audio track")
 
         logger.info("[5/5] Exporting video...")
         self._export_video(main_video)
