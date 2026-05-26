@@ -129,11 +129,11 @@ Output a single JSON file with this exact structure:
     "timing_mode": "CONTENT_MATCHED_TIMESTAMP_LOCKED"
   },
   "thumbnail": {
-    "prompt": "[THUMBNAIL IMAGE PROMPT - see thumbnail rules below]",
-    "overlay_text": "[2-3 BOLD UPPERCASE WORDS]",
+    "prompt": "[THUMBNAIL IMAGE PROMPT - see thumbnail rules below. Face=70%, ONE background element at 15-20% opacity, NO clutter]",
+    "overlay_text": "[2-4 BOLD UPPERCASE WORDS - STRICT MAX 4 WORDS]",
     "text_position": "left|right",
-    "face_percentage": 65,
-    "color_scheme": "[primary_color + secondary_color]",
+    "face_percentage": 70,
+    "color_scheme": "[primary_color + secondary_color - MAX 2 COLORS]",
     "face_expression": "[expression matching story emotion]"
   },
   "images": [
@@ -611,10 +611,16 @@ AMERICAN AUDIENCE VISUAL ANCHORS (for USA-targeted channels):
 - For non-American subjects: include shots that CONTRAST their world with American landmarks viewers recognize
 
 THUMBNAIL GENERATION RULES (CRITICAL — based on viral channel analysis):
+
+SIMPLICITY IS THE #1 RULE — maximum THREE visual elements: (1) face, (2) ONE background element, (3) text overlay.
+If a viewer has to study the thumbnail to understand it, you have FAILED.
+
 The thumbnail prompt MUST follow these exact specifications:
-- Face takes 65-70% of the frame — this is the #1 factor for click-through rate
-- Face expression matches the dominant emotion of the biography (intense stare, pain, shock, confidence)
-- Background: subtle contextual elements (flames, money, maps, shadows) at 20-30% opacity behind the face
+- Face takes 70% of the frame — this is the #1 factor for click-through rate (increased from 65%)
+- Face expression matches the dominant emotion of the biography (intense stare, pain, shock, confidence, cold calculation)
+- Background: ONLY ONE faint symbolic element (flames, money, maps, shadows) at 15-20% opacity — NOT multiple props
+  * NO badges, NO seals, NO documents, NO charts, NO police lights, NO text in background
+  * The background must be dark and deeply blurred — it should NOT compete with the face
 - Color scheme: HIGH CONTRAST, maximum 2 dominant colors
   * Crime/dark stories: Red (#FF0000) + Black
   * Mystery/science: Blue (#003366) + Orange (#FF6600)
@@ -627,8 +633,19 @@ The thumbnail prompt MUST follow these exact specifications:
 - Lighting: Dramatic split lighting (Rembrandt) or strong side light for cinematic depth
 - The thumbnail must work at 1 inch wide (mobile phone size) — test by imagining it tiny
 - NO text in the thumbnail image prompt (text overlay is added separately in post-production)
-- Style suffix: "Cinematic portrait photograph, ultra-sharp focus on face, dramatic Rembrandt lighting, rich color grading, 8K resolution, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, shallow depth of field on background, professional YouTube thumbnail style, NOT AI looking, natural skin pores and texture visible"
+- overlay_text: STRICTLY 2-4 words MAXIMUM, ALL UPPERCASE — must be readable at mobile phone size
+  * Fewer words is always better
+  * Must create instant emotional impact even without the video title
+  * NO full sentences — use punchy fragments (e.g., "FAKE GENIUS", "$420M LIE", "DESTROYED HIM")
+- Style suffix: "Cinematic portrait photograph, ultra-sharp focus on face, dramatic Rembrandt lighting, rich color grading, 8K resolution, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, shallow depth of field on background, professional YouTube thumbnail style, NOT AI looking, natural skin pores and texture visible, documentary photography, single strong focal point"
 - For unknown/ancient faces: Use a dramatic silhouette, historical statue, or symbolic object instead (see HANDLING UNKNOWN FACES section above)
+
+THUMBNAIL ANTI-PATTERNS (NEVER DO THESE):
+- NEVER put 3+ text blocks on a thumbnail (one overlay_text block only)
+- NEVER include multiple props/symbols in the background (one element max)
+- NEVER make the face less than 70% of the frame
+- NEVER use more than 2 dominant colors
+- NEVER embed text directly into the AI-generated image (use overlay_text field only)
 
 ============================================================
 VERIFICATION CHECKLIST (RUN BEFORE DELIVERING — FIX ANY FAILURES)
@@ -681,8 +698,11 @@ Before delivering the final JSON, verify ALL of the following. If any check FAIL
 
 **FORMAT CHECKS:**
 [ ] JSON structure matches the exact format (including section, emotional_tone, shot_type, color_temperature)
-[ ] Thumbnail prompt follows all thumbnail generation rules
-[ ] Thumbnail face percentage is 65-70%
+[ ] Thumbnail prompt follows all thumbnail generation rules (simplicity, single focal point)
+[ ] Thumbnail face percentage is 70%
+[ ] Thumbnail overlay_text is 2-4 words MAXIMUM
+[ ] Thumbnail background has ONLY ONE symbolic element at 15-20% opacity
+[ ] Thumbnail has maximum 2 dominant colors
 [ ] All JSON is valid (no trailing commas, proper escaping)
 [ ] American audience visual anchors included where script references them
 

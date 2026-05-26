@@ -33,14 +33,22 @@ MANDATORY OUTPUT SECTIONS
 Under 60 characters.  
 Cinematic, emotionally intelligent, curiosity-driven.
 
+CRITICAL TITLE RULES:
+• The person's FULL NAME must appear in EVERY title — anonymous titles ("He did X", "This man", "The guy who") destroy CTR because viewers have no anchor  
+• Create a CURIOSITY GAP — the title must make the viewer NEED to click to resolve an unanswered question  
+• Front-load the person's name (first 3 words ideally) for search visibility and instant recognition  
+• Use SPECIFIC numbers, facts, or consequences when available ($420M, not "millions")  
+• The title must work as a standalone sentence — if someone reads ONLY the title, they should understand the stakes  
+
 Framework:
-• Title 1 – Inner Conflict or psychological struggle  
-• Title 2 – Turning point or irreversible change  
-• Title 3 – Legacy or hidden cost  
-• Title 4 – Curiosity-driven, search-optimized  
+• Title 1 – [PERSON NAME]: [Inner conflict or psychological struggle]  
+• Title 2 – [PERSON NAME] [Turning point or irreversible consequence]  
+• Title 3 – [PERSON NAME]: [Legacy, hidden cost, or paradox]  
+• Title 4 – [PERSON NAME] [Curiosity-driven hook with specific detail]  
 
 Must feel like prestige documentary titles.  
-No years. No clichés. No hype.
+No years. No clichés. No hype.  
+NO anonymous subjects — always name the person.
 
 ---
 
@@ -137,17 +145,24 @@ Optimized for US viewers.
 ━━━━━━━━━━━━━━━━━━━━
 ## 6) THUMBNAIL TEXT (4 OPTIONS)
 
-3–6 words each.  
+2–4 words each (STRICT MAXIMUM: 4 words).  
 Emotionally powerful.  
-Derived directly from script moments.
+Derived directly from the single most dramatic moment in the script.
+
+These words appear LARGE on the thumbnail — they must be readable at 1 inch wide (mobile phone).
 
 Variations:
-• inner struggle  
-• turning point  
-• consequence  
-• paradox/mystery  
+• Option 1 – inner struggle (e.g., "COULDN'T STOP", "HE KNEW")  
+• Option 2 – turning point (e.g., "IT ALL COLLAPSED", "CAUGHT")  
+• Option 3 – consequence (e.g., "$420M GONE", "LIFE SENTENCE")  
+• Option 4 – paradox/mystery (e.g., "FAKE GENIUS", "BUILT ON LIES")  
 
-Must work standalone on mobile.
+RULES:
+• NEVER exceed 4 words — fewer is better  
+• ALL UPPERCASE  
+• Must create instant emotional impact even without the title  
+• Must work standalone on mobile at tiny size  
+• NO full sentences — fragments only
 
 ━━━━━━━━━━━━━━━━━━━━
 ## 7) PINNED COMMENT
