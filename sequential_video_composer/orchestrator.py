@@ -511,7 +511,7 @@ class SequentialVideoOrchestrator:
         if len(overlays) > 1:
             main_video = CompositeVideoClip(overlays)
 
-        # Audio: only attach narration if provided; never generate procedural noise
+        # Audio: attach narration if provided, otherwise add silent track
         if self.audio_path and self.audio_path.exists():
             logger.info("  Adding audio from: %s", self.audio_path)
             audio_clip = AudioFileClip(str(self.audio_path))
@@ -520,7 +520,12 @@ class SequentialVideoOrchestrator:
             audio_clip = self._normalize_audio(audio_clip)
             main_video = main_video.set_audio(audio_clip)
         else:
-            logger.info("  No audio file provided — video will have no audio track")
+            # Attach a silent audio track so players don't choke on missing audio
+            from moviepy.audio.AudioClip import AudioArrayClip
+            silence = np.zeros((int(44100 * main_video.duration), 2), dtype=np.float32)
+            silent_audio = AudioArrayClip(silence, fps=44100).set_duration(main_video.duration)
+            main_video = main_video.set_audio(silent_audio)
+            logger.info("  No audio file provided — attached silent audio track")
 
         logger.info("[5/5] Exporting video...")
         self._export_video(main_video)
