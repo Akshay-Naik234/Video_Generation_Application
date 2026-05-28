@@ -1,21 +1,100 @@
 Generate a cinematic, ultra-sharp YouTube documentary thumbnail in 16:9 (1280x720, RGB).
 
-Create a chest-up close-up portrait of {{PERSON_NAME}} in their most iconic historically accurate era that represents their legacy. Use authentic period clothing, grooming, and posture. No modern styling. Documentary realism only.
+━━━━━━━━━━━━━━━━━━━━
+SIMPLICITY IS EVERYTHING (NON-NEGOTIABLE)
+━━━━━━━━━━━━━━━━━━━━
+The thumbnail MUST pass the "1-inch test" — it must be instantly readable at mobile phone size (1 inch wide).
+Maximum THREE visual elements total: (1) the face, (2) ONE subtle background element, (3) text overlay.
+If a viewer has to study the thumbnail to understand it, you have FAILED.
 
-Position the subject using the rule of thirds, occupying about 60–65% of the frame with a subtle 3/4 angle. Face fully visible, eyes unobstructed.
+━━━━━━━━━━━━━━━━━━━━
+FACE — THE DOMINANT ELEMENT (70% OF FRAME)
+━━━━━━━━━━━━━━━━━━━━
+Create a chest-up close-up portrait of {{PERSON_NAME}} at the age that represents their most iconic or dramatic moment.
 
-Facial expression: emotionally controlled but intense. Convey deep intelligence, quiet rebellion, inner conflict, and determination through subtle eyebrow tension and sharp focused eyes. Natural skin texture with realistic imperfections.
+Composition:
+- Face fills 70% of the frame — this is the #1 factor for click-through rate
+- Use a subtle 3/4 angle with rule-of-thirds positioning
+- Face fully visible, eyes unobstructed and making direct eye contact with the viewer
+- Leave clean negative space on one side (left or right) for the text overlay
 
-Lighting: cinematic high-contrast documentary lighting. One side of the face lit in warm golden/orange tones, the opposite side in cool blue/teal shadows. HDR clarity, professional color grading, subtle film grain.
+Historical accuracy:
+- Authentic period-accurate clothing, grooming, and posture — no modern styling
+- Documentary realism only
 
-Background: dark and softly blurred with cinematic depth. Include faint semi-transparent symbolic elements related to {{PERSON_NAME}}’s field or legacy such as handwritten notes, diagrams, historical textures, abstract metaphors, or aged paper fading into darkness. Keep background low contrast and non-distracting.
+Facial expression:
+- ONE dominant emotion that matches the story's core tension (intense stare, quiet defiance, controlled fury, haunted regret, cold calculation)
+- Convey emotion through subtle micro-expressions: eyebrow tension, jaw set, eye intensity
+- Natural skin texture with realistic imperfections — visible pores, subtle asymmetry, natural under-eye shadows
+- NOT smooth, NOT airbrushed, NOT AI-looking
 
-Add subtle atmospheric depth like soft light rays, floating dust particles, or gentle haze, keeping focus on the eyes.
+━━━━━━━━━━━━━━━━━━━━
+LIGHTING — CINEMATIC DEPTH
+━━━━━━━━━━━━━━━━━━━━
+Dramatic split lighting (Rembrandt or strong side light):
+- One side of the face lit in warm golden/amber tones
+- The opposite side in cool blue/teal shadows
+- Strong HDR clarity with professional color grading
+- Subtle film grain for cinematic texture
+- The lighting itself should tell a story (tension, duality, mystery)
 
-Insert bold cinematic thumbnail text reading exactly: "{{THUMBNAIL_TEXT}}"
+━━━━━━━━━━━━━━━━━━━━
+BACKGROUND — MINIMAL AND NON-DISTRACTING
+━━━━━━━━━━━━━━━━━━━━
+Dark, deeply blurred background with ONLY ONE faint semi-transparent symbolic element related to {{PERSON_NAME}}'s story:
+- Keep background elements at 15-20% opacity maximum
+- Examples: faint flames, scattered money, a single equation, a courtroom outline, a flag silhouette
+- Background MUST NOT compete with the face for attention
+- NO multiple props, NO badges, NO seals, NO charts, NO documents, NO text in the background
+- Add subtle atmospheric depth: soft light rays OR floating dust particles (not both)
 
-Text style: bold sans-serif (Bebas Neue / Montserrat Black / Impact style), high contrast white or warm gold with subtle shadow or outline. Place in clean negative space (left or right side), never covering the face.
+━━━━━━━━━━━━━━━━━━━━
+TEXT OVERLAY (ADDED IN POST-PRODUCTION)
+━━━━━━━━━━━━━━━━━━━━
+DO NOT embed text in the image prompt — text is added separately.
 
-Overall mood: premium cinematic documentary, serious, mysterious, emotionally powerful, rebellion and importance.
+The overlay_text field should contain exactly 2-4 BOLD UPPERCASE WORDS that:
+- Create instant emotional impact or curiosity
+- Work standalone without the title (a viewer seeing ONLY these words should feel compelled to click)
+- Are derived from the single most dramatic moment in the story
 
-Ensure the image is optimized for mobile viewing with a single strong focal point, high contrast, and instantly readable face and text.
+Text style (applied in post-production):
+- Bold sans-serif (Bebas Neue / Montserrat Black / Impact style)
+- High contrast white or warm gold with subtle drop shadow
+- Placed in the clean negative space — NEVER covering the face
+- Large enough to read at mobile phone size
+
+━━━━━━━━━━━━━━━━━━━━
+COLOR SCHEME — HIGH CONTRAST, TWO COLORS ONLY
+━━━━━━━━━━━━━━━━━━━━
+Maximum 2 dominant colors. Select based on story genre:
+- Crime/dark stories: Red (#FF0000) + Black
+- Mystery/science: Blue (#003366) + Orange (#FF6600)
+- Wealth/power: Gold (#FFD700) + Black
+- Tragedy: Deep Purple (#2d0040) + Grey
+- Politics/scandal: Dark Red (#8B0000) + Navy Blue (#000080)
+- Military/war: Dark Green (#1a3c1a) + Red
+- Tech/innovation: Electric Blue (#0066FF) + White
+- Historical/ancient: Warm Sepia (#704214) + Gold
+
+━━━━━━━━━━━━━━━━━━━━
+STYLE SUFFIX (APPEND TO EVERY PROMPT)
+━━━━━━━━━━━━━━━━━━━━
+"Cinematic portrait photograph, ultra-sharp focus on face, dramatic Rembrandt lighting, rich color grading, 8K resolution, photorealistic skin texture with natural imperfections, realistic eyes with catchlights, shallow depth of field on background, professional YouTube thumbnail style, NOT AI looking, natural skin pores and texture visible, documentary photography, single strong focal point"
+
+NEGATIVE PROMPT (if the AI image tool supports it):
+"text, words, letters, title, watermark, border, multiple people, cluttered background, busy composition, multiple objects, badges, seals, documents, charts, cartoon, anime, illustration, painting, digital art, 3D render, CGI, plastic skin, smooth skin, airbrushed, overly saturated, neon colors"
+
+━━━━━━━━━━━━━━━━━━━━
+QUALITY CHECKLIST (MUST ALL PASS)
+━━━━━━━━━━━━━━━━━━━━
+[ ] Face fills 70%+ of the frame
+[ ] Only ONE background element at low opacity
+[ ] Readable at 1 inch wide (mobile test)
+[ ] Maximum 2 dominant colors
+[ ] No text baked into the image
+[ ] Overlay text is 2-4 words only
+[ ] Face looks photorealistic, not AI-generated
+[ ] Clear single focal point — the eyes
+[ ] Background does NOT compete with face
+[ ] Overall mood: premium cinematic documentary, not clickbait
