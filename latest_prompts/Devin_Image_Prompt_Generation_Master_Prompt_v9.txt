@@ -1,6 +1,6 @@
 ============================================================
-BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.1
-(synced with sequential_video_composer v5.1 + retention v2 + storytelling mastery)
+BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.3
+(synced with sequential_video_composer v5.3 + retention v2 + storytelling mastery)
 ============================================================
 
 ╔══════════════════════════════════════════════════════════════════╗
@@ -8,9 +8,10 @@ BIOGRAPHY VIDEO — IMAGE PROMPT GENERATION MASTER PROMPT v9.1
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
 ║  TIMING:                                                         ║
-║  1. Target 4-5s per image, max 7s, min 3s — avg ~4.5s           ║
+║  1. VARY durations 3-7s per image — avg ~4.5s. NEVER all same!  ║
 ║  2. 150-170 total images for a 12-min video                      ║
 ║  3. Cold Open: 3-4s rapid cuts | Conflict: fastest | Legacy: 5-6s║
+║  3b. ANTI-PATTERN: All images at same duration = FAILURE         ║
 ║                                                                  ║
 ║  ANIMATION FIELDS (every image MUST have all three):             ║
 ║  4. movement_type — match emotion (push_in=suspense,             ║
@@ -104,13 +105,25 @@ DOCUMENTARY ANIMATION SYSTEM (v3.0) — COMPLETE REFERENCE
 The video system supports 40 movement styles, 28 transition types, and 24 cinematic effect overlays.
 You MUST select the appropriate ones for each image based on the scene content and emotional tone.
 
-**ENGINE BEHAVIOR (v5.1 — what affects your prompts):**
+**ENGINE BEHAVIOR (v5.2 — what affects your prompts):**
 - Smooth sine easing on all movements. Effects intensity is SECTION-AWARE (CLIMAX ×1.4, LEGACY ×0.75).
 - Motion blur ONLY on whip_pan — all others stay sharp.
-- Effects limited to 2 per image (engine applies first 2 if you list 3). Vignette/fog/dust are subtle.
+- Effects limited to 2 per image (engine applies first 2 if you list 3). Brightness budget auto-scales:
+  2 simultaneous effects each get 70% intensity to prevent washed-out frames.
 - YOUR PROMPTS must specify proper lighting — engine preserves source brightness as-is.
 - Clips overlap with section-aware crossfade — NEVER black gaps between images.
-- Text overlays have stroke outlines + drop shadows — readable on any background.
+- Text overlays have mobile-first sizing (58pt name, 78pt chapter, 50pt quote at 1080p) with
+  5-layer drop shadows and 4px stroke outlines — readable on any background at any device size.
+- **Section title cards** are auto-generated at every section boundary (except first image
+  and CTA). Full-screen darkened overlay with golden accent lines and section name. You do NOT
+  need to create separate title-card images — the engine handles this automatically.
+- **Particle overlays** (dust, sparkles, embers, rain, confetti) are now auto-applied per section.
+- **Audio**: The engine does NOT generate any audio/sound. Video is silent unless narration
+  audio is provided separately via audio_path. No background noise or procedural sounds.
+- Text-heavy shot types (detail, extreme_closeup, map, timeline) automatically receive
+  gentler movements to keep on-screen text readable during the Ken Burns effect.
+- Movement deduplication: engine never repeats the same movement within 3 consecutive images
+  (even if JSON specifies it — the pool is reshuffled automatically).
 
 ------------------------------------------------------------
 MOVEMENT TYPES (40 available) — set via "movement_type" field
@@ -234,9 +247,17 @@ TRANSITION SELECTION RULES:
 - Use film_burn for climactic/destruction moments (THE_CLIMAX)
 - Use flash_cut for shocking/sudden events (COLD_OPEN, dramatic reveals)
 - Use fade_through_black for major section transitions and death scenes
-- Use crossfade as your default for neutral transitions
+- Use crossfade SPARINGLY — it's the blandest transition. Max 30-40% of images.
+  Over-relying on crossfade makes the video feel like a slideshow.
 - Use whip_pan for fast-paced/chaotic transitions
 - Alternate transitions — avoid using the same transition_type more than 2 times in a row
+- **Section boundaries MUST use dramatic transitions** (ink_splash, flash_cut, film_burn,
+  fade_through_black, or zoom_dissolve) — NEVER crossfade at a section change.
+- Aim for this transition distribution:
+  crossfade: 25-35% | light_leak: 10-15% | fade_through_black: 8-12% |
+  flash_cut: 5-8% | glitch: 5-8% | whip_pan: 5-8% | film_burn: 3-5% |
+  ink_splash: 2-4% | premium (parallax_slide, zoom_dissolve, color_sweep): 10-15% |
+  remaining: slides, wipes, morphs, pushes, etc.
 
 **TRANSITION RENDERING BEHAVIOR:**
 - **fade_through_black/white/warm**: Quick fade — the black/white/warm period is SHORT (not a long dark hold). Clips overlap so transitions feel seamless.
@@ -774,6 +795,19 @@ TIMING RULES:
 - Pacing by section: Cold Open 3-4s (RAPID) | Early Life 4-5s | Spark 4-5s | Rise 4-5s |
   Conflict 3-4s (FASTEST) | Climax 5-6s | Fall 4-5s | Legacy 5-6s | CTA 4-5s
 
+**CRITICAL ANTI-PATTERN — UNIFORM DURATIONS:**
+NEVER assign the same duration to all images (e.g., all at 4.33s or all at 4.5s).
+This is the #1 mistake that makes the video feel robotic and kills engagement.
+Each section MUST have a distinct pacing feel:
+- COLD_OPEN: Rapid 3.0-3.5s cuts to hook immediately
+- CONFLICT: Fast 3.0-4.0s cuts to build tension
+- CLIMAX: Longer 5.0-6.0s holds for dramatic impact
+- LEGACY: Contemplative 5.0-6.0s for emotional resonance
+- Within each section, VARY durations by ±0.5-1.0s between images
+  (e.g., 4.0, 4.5, 3.5, 5.0 — NOT 4.33, 4.33, 4.33, 4.33)
+- Emotional peaks should HOLD LONGER (5-6s), exposition can be FASTER (3-4s)
+- A dramatic reveal deserves 5-6s; a quick reaction shot needs only 3s
+
 IMAGE COUNT (12-min video): Cold Open 8-10 | Early 18-22 | Spark 18-22 | Rise 24-28 |
 Conflict 30-36 (MOST) | Climax 15-18 | Fall 18-22 | Legacy 10-12 | CTA 6-8 | TOTAL: 150-170
 Formula: total_duration / 4.5 = image count. Shorter (<480s): 95-110. Longer (>900s): 190-220.
@@ -860,6 +894,16 @@ RETENTION TECHNIQUES (condensed — see quick-reference card for priorities)
 - **Transitions**: Never same 2× in a row. ink_splash at narrative shifts, light_leak for nostalgia.
 - **End Retention**: Legacy 5-6s max, warm. CTA 4-5s, breathing movement. End visually strong.
   v9: Legacy = LIGHTER/HOPEFUL. Last image = meaningful, not just fade to black.
+- **Audio-Visual Sync (v9.2 — NEW)**: Every image transition MUST fall at a natural sentence
+  boundary or dramatic pause in the narration — NEVER mid-sentence. When setting start_time
+  and duration for each image, align the end_time to the nearest sentence boundary in the
+  narration timestamps. If the narration has a gap > 0.8s between segments, extend the
+  current image's duration to hold through the pause rather than cutting to silence.
+- **Section Title Cards (v9.2 — NEW)**: The engine auto-generates section title cards at every
+  section boundary. You do NOT need to create separate title-card images — but you SHOULD
+  ensure that the FIRST IMAGE of each new section is visually distinct from the last image of
+  the previous section (color shift, scale shift, or subject shift) so the title card overlay
+  looks intentional.
 
 ============================================================
 STORYTELLING-DRIVEN VISUAL DIRECTION (v9 — NEW)
@@ -1163,6 +1207,9 @@ VERIFICATION CHECKLIST (fix ANY failures before delivering)
 
 **TIMING:** 150-170 images, 3-7s each (target 4-5s, avg 4.5-5s). No gaps. Starts at 0.0,
 ends at exact total_duration. Sum of durations = total_duration (off by 0.1s = failure).
+[ ] PACING VARIANCE CHECK: Durations MUST vary within and between sections. If >5 consecutive
+    images have the same duration, that is a FAILURE. COLD_OPEN avg must be 3.0-3.5s,
+    CONFLICT avg 3.0-4.0s, CLIMAX avg 5.0-6.0s. Check standard deviation > 0.4s per section.
 
 **IMAGE COUNT:** Cold Open 8-10 | Early Life 18-22 | Spark 18-22 | Rise 24-28 |
 Conflict 30-36 (MOST) | Climax 15-18 | Fall 18-22 | Legacy 10-12 | CTA 6-8
@@ -1172,6 +1219,9 @@ suffix on every prompt. Period-accurate details. Prompts match narration timesta
 
 **VARIETY:** No 2 consecutive same shot_type. High-impact shot every 5 images. Pattern
 interrupt every 15-20s. No 3+ consecutive same transition or shot scale.
+[ ] TRANSITION DISTRIBUTION CHECK: crossfade must be <40% of all transitions.
+    Section boundaries MUST NOT use crossfade. Premium transitions (zoom_dissolve,
+    parallax_slide, color_sweep) should appear at least 10% of the time.
 
 **COLOR:** Cool(open)→warm(early)→neutral(spark)→bold(rise)→cold(conflict)→gold/blue(climax)
 →muted(fall)→golden(legacy). No random jumps within a section.

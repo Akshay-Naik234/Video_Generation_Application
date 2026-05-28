@@ -86,10 +86,13 @@ class ClipFactory:
             logger.debug("  End time: %ss", end_time)
             logger.debug("  Movement style: %s", movement)
 
-            # Section-aware color grading: use section-specific grade when available
+            # Section-aware + emotion-aware adaptive color grading
             section = self.orchestrator.image_sections.get(num, '')
+            tone = self.orchestrator.image_tones.get(num, '')
             if section:
                 grade = self.orchestrator.color_grading.grade_for_section(section)
+            elif tone:
+                grade = self.orchestrator.color_grading.grade_for_emotion(tone)
             else:
                 grade = self.orchestrator.color_grade
 
@@ -108,10 +111,11 @@ class ClipFactory:
             clips_data.append({
                 'clip': clip,
                 'transition': transition,
+                'transition_type': transition,
                 'image_num': num,
                 'start_time': start_time,
                 'end_time': end_time,
-                'duration': image_duration
+                'duration': image_duration,
             })
 
         if failed:

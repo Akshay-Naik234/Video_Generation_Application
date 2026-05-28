@@ -25,6 +25,8 @@ from .clip_factory import ClipFactory
 from .text_overlays import TextOverlayEngine
 from .effects import DocumentaryEffects
 from .performance import RenderOptimizer
+from .sound_design import SoundDesignEngine
+from .particles import ParticleSystem
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +51,7 @@ class SequentialVideoOrchestrator:
         movement_style: str = "random",
         color_grade: str = "cinematic",
         enable_vignette: bool = True,
-        enable_film_grain: bool = False,
+        enable_film_grain: bool = True,
         enable_text_overlays: bool = True,
         overlay_accent_color: Tuple[int, int, int] = (218, 165, 32),
         duration_config_path: Optional[Union[str, Path]] = None,
@@ -88,6 +90,10 @@ class SequentialVideoOrchestrator:
         self.preview_mode: bool = False
         self.fast_mode: bool = False
         self.aspect_mode: str = 'fill'
+        # Track recently used movements/transitions to prevent repetition
+        from collections import deque
+        self._recent_movements: deque = deque(maxlen=3)
+        self._recent_transitions: deque = deque(maxlen=3)
 
         self._validate_config()
 
@@ -100,6 +106,8 @@ class SequentialVideoOrchestrator:
         self.clip_factory = ClipFactory(self)
         self.text_overlay_engine = TextOverlayEngine(resolution, accent_color=overlay_accent_color)
         self.effects = DocumentaryEffects(resolution, fps=fps)
+        self.sound_design = SoundDesignEngine()
+        self.particles = ParticleSystem(resolution, fps=fps)
         self.optimizer = RenderOptimizer(resolution=resolution)
 
     def _validate_config(self) -> None:
@@ -291,18 +299,30 @@ class SequentialVideoOrchestrator:
         """Get movement style for an image based on section, tone, and position.
 
         Priority: per-image movement_type from JSON > section/tone pool > legacy logic.
+        Tracks recent movements to avoid repetition within 3 consecutive images.
         """
         # 1. Per-image explicit movement from JSON config (highest priority)
         if image_num and image_num in self.image_movement_types:
             movement = self.image_movement_types[image_num]
             if movement in MovementStyles.MOVEMENT_TYPES:
                 logger.debug("  Using per-image movement_type from config: %s", movement)
+                self._recent_movements.append(movement)
                 return movement
             else:
                 logger.warning("Unknown movement_type '{movement}' in config, falling back to section pool")
 
         section = self.image_sections.get(image_num, '')
         tone = self.image_tones.get(image_num, '')
+        shot_type = self.image_shot_types.get(image_num, '')
+
+        # 1b. Content-aware constraint: text-heavy shots get gentler movements
+        if shot_type in MovementStyles.TEXT_HEAVY_SHOT_TYPES:
+            fresh = [m for m in MovementStyles.TEXT_SAFE_MOVEMENTS
+                     if m not in self._recent_movements]
+            choice = random.choice(fresh) if fresh else random.choice(MovementStyles.TEXT_SAFE_MOVEMENTS)
+            self._recent_movements.append(choice)
+            logger.debug("  Text-heavy shot (%s) → gentle movement: %s", shot_type, choice)
+            return choice
 
         # 2. Section-aware documentary mode (fallback)
         if self.movement_style in ('documentary', 'random') and section:
@@ -315,8 +335,12 @@ class SequentialVideoOrchestrator:
             calm_sections = {'LEGACY', 'CTA', 'EARLY_LIFE'}
             if section in calm_sections:
                 pool = [m for m in pool if m not in ('handheld_drift', 'whip_pan', 'dutch_tilt')]
+            # Exclude recently used movements to prevent repetition
             if pool:
-                return random.choice(pool)
+                fresh = [m for m in pool if m not in self._recent_movements]
+                choice = random.choice(fresh) if fresh else random.choice(pool)
+                self._recent_movements.append(choice)
+                return choice
 
         # Movements excluded from random selection: too aggressive for
         # general use.  They remain available via explicit per-image config
@@ -328,7 +352,10 @@ class SequentialVideoOrchestrator:
 
         if self.movement_style == "random":
             safe_pool = [m for m in MovementStyles.MOVEMENT_TYPES if m not in _SHAKE_MOVEMENTS]
-            return random.choice(safe_pool)
+            fresh = [m for m in safe_pool if m not in self._recent_movements]
+            choice = random.choice(fresh) if fresh else random.choice(safe_pool)
+            self._recent_movements.append(choice)
+            return choice
         elif self.movement_style == "sequential":
             movements = ['zoom_in', 'pan_left', 'zoom_out', 'pan_right', 'diagonal_tl_br', 'gentle_drift']
             return movements[index % len(movements)]
@@ -466,6 +493,12 @@ class SequentialVideoOrchestrator:
                 )
                 overlays.append(grain)
 
+        # Section title cards at chapter boundaries
+        if self.enable_text_overlays and self.image_sections:
+            title_clips = self._create_section_title_clips(clips_data)
+            overlays.extend(title_clips)
+            logger.info("  Added %d section title card overlays", len(title_clips))
+
         # Text overlays from duration config
         logger.info("[4/5] Adding text overlays...")
         if self.enable_text_overlays and self.overlay_texts:
@@ -507,6 +540,7 @@ class SequentialVideoOrchestrator:
         Otherwise, falls back to grouping by section.
         """
         effect_clips = []
+        sections: Dict[str, Dict] = {}
 
         # 1. Per-image effects from JSON config (highest priority)
         max_effects_per_image = 2
@@ -534,7 +568,7 @@ class SequentialVideoOrchestrator:
         # 2. Section-based effects for images WITHOUT per-image effects
         if self.image_sections:
             # Group remaining clips by section
-            sections: Dict[str, Dict] = {}
+            sections = {}
             for data in clips_data:
                 img_num = data.get('image_num')
                 if img_num in per_image_handled:
@@ -577,7 +611,125 @@ class SequentialVideoOrchestrator:
                     self.effects.create_dust_particles(dur, self.effects_intensity * 0.15),
                 ])
 
+        # 4. Section-aware particle overlays for environmental storytelling
+        if self.image_sections:
+            # Build section time ranges if not already available
+            if not sections:
+                sections = {}
+                for data in clips_data:
+                    img_num = data.get('image_num')
+                    section = self.image_sections.get(img_num, '')
+                    if not section:
+                        continue
+                    start = data.get('start_time', 0) or 0
+                    end = (data.get('end_time') or (start + data.get('duration', 0)))
+                    if section not in sections:
+                        sections[section] = {'start': start, 'end': end}
+                    else:
+                        sections[section]['start'] = min(sections[section]['start'], start)
+                        sections[section]['end'] = max(sections[section]['end'], end)
+            particle_clips = self._create_particle_overlays(sections)
+            effect_clips.extend(particle_clips)
+            if particle_clips:
+                logger.info("  Added %d section particle overlays", len(particle_clips))
+
         return effect_clips
+
+    def _create_particle_overlays(self, sections: Dict[str, Dict]) -> List:
+        """Create section-aware particle system overlays."""
+        particle_clips = []
+        for section, times in sections.items():
+            particle_type = ParticleSystem.SECTION_PARTICLES.get(section)
+            if not particle_type:
+                continue
+            sec_duration = times['end'] - times['start']
+            if sec_duration <= 0:
+                continue
+
+            create_fn = {
+                'rain': self.particles.create_rain,
+                'embers': self.particles.create_embers,
+                'sparkles': self.particles.create_sparkles,
+                'dust_motes': self.particles.create_dust_motes,
+                'confetti': self.particles.create_confetti,
+            }.get(particle_type)
+
+            if create_fn:
+                clip = create_fn(
+                    duration=sec_duration,
+                    intensity=self.effects_intensity * 0.4,
+                )
+                clip = clip.set_start(times['start'])
+                particle_clips.append(clip)
+        return particle_clips
+
+    # Human-readable section display names for title cards
+    _SECTION_DISPLAY_NAMES = {
+        'COLD_OPEN': ('Cold Open', ''),
+        'EARLY_LIFE': ('Early Life', 'The Beginning'),
+        'THE_SPARK': ('The Spark', 'A Turning Point'),
+        'THE_RISE': ('The Rise', 'Building an Empire'),
+        'THE_CONFLICT': ('The Conflict', 'Cracks Appear'),
+        'THE_CLIMAX': ('The Climax', 'Point of No Return'),
+        'THE_FALL': ('The Fall', 'Everything Crumbles'),
+        'LEGACY': ('Legacy', 'What Remains'),
+        'CTA': ('', ''),  # No title card for CTA
+    }
+
+    def _create_section_title_clips(self, clips_data: List[Dict]) -> List:
+        """Create title card overlays at section boundaries.
+
+        Inserts a 2.5-second title card overlay at the start of each new
+        section (except COLD_OPEN's very first image, which jumps straight in).
+        """
+        title_clips = []
+        prev_section = ''
+        for data in clips_data:
+            img_num = data.get('image_num')
+            section = self.image_sections.get(img_num, '')
+            if not section or section == prev_section:
+                prev_section = section
+                continue
+            prev_section = section
+
+            display = self._SECTION_DISPLAY_NAMES.get(section, (section.replace('_', ' ').title(), ''))
+            title, subtitle = display
+            if not title:
+                continue
+
+            # Skip title card on the very first image (COLD_OPEN usually)
+            start = data.get('start_time', 0) or 0
+            if start < 1.0:
+                continue
+
+            overlay_arr = self.text_overlay_engine.create_section_title_card(
+                title, subtitle, accent_color=self.overlay_accent_color,
+            )
+
+            title_dur = min(2.5, (data.get('duration', 4.0) or 4.0) * 0.6)
+
+            def make_frame(t, arr=overlay_arr):
+                return arr[:, :, :3]
+
+            def make_mask(t, arr=overlay_arr, dur=title_dur):
+                alpha = arr[:, :, 3].astype(np.float32) / 255.0
+                # Fade in for first 0.4s, hold, fade out for last 0.5s
+                if t < 0.4:
+                    alpha *= t / 0.4
+                elif t > dur - 0.5:
+                    alpha *= max(0, (dur - t) / 0.5)
+                return alpha
+
+            tc = (VideoClip(make_frame, duration=title_dur)
+                  .set_fps(self.fps)
+                  .set_position('center')
+                  .set_start(start))
+            mask_clip = (VideoClip(make_mask, ismask=True, duration=title_dur)
+                         .set_fps(self.fps))
+            tc = tc.set_mask(mask_clip)
+            title_clips.append(tc)
+
+        return title_clips
 
     def _create_text_overlay_clips(self, clips_data: List[Dict]) -> List:
         """Create MoviePy clips for all overlay text entries with animation support."""
@@ -1038,6 +1190,119 @@ class SequentialVideoOrchestrator:
         from moviepy.audio.AudioClip import AudioArrayClip
         return AudioArrayClip(samples, fps=44100).set_duration(audio_clip.duration)
 
+    def _create_sound_design_layers(
+        self, clips_data: List[Dict], total_duration: float
+    ) -> Optional[np.ndarray]:
+        """Generate procedural sound design layers from transition and section data.
+
+        Creates a mono audio array at 44100 Hz containing:
+        - Transition sound effects (whooshes, impacts) at each cut point
+        - Section-aware ambient atmosphere underneath
+        """
+        sr = self.sound_design.sample_rate
+        total_samples = int(sr * total_duration)
+        if total_samples <= 0:
+            return None
+
+        mix = np.zeros(total_samples, dtype=np.float32)
+
+        # 1. Transition sound effects
+        for data in clips_data:
+            transition = data.get('transition_type', '')
+            start = data.get('start_time', 0) or 0
+            dur = data.get('duration', 0) or 0
+            # Place transition sound at the end of each clip (where the cut happens)
+            cut_time = start + dur
+            sound_type = self.sound_design.get_transition_sound_type(transition)
+            if sound_type and cut_time < total_duration:
+                if 'whoosh' in sound_type:
+                    direction = 'fast'
+                    if 'rising' in sound_type:
+                        direction = 'rising'
+                    elif 'falling' in sound_type:
+                        direction = 'falling'
+                    sfx = self.sound_design.generate_whoosh(duration=0.4, direction=direction)
+                elif 'impact' in sound_type or 'boom' in sound_type:
+                    sfx = self.sound_design.generate_impact(duration=0.3)
+                elif 'shimmer' in sound_type:
+                    sfx = self.sound_design.generate_shimmer(duration=0.8)
+                else:
+                    continue
+
+                # Center the sound effect around the cut point
+                offset = max(0, int((cut_time - 0.15) * sr))
+                end_idx = min(total_samples, offset + len(sfx))
+                usable = end_idx - offset
+                if usable > 0:
+                    mix[offset:end_idx] += sfx[:usable] * 0.12
+
+        # 2. Section-aware ambient atmosphere
+        if self.image_sections:
+            section_ranges: Dict[str, Tuple[float, float]] = {}
+            for data in clips_data:
+                img_num = data.get('image_num')
+                section = self.image_sections.get(img_num, '')
+                if not section:
+                    continue
+                start = data.get('start_time', 0) or 0
+                end = (data.get('end_time') or (start + (data.get('duration', 0) or 0)))
+                if section not in section_ranges:
+                    section_ranges[section] = (start, end)
+                else:
+                    s, e = section_ranges[section]
+                    section_ranges[section] = (min(s, start), max(e, end))
+
+            for section, (s_start, s_end) in section_ranges.items():
+                atmos_type, volume = self.sound_design.get_section_atmosphere_config(section)
+                s_dur = s_end - s_start
+                if s_dur <= 0:
+                    continue
+                atmos = self.sound_design.generate_atmosphere(atmos_type, s_dur, volume * 0.5)
+                offset = max(0, int(s_start * sr))
+                end_idx = min(total_samples, offset + len(atmos))
+                usable = end_idx - offset
+                if usable > 0:
+                    mix[offset:end_idx] += atmos[:usable]
+
+        # Only return if we actually generated something
+        if np.max(np.abs(mix)) < 1e-8:
+            return None
+
+        logger.info("  Generated sound design layers (%.1fs)", total_duration)
+        return np.clip(mix, -1.0, 1.0)
+
+    def _mix_sound_design(
+        self, narration: AudioFileClip, sound_layers: np.ndarray
+    ) -> AudioFileClip:
+        """Mix procedural sound design layers into the narration audio."""
+        from moviepy.audio.AudioClip import AudioArrayClip
+
+        try:
+            narr_samples = narration.to_soundarray(fps=44100)
+        except TypeError:
+            chunks = list(narration.iter_chunks(fps=44100, quantize=False, chunksize=2000))
+            narr_samples = np.vstack(chunks) if chunks else np.array([])
+
+        if narr_samples.size == 0:
+            return narration
+
+        n_channels = narr_samples.shape[1] if narr_samples.ndim > 1 else 1
+        n_samples = narr_samples.shape[0]
+
+        # Expand sound_layers to match narration shape
+        sd = sound_layers[:n_samples] if len(sound_layers) >= n_samples else np.pad(
+            sound_layers, (0, n_samples - len(sound_layers))
+        )
+        if n_channels > 1:
+            sd = np.stack([sd] * n_channels, axis=-1)
+        else:
+            sd = sd.reshape(-1, 1)
+
+        mixed = narr_samples + sd.astype(narr_samples.dtype)
+        mixed = np.clip(mixed, -1.0, 1.0)
+
+        return AudioArrayClip(mixed, fps=44100).set_duration(narration.duration)
+
     def _export_video(self, video: CompositeVideoClip) -> None:
         """Export the final video with professional settings.
 
@@ -1059,7 +1324,7 @@ class SequentialVideoOrchestrator:
             crf = '22'
         else:
             preset = 'medium'
-            crf = '18'
+            crf = '20'
 
         try:
             video.write_videofile(

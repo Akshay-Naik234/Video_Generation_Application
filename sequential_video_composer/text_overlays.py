@@ -35,21 +35,24 @@ class TextOverlayEngine:
     - Slide-in overlays (animated text that slides from the side)
     """
 
-    # Font size defaults (relative to 1080p, scaled by resolution)
+    # Font size defaults (relative to 1080p, scaled by resolution).
+    # Sized for mobile-first readability — YouTube's #1 viewing device.
     FONT_SIZES = {
-        'lower_third_name': 44,
-        'lower_third_title': 28,
-        'chapter_title': 58,
-        'chapter_subtitle': 32,
-        'quote_text': 38,
-        'quote_attribution': 26,
-        'quote_mark': 96,
-        'info_card': 32,
-        'year_stamp': 80,
-        'year_stamp_label': 24,
-        'location_stamp': 30,
-        'location_stamp_sub': 22,
-        'slide_in': 32,
+        'lower_third_name': 58,
+        'lower_third_title': 36,
+        'chapter_title': 78,
+        'chapter_subtitle': 42,
+        'quote_text': 50,
+        'quote_attribution': 34,
+        'quote_mark': 120,
+        'info_card': 42,
+        'year_stamp': 108,
+        'year_stamp_label': 32,
+        'location_stamp': 40,
+        'location_stamp_sub': 30,
+        'slide_in': 42,
+        'section_title': 90,
+        'section_title_sub': 42,
     }
 
     # Cross-platform font paths: tried in order until one works.
@@ -230,13 +233,23 @@ class TextOverlayEngine:
         shadow_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         shadow_offset: int = 10,
     ) -> None:
-        """Draw text with a multi-layer drop shadow and outline for readability."""
+        """Draw text with a multi-layer drop shadow and outline for readability.
+
+        Uses stronger shadows and thicker outlines to survive YouTube's
+        H.264 compression, especially at mobile viewing sizes.
+        """
         x, y = position
-        offset = max(6, int(shadow_offset * self.scale))
-        sw = max(2, int(3 * self.scale))
-        sf = (0, 0, 0, 220)
-        # Multi-layer shadow for stronger depth on dark backgrounds
-        for dx, dy, alpha in [(offset + 2, offset + 2, 80), (offset + 1, offset + 1, 140), (offset, offset, 255)]:
+        offset = max(8, int(shadow_offset * self.scale * 1.3))
+        sw = max(3, int(4 * self.scale))
+        sf = (0, 0, 0, 240)
+        # Multi-layer shadow for stronger depth — survives compression
+        for dx, dy, alpha in [
+            (offset + 4, offset + 4, 60),
+            (offset + 3, offset + 3, 100),
+            (offset + 2, offset + 2, 140),
+            (offset + 1, offset + 1, 190),
+            (offset, offset, 255),
+        ]:
             sc = (shadow_color[0], shadow_color[1], shadow_color[2], alpha)
             draw.text((x + dx, y + dy), text, font=font, fill=sc)
         # Main text with stroke
@@ -1036,6 +1049,82 @@ class TextOverlayEngine:
 
         # Default: info card (works for dates, facts, short context text)
         return 'info_card'
+
+    def create_section_title_card(
+        self,
+        title: str,
+        subtitle: str = '',
+        accent_color: Tuple[int, int, int] = (218, 165, 32),
+    ) -> np.ndarray:
+        """Create a full-screen section title card for chapter transitions.
+
+        Features a large centered title with a golden accent line,
+        optional subtitle, and a darkened background overlay for contrast.
+        Designed for 2-3 second display at section boundaries.
+        """
+        overlay = PILImage.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+
+        # Semi-transparent dark background for contrast
+        bg_alpha = 160
+        draw.rectangle([0, 0, self.width, self.height], fill=(0, 0, 0, bg_alpha))
+
+        title_font = self._get_font('section_title', bold=True)
+        sub_font = self._get_font('section_title_sub', bold=False)
+
+        title_upper = title.upper()
+        title_bbox = draw.textbbox((0, 0), title_upper, font=title_font)
+        title_w = title_bbox[2] - title_bbox[0]
+        title_h = title_bbox[3] - title_bbox[1]
+
+        # Center title vertically (slightly above center)
+        cx = self.width // 2
+        cy = int(self.height * 0.42)
+
+        # Golden accent line above title
+        line_w = min(title_w + int(80 * self.scale), int(self.width * 0.6))
+        line_h = max(3, int(4 * self.scale))
+        line_y = cy - title_h // 2 - int(20 * self.scale)
+        draw.rectangle(
+            [cx - line_w // 2, line_y, cx + line_w // 2, line_y + line_h],
+            fill=(*accent_color, 230),
+        )
+
+        # Title text
+        self._draw_text_with_outline(
+            draw,
+            (cx - title_w // 2, cy - title_h // 2),
+            title_upper,
+            title_font,
+            fill=(255, 255, 255, 255),
+            outline_color=(0, 0, 0, 255),
+            outline_width=12,
+            shadow=True,
+        )
+
+        # Subtitle below title
+        if subtitle:
+            sub_bbox = draw.textbbox((0, 0), subtitle, font=sub_font)
+            sub_w = sub_bbox[2] - sub_bbox[0]
+            sub_y = cy + title_h // 2 + int(18 * self.scale)
+            self._draw_text_with_shadow(
+                draw,
+                (cx - sub_w // 2, sub_y),
+                subtitle,
+                sub_font,
+                fill=(accent_color[0], accent_color[1], accent_color[2], 230),
+            )
+
+        # Golden accent line below everything
+        bottom_y = cy + title_h // 2 + int(60 * self.scale)
+        if subtitle:
+            bottom_y += int(40 * self.scale)
+        draw.rectangle(
+            [cx - line_w // 2, bottom_y, cx + line_w // 2, bottom_y + line_h],
+            fill=(*accent_color, 180),
+        )
+
+        return np.array(overlay)
 
     def render_overlay_text(self, text: str,
                              accent_color: Optional[Tuple[int, int, int]] = None
